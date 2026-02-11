@@ -2,6 +2,7 @@
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, user-scalable=yes">
     <title>株価取得アプリ</title>
     <link rel="stylesheet" href="<?= BASE_PATH ?>/css/style.css">
     <link rel="stylesheet" href="<?= BASE_PATH ?>/css/login.css">
