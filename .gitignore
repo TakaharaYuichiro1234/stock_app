@@ -18,4 +18,5 @@ venv/
 # db
 config/db.ph
 
+# .env
 .env
