@@ -4,9 +4,8 @@ html {
 body {
     overflow: hidden;
 }
-main {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
+#container {
+    display: flex;
     gap: 10px;
     height: calc(100vh - 60px);
 }
@@ -24,7 +23,7 @@ section {
 }
 .section-title {
     padding-left: 2px;
-    font-size: 18px;
+    font-size: 1.2rem;
     font-weight: normal;
     white-space: nowrap;
     margin: 0;
@@ -39,7 +38,7 @@ section {
 .section-header-button {
     width: 90px;
     height: 40px;
-    font-size: medium;
+    font-size: 1rem;
     margin: 2px;
     white-space: nowrap;
 }
@@ -57,7 +56,7 @@ section {
 .search-input {
     width: 100%;
     height: 100%;
-    font-size: large;
+    font-size: 1.2rem;
 }
 
 .operation-button-container {
@@ -77,7 +76,7 @@ section {
     height: 32px;
     padding:0;
     white-space: nowrap;
-    font-size: small;
+    font-size: 0.8rem;
 }
 
 .list {
@@ -105,7 +104,7 @@ section {
 .stock-board-name {
     /* max-width: 160px; */
     overflow: hidden;
-    font-size: large;
+    font-size: 1.2rem;
     font-weight: bold;
 
     /* border: 1px solid red; */
@@ -113,7 +112,7 @@ section {
 .stock-board-info-block {
     display: grid;
     grid-template-columns: 1fr auto;
-    font-size: small
+    font-size: 0.8rem
 }
 .stock-board-symbol {
     color: #999;
@@ -176,7 +175,7 @@ footer {
     height: 100%;
     border-radius: 0;
     white-space: nowrap;
-    font-size: normal;
+    font-size: 1rem;
     background: #0b0985;
     color: #fff;
 }
@@ -184,7 +183,7 @@ footer {
     background: #0b0985;
 }
 .unselected {
-    font-size: small;
+    font-size: 0.8rem;
     background: #ccc;
     color: #777;
 }
@@ -192,17 +191,59 @@ footer {
     background: #aeade4;
 }
 
+#A { background: #ccc; }
+#D { background: #ccc; }
 
-@media screen and (max-width: 480px) {
-    main {
-        grid-template-columns: 1fr;
-    }
+@media (min-width: 481px) {
+  #A, #D {
+    display: none;
+  }
+
+  #B, #C {
+    flex: 1;
+  }
+}
+
+
+@media (max-width: 480px) {
     footer {
         display: block;
     }
-    .hidden-when-mobile {
-        display: none;
-    }
+
+ /* 基本は4分割 */
+  #A, #B, #C, #D {
+    flex: 1;
+  }
+
+  /* isLeft = true */
+  #container.left #A,
+  #container.left #C {
+    display: none;
+  }
+
+  #container.left #D {
+    flex: 0 0 20px;
+  }
+
+  #container.left #B {
+    flex: 1;
+  }
+
+  /* isLeft = false */
+  #container.right #B,
+  #container.right #D {
+    display: none;
+  }
+
+  #container.right #A {
+    flex: 0 0 20px;
+  }
+
+  #container.right #C {
+    flex: 1;
+  }
+
+
 }
 
 

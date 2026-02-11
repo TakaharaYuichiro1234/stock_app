@@ -38,8 +38,10 @@
         </p>
     <?php endif; ?>
 
-    <main>
-        <section id="searched">
+    <main id="container" class="desktop">
+        <section id="A"></section>
+
+        <section id="B">
             <div class="section-header">
                 <h3 class="section-title">候補リスト</h3>
                 <button class="section-header-button" id="search-submit-button">検索</button>
@@ -56,7 +58,7 @@
             <div class="list" id="searched-stock-list"></div>
         </section>
 
-        <section id="users">
+        <section id="C">
             <div class="section-header">
                 <h3 class="section-title">マイ銘柄</h3>
                 <button class="section-header-button" id="update-button">登録</button>
@@ -70,8 +72,10 @@
 
             <hr>
 
-            <div class="list" id="users-stock-list"></div>
+            <section class="list" id="users-stock-list"></section>
         </section>
+
+        <div id="D"></div>
     </main>
 
     <footer>

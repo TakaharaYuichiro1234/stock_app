@@ -45,8 +45,23 @@ function initViewSwitch() {
         document.getElementById("view-switch-searched").classList.toggle("unselected", !isSearch);
         document.getElementById("view-switch-users").classList.toggle("unselected", isSearch);
 
-        document.getElementById("searched").classList.toggle("hidden-when-mobile", !isSearch);
-        document.getElementById("users").classList.toggle("hidden-when-mobile", isSearch);
+        // document.getElementById("searched").classList.toggle("hidden-when-mobile", !isSearch);
+        // document.getElementById("users").classList.toggle("hidden-when-mobile", isSearch);
+
+        // document.getElementById("main").classList.toggle("left", !isSearch);
+        // document.getElementById("main").classList.toggle("right", isSearch);
+
+        const container = document.getElementById("container");
+
+        container.classList.remove("left", "right");
+
+        if (window.innerWidth <= 480) {
+            if (isSearch) {
+                container.classList.add("left");
+            } else {
+                container.classList.add("right");
+            }
+        }
     }
             
     viewSwitch(true);
