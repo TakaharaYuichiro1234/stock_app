@@ -140,15 +140,41 @@ async function setUsersStocks() {
 }
 
 function setUserOperationButtonsListener() {
-    document.getElementById('update-button').addEventListener('click', () => {
+    document.getElementById('update-button').addEventListener('click', async () => {
         if(!confirm("登録しますか？")) return;
         const stockIdList = stockView.getUsersStockIdList();
 
-        const inputElement = document.getElementById('users-stocks-data');
+        // const inputElement = document.getElementById('users-stocks-data');
         const data = JSON.stringify(stockIdList);
         
-        inputElement.value = data;
-        document.getElementById('update-users-stocks').submit();
+        // inputElement.value = data;
+        // document.getElementById('update-users-stocks').submit();
+
+        const url = `${BASE_PATH}/user-stocks/update`;
+
+        try {
+            const csrfToken = document
+                .querySelector('meta[name="csrf-token"]')
+                ?.getAttribute('content');
+
+            const formData = new FormData();
+            formData.append('csrf_token', csrfToken);
+            formData.append('users-stocks', data);
+
+            const res = await fetch(url, {
+                method: 'POST',
+                body: formData,
+                credentials: 'same-origin', // セッション / CSRF用
+            });
+
+            if (!res.ok) {
+                throw new Error('通信エラー');
+            }
+            location.reload();
+
+        } catch (err) {
+            console.error(err);
+        }
     })
 
     document.getElementById("up-button").addEventListener('click', () => stockView.up());

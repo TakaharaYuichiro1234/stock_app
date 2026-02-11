@@ -61,6 +61,9 @@ class UserStockController {
             exit('Invalid CSRF token');
         }
 
+        // var_dump("test");
+        // exit;
+
         unset($_SESSION['csrf_token']);
 
         // $data = [
