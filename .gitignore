@@ -15,3 +15,5 @@ venv/
 # uploads / runtime
 /storage/
 
+# db
+config/db.php
