@@ -16,4 +16,6 @@ venv/
 /storage/
 
 # db
-config/db.php
+config/db.ph
+
+.env
