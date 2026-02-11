@@ -9,7 +9,7 @@ section {
 }
 .section-title {
     padding-left: 2px;
-    font-size: 18px;
+    font-size: 1.2rem;
     font-weight: normal;
     white-space: nowrap;
     margin: 0;
@@ -82,7 +82,7 @@ section {
     border-bottom: 1px solid #aaa;
     display: flex;
     justify-content: space-between;
-    align-items: flex-start;
+    align-items: center;
     white-space: nowrap;
 }
 
@@ -95,10 +95,8 @@ section {
     grid-row: 1;
     grid-column: 2;
     overflow: visible;
-    font-size: large;
+    font-size: 1.2rem;
     font-weight: bold;
-
-    /* border: 1px solid red; */
 }
 .stock-board-info-block {
     grid-row: 1;
@@ -106,11 +104,9 @@ section {
     display: grid;
     grid-template-columns: 1fr auto;
     align-items: center;
-
-    /* border: 1px solid blue; */
-
 }
 .stock-board-symbol {
+    font-size: 1rem;
     color: white;
 }
 .stock-board-price {
@@ -126,4 +122,17 @@ section {
 .admin-button {
     width: auto;
     height: 30px;
+}
+
+@media screen and (max-width: 480px) {
+    .stock-board-name-block{
+        grid-template-columns: 45px 1fr;
+        
+    }
+    .admin-button {
+        width: 35px;
+        height: 35px;
+        white-space:normal ;
+        font-size: 0.8rem;
+    }
 }
