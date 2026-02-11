@@ -1,0 +1,172 @@
+* {
+    box-sizing: border-box;
+}
+
+button {
+    background-color: #2c2d2f;
+    color: #8DDDC0;
+
+    width: 100px;
+    height: 40px;
+    border-radius: 5px;
+    border: none;
+}
+button:disabled {
+    background-color: #666;
+    color: #aaa;
+}
+button:hover {
+    background: #999;
+}
+
+input {
+    font-size: 16px;
+    background: #333;
+    color: #fff;
+}
+input[type="date"] {
+    color-scheme: #fff;
+}
+input[type="date"]::-webkit-calendar-picker-indicator {
+    filter: invert(1); 
+}
+select {
+    font-size: 16px;
+    background: #333;
+    color: #fff;
+}
+textarea {
+    font-size: 16px;
+    background: #333;
+    color: #fff;
+}
+
+html { 
+    margin: 0; 
+    height: 100%; 
+}
+
+body {
+    font-family: sans-serif; 
+    width:100%;
+    max-width: 800px;
+    margin: 0 auto;
+
+    background: black;
+    color: white;
+    /* border: 1px solid red; */
+}
+
+hr {
+    width: 100%;
+    border: 1px solid white;
+}
+
+/* 共通で使用する設定 */
+.hidden {
+    display: none;
+}
+.admin-button-container {
+    display: flex;
+    gap: 5px;
+}
+
+/* プラスマイナスの色 */
+.diff-plus {
+    color: red;
+}
+
+.diff-minus {
+    color: green;
+}
+
+.diff-zero {
+    color: gray;
+}
+
+/* 検索バーの基本レイアウト */
+.search-container {
+    width: 100%;
+    padding: 5px;
+    display: grid;
+    grid-template-columns: 1fr auto;
+    align-items: center;
+    /* border: 1px solid green; */
+}
+.search-input-block {
+    width: 100%;
+}
+.search-input {
+    width: 100%;
+    height: 40px;
+    font-size: large;
+}
+.search-submit {
+    margin: 2px 5px;
+}
+
+/* 銘柄ボードの基本レイアウト */
+.stock-board {
+    display: grid;
+    grid-template-columns: 1fr auto auto;
+    align-items: flex-end;
+    white-space: nowrap;
+}
+
+.stock-board-name-block {
+    display: block;
+    padding: 0;
+    margin: 0;
+    max-width: 100%;
+    overflow: hidden;
+}
+.stock-board-name {
+    font-size: large;
+    font-weight: bold;
+    padding: 0;
+    margin: 0;
+}
+.stock-board-info-block {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    font-size: small;
+    padding: 0 20px 0 0 ;
+    margin: 0;
+}
+.stock-board-symbol {
+    color: #999;
+    width: 100px;
+    padding: 0;
+    margin: 0;
+}
+.stock-board-price {
+    display: flex;
+    align-items: flex-end;
+}
+.stock-board-price-int-part {
+    width: 100px;
+    text-align: right;
+    font-size: xx-large;
+    line-height: 1;
+
+    /* border: 1px solid red; */
+}
+.stock-board-price-decimal-part {
+    width: 50px;
+    margin-left: 2px;
+    font-size: large;
+    line-height: 1;
+
+    /* border: 1px solid red; */
+}
+
+.stock-board-diff-block {
+    width: 60px;
+    display: flex;
+    flex-direction: column;
+     
+    gap: 3px;
+    line-height: 1;
+}
+
+

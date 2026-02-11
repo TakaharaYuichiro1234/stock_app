@@ -1,0 +1,9 @@
+RewriteEngine On
+
+# 実在ファイル・ディレクトリはそのまま
+RewriteCond %{REQUEST_FILENAME} -f [OR]
+RewriteCond %{REQUEST_FILENAME} -d
+RewriteRule ^ - [L]
+
+# それ以外は index.php に渡す
+RewriteRule ^ index.php [L]

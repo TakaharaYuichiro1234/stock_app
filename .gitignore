@@ -1,0 +1,17 @@
+# env
+.env
+
+# PHP
+/vendor/
+*.log
+
+# Python
+__pycache__/
+venv/
+
+# OS
+.DS_Store
+
+# uploads / runtime
+/storage/
+

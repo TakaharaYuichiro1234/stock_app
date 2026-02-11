@@ -1,0 +1,26 @@
+
+
+
+.list {
+    margin: 10px;
+    overflow-y: scroll;
+}
+
+/* 銘柄基本データ */
+.stock-board {
+    padding: 20px 20px 5px 20px;
+    border-bottom: 1px solid #aaa;
+}
+
+.list-admin-button-container {
+    justify-content: start;
+    margin: 10px 10px 0px 0px;
+    /* border: 1px solid blue; */
+}
+.list-admin-button-container button {
+    height: 25px;
+}
+
+
+
+

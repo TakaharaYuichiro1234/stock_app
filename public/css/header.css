@@ -1,0 +1,159 @@
+
+header {
+    position: sticky;
+    top: 0;
+    background: black;
+    display: grid;
+    grid-template-columns: auto 1fr auto 50px;
+    align-items: center;
+    gap: 15px;
+    width: 100%;
+    height: 60px;
+    border-bottom: 1px solid white;
+    margin-bottom: 5px;
+    z-index: 1000;
+} 
+
+
+/* 戻るボタン */
+.prev-button {
+    max-width: 40px;
+    height: 40px;
+    background: transparent;
+    border: none;
+    padding: 0;
+}
+.prev-button .lessthan{
+    display: block;
+    width: 100%;
+    height: 100%;
+    position: relative;
+    text-decoration: none;
+}
+.prev-button .lessthan::before{
+    content: "";
+    display: block;
+    width: 15px;
+    height: 15px;
+    border-top: #fff 2px solid;
+    border-left: #fff 2px solid;
+    -webkit-transform: rotate(45deg);
+    -ms-transform: rotate(45deg);
+    transform: rotate(-45deg);
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 15px;
+    margin: auto;
+}
+
+/* ページタイトル */
+.header-title {
+    max-width: 100%;
+    overflow: hidden;
+    display: flex;
+    justify-content: start;
+    align-items: center;
+}
+.header-title p {
+    font-size: x-large;
+    margin:0;
+    padding: 0;
+    white-space: nowrap;
+}
+
+/* ユーザー名 */
+.header-user {
+    display: flex;
+    justify-content: end;
+    align-items: center;
+    gap: 5px;
+}
+.header-user p {
+    margin:0;
+    padding: 0;
+    white-space: nowrap;
+}
+
+/* メニューボタン関連 */
+.menu-container {
+    width: 100%;
+    height: 100%;
+    position: relative;
+}
+
+/* 3点リーダ */
+.three-dot-leader {
+    width: 100%;
+    height: 100%;
+    cursor: pointer;
+    background: none;
+    display: block;
+    position: relative;
+    border: none;
+
+
+    /* border: 1px solid red; */
+}
+
+.three-dot-leader .dot,
+.three-dot-leader .dot::before,
+.three-dot-leader .dot::after {
+    display: block;
+    position: absolute;
+    border-radius: 50%;
+    width: 4px;
+    height: 4px;
+    background-color: white;
+}
+.three-dot-leader .dot {
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    margin: auto;
+}
+
+.three-dot-leader .dot::before, .three-dot-leader .dot::after {
+    content: '';
+}
+
+.three-dot-leader .dot::before {
+    top: -9px;    /* 上のドットの位置 */
+}
+
+.three-dot-leader .dot::after {
+    top: 9px;     /* 下のドットの位置 */
+}
+
+/* 3点リーダを押した時に表示されるメニューパネル */
+.menu-panel {
+    position: absolute;
+    top: 50px;
+    right: 0;
+    background: #3c3c3c;
+    border-radius: 10px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    display: none;
+    z-index: 9999;
+    min-width: 160px;
+}
+
+.menu-panel.show {
+    display: block;
+}
+
+.menu-item {
+    padding: 14px 16px;
+    font-size: 14px;
+    border-bottom: 1px solid #eee;
+}
+
+.menu-item:last-child {
+    border-bottom: none;
+}
+
+.menu-item:hover {
+    background-color: #f3f3f3;
+    cursor: pointer;
+}

@@ -1,0 +1,129 @@
+section {
+    /* border: 1px solid red; */
+    padding: 20px 10px 30px 10px;
+}
+.section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: normal;
+}
+.section-title {
+    padding-left: 2px;
+    font-size: 18px;
+    font-weight: normal;
+    white-space: nowrap;
+    margin: 0;
+    max-width: 100px;
+    overflow: visible;
+    color: #ccc;
+
+
+    /* border: 1px solid red; */
+}
+
+
+#formSubmit {
+    width: 120px;
+}
+
+.stock-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 10px 0;
+}
+.stock-table td, .stock-table th {
+    border: 1px solid #ddd;
+    padding: 5px 5px;
+}
+.stock-table th {
+    text-align: left;
+}
+.stock-table th:first-child {
+    width: 20px;
+    border-right: none;
+}
+.stock-table th:nth-child(2) {
+    width: 180px;
+    border-right: none;
+    border-left: none;
+
+}
+.stock-table input {
+    width: 100%;
+    height: 30px;
+}
+
+/* 新規銘柄検索時のメッセージ */
+.section-content-message p{
+    padding:0;
+    margin: 3px 10px;
+    white-space: pre-line;
+    color: white;
+}
+.section-content-message p.error{
+    color: red;
+}
+.section-content-message p.success{
+    color: green;
+}
+
+
+
+
+/* 登録済みの銘柄一覧 */
+.list {
+    margin: 10px 5px;
+    /* overflow-y: scroll; */
+    /* height: 300px; */
+    flex: 1;
+}
+.stock-board {
+    padding: 5px 0px 5px 0px;
+    border-bottom: 1px solid #aaa;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    white-space: nowrap;
+}
+
+.stock-board-name-block {
+    display: grid;
+    grid-template-columns: 100px 1fr;
+    gap: 10px;
+}
+.stock-board-name {
+    grid-row: 1;
+    grid-column: 2;
+    overflow: visible;
+    font-size: large;
+    font-weight: bold;
+
+    /* border: 1px solid red; */
+}
+.stock-board-info-block {
+    grid-row: 1;
+    grid-column: 1;
+    display: grid;
+    grid-template-columns: 1fr auto;
+    align-items: center;
+
+    /* border: 1px solid blue; */
+
+}
+.stock-board-symbol {
+    color: white;
+}
+.stock-board-price {
+    display: none;
+}
+.stock-board-button-container {
+    width: auto;
+    height: auto;
+    margin-left: 10px;
+    display: flex;
+    gap: 4px;
+}
+.admin-button {
+    width: auto;
+    height: 30px;
+}
