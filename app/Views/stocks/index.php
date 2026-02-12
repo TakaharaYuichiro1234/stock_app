@@ -50,6 +50,10 @@
         }
     ?>
 
+    <div>
+        <?= count($stocks) === 0 ? "マイ銘柄リストに登録されている銘柄がありません。": "" ?> 
+    </div>
+
     <div class="list">
         <?php foreach ($stocks as $stock): ?>
             <div class="stock-board" id="list-content_<?= htmlspecialchars($stock['id']) ?>">

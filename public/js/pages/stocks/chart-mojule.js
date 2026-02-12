@@ -72,6 +72,11 @@ class ChartModule{
             borderVisible: false,
             wickUpColor: '#ef5350',
             wickDownColor: '#f5f3f9',
+            priceFormat: {
+                type: 'price',
+                precision: 0,   // ← 小数点以下桁数
+                minMove: 1 // ← precision と合わせる
+            }
         });
 
         this.#chart.subscribeClick((param) => {
