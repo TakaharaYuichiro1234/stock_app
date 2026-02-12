@@ -29,13 +29,14 @@ button {
     border-radius: 5px;
     border: none;
 }
+button:hover {
+    background: #999;
+}
 button:disabled {
     background-color: #666;
     color: #aaa;
 }
-button:hover {
-    background: #999;
-}
+
 
 input {
     font-size: 1rem;

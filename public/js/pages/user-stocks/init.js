@@ -1,13 +1,15 @@
 let stockView;
+let currentStockIdList = [];
 
-function init() {
+async function init() {
     initMenu();
     initViewSwitch();
 
     stockView = new StocksViewModule();
     initEventsFromStockView();
-    initSearchedSection();
-    initUsersSection();   
+    await initSearchedSection();
+    await initUsersSection();   
+    currentStockIdList = stockView.getUsersStockIdList();
 }
 
 function initMenu() {
@@ -45,23 +47,9 @@ function initViewSwitch() {
         document.getElementById("view-switch-searched").classList.toggle("unselected", !isSearch);
         document.getElementById("view-switch-users").classList.toggle("unselected", isSearch);
 
-        // document.getElementById("searched").classList.toggle("hidden-when-mobile", !isSearch);
-        // document.getElementById("users").classList.toggle("hidden-when-mobile", isSearch);
-
-        // document.getElementById("main").classList.toggle("left", !isSearch);
-        // document.getElementById("main").classList.toggle("right", isSearch);
-
-        const container = document.getElementById("container");
-
+        const container = document.getElementById("main-container");
         container.classList.remove("left", "right");
-
-        if (window.innerWidth <= 480) {
-            if (isSearch) {
-                container.classList.add("left");
-            } else {
-                container.classList.add("right");
-            }
-        }
+        container.classList.add(isSearch ? "left" : "right");
     }
             
     viewSwitch(true);
@@ -77,6 +65,25 @@ function initViewSwitch() {
 // stockViewModuleからのイベントを受ける
 function initEventsFromStockView() {
     document.addEventListener("show-detail", (e) => {
+        // 変更されている場合は確認を促す
+        const newStockIdList = stockView.getUsersStockIdList();
+
+        const isEqualArray = function (array1, array2) {
+            let i = array1.length;
+            if (i != array2.length) return false;
+
+            while (i--) {
+                if (array1[i] !== array2[i]) return false;
+            }
+            return true;
+        };
+
+        if (!isEqualArray(currentStockIdList, newStockIdList)) {
+            alert("マイ銘柄リストが編集されています。登録ボタンで編集内容を保存してください。");
+            return;
+        }
+
+        // 詳細画面へ遷移
         const { stockId } = e.detail;
         const redirectUri = encodeURI(`${BASE_PATH}/user-stocks`);
         location.href=`${BASE_PATH}/stocks/show/${stockId}?redirect=${redirectUri}`

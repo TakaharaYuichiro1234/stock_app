@@ -38,45 +38,47 @@
         </p>
     <?php endif; ?>
 
-    <main id="container" class="desktop">
-        <section id="A"></section>
+    <div id="main-container" >
+        <div id="main-wrapper">
 
-        <section id="B">
-            <div class="section-header">
-                <h3 class="section-title">候補リスト</h3>
-                <button class="section-header-button" id="search-submit-button">検索</button>
-            </div>
-            
-            <div class="search-container">
-                <div class="search-input-block">
-                    <input class="search-input" id="search-input" type="text" name="keywords" placeholder="キーワードを入力（スペース区切り）">
-                </div>   
-            </div>
+            <section class="list-section">
+                <div class="section-header">
+                    <h3 class="section-title">候補リスト</h3>
+                    <button class="section-header-button" id="search-submit-button">検索</button>
+                </div>
+                
+                <div class="search-container">
+                    <div class="search-input-block">
+                        <input class="search-input" id="search-input" type="text" name="keywords" placeholder="キーワードを入力（スペース区切り）">
+                    </div>   
+                </div>
 
-            <hr>
+                <hr>
 
-            <div class="list" id="searched-stock-list"></div>
-        </section>
+                <div class="list" id="searched-stock-list"></div>
+            </section>
 
-        <section id="C">
-            <div class="section-header">
-                <h3 class="section-title">マイ銘柄</h3>
-                <button class="section-header-button" id="update-button">登録</button>
-            </div>
+            <section class="space-section"></section>
 
-            <div class="operation-button-container">
-                <button class="operation-button" id="up-button">上へ</button>
-                <button class="operation-button" id="down-button">下へ</button>
-                <button class="operation-button" id="select-reset-button">選択解除</button>
-            </div>
+            <section class="list-section">
+                <div class="section-header">
+                    <h3 class="section-title">マイ銘柄</h3>
+                    <button class="section-header-button" id="update-button">登録</button>
+                </div>
 
-            <hr>
+                <div class="operation-button-container">
+                    <button class="operation-button" id="up-button">上へ</button>
+                    <button class="operation-button" id="down-button">下へ</button>
+                    <button class="operation-button" id="select-reset-button">選択解除</button>
+                </div>
 
-            <section class="list" id="users-stock-list"></section>
-        </section>
+                <hr>
 
-        <div id="D"></div>
-    </main>
+                <div class="list" id="users-stock-list"></div>
+            </section>
+
+        </div>
+    </div>
 
     <footer>
         <div class="view-switch">
@@ -84,7 +86,6 @@
             <button id="view-switch-users" class="view-switch-button">マイ銘柄</button>
         </div>
     </footer>
-
 
     <?php
         unset($_SESSION['flash'], $_SESSION['errors'], $_SESSION['old']);
@@ -104,6 +105,4 @@
 
     </script>
 </body>
-
-
 </html>
