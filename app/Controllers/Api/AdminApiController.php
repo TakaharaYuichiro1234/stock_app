@@ -13,7 +13,6 @@ class AdminApiController
     private PDO $pdo;
     private StockService $stockService;
 
-
     public function __construct()
     {
         require __DIR__ . '/../../../config/db.php';

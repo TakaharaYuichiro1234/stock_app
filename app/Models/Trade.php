@@ -62,11 +62,6 @@ class Trade {
         $stmt->execute([$id]);
     }
 
-
-
-
-
-
     public function getAmounts(int $userId, int $stockId): array {
         $stmt = $this->pdo->prepare("
             SELECT

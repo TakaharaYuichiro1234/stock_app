@@ -16,9 +16,7 @@ body {
 
     background: black;
     color: white;
-    /* border: 1px solid red; */
 }
-
 
 button {
     background-color: #2c2d2f;
@@ -60,7 +58,6 @@ textarea {
     color: #fff;
 }
 
-
 hr {
     width: 100%;
     border: 1px solid white;
@@ -95,7 +92,6 @@ hr {
     display: grid;
     grid-template-columns: 1fr auto;
     align-items: center;
-    /* border: 1px solid green; */
 }
 .search-input-block {
     width: 100%;
@@ -149,23 +145,16 @@ hr {
     align-items: flex-end;
     width: 100px;
     margin: 0 5px;
-
 }
 .stock-board-price-int-part {
-    /* width: 100px; */
     text-align: right;
     font-size: 1.6rem;
     line-height: 1;
-
-    /* border: 1px solid red; */
 }
 .stock-board-price-decimal-part {
-    /* width: 28px; */
     margin-left: 2px;
     font-size: 0.8rem;
     line-height: 1;
-
-    /* border: 1px solid red; */
 }
 
 .stock-board-diff-block {
@@ -177,9 +166,6 @@ hr {
     line-height: 1;
     font-size: 0.9rem;
 }
-
-
-
 
 /* モーダル画面 */
 .modal {

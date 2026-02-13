@@ -78,8 +78,6 @@ class StockApiController
             exit;
         }
 
-        // unset($_SESSION['csrf_token']);
-
         $data = [
             'name' => $_POST['name'] ?? '',
             'digit' => $_POST['digit'] ?? '',
@@ -150,8 +148,6 @@ class StockApiController
             ]);
             exit;
         }
-        
-        // unset($_SESSION['csrf_token']);
 
         $stockId = $_POST['stockId'] ?? '';
 
@@ -172,7 +168,6 @@ class StockApiController
         ]);
         exit;
     }
-
 
     public function getForChart($stockId): void
     {
@@ -217,7 +212,6 @@ class StockApiController
         $stocks = $this->stockModel->allWithLatestPriceByUserId($userId);
 
         header('Content-Type: application/json; charset=utf-8');
-        // echo json_encode($stocks);
         echo json_encode([
             'success' => true,
             'data' => $stocks,
@@ -226,13 +220,11 @@ class StockApiController
         exit;
     }
 
-
     public function getFiltered(): void
     {
         $input = $_GET['keywords'] ?? '';
         if (!is_string($input)) {
             http_response_code(400);
-            // echo json_encode([]);
             echo json_encode([
                 'success' => false,
                 'errors' => ['invalid request'],
@@ -242,7 +234,6 @@ class StockApiController
 
         if (mb_strlen($input) > 100) {
             http_response_code(400);
-            // echo json_encode([]);
             echo json_encode([
                 'success' => false,
                 'errors' => ['invalid request'],
@@ -253,7 +244,6 @@ class StockApiController
         if ($input === '') {
             $stocks = $this->stockModel->all();
             header('Content-Type: application/json; charset=utf-8');
-            // echo json_encode($stocks);
             echo json_encode([
                 'success' => true,
                 'errors' => [],
@@ -267,7 +257,6 @@ class StockApiController
         $keywords = array_values(array_filter($keywords, fn($k) => $k !== ''));
         $keywords = array_slice($keywords, 0, 5);
         if (empty($keywords)) {
-            // echo json_encode([]);
             echo json_encode([
                 'success' => false,
                 'errors' => ['invalid request'],
@@ -310,8 +299,6 @@ class StockApiController
             ]);
             exit;
         }
-        
-        // unset($_SESSION['csrf_token']);
 
         $stockId = $_POST['stockId'] ?? '';
 

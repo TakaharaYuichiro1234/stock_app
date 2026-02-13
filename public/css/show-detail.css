@@ -85,7 +85,6 @@ section {
     margin: 20px auto;
     height: 60vh;
     border: none;
-    /* box-shadow: 10px 10px 5px gray; */
 }
 #chart {
     width: 100%;
@@ -128,7 +127,6 @@ section {
   border: none;
   padding: 0 20px;
   margin: 0;
-  /* text-align: center; */
 }
 
 .radio-inline__input {

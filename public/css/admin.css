@@ -1,5 +1,4 @@
 section {
-    /* border: 1px solid red; */
     padding: 20px 10px 30px 10px;
 }
 .section-header {
@@ -16,9 +15,6 @@ section {
     max-width: 100px;
     overflow: visible;
     color: #ccc;
-
-
-    /* border: 1px solid red; */
 }
 
 
@@ -67,14 +63,9 @@ section {
     color: green;
 }
 
-
-
-
 /* 登録済みの銘柄一覧 */
 .list {
     margin: 10px 5px;
-    /* overflow-y: scroll; */
-    /* height: 300px; */
     flex: 1;
 }
 .stock-board {
@@ -126,8 +117,7 @@ section {
 
 @media screen and (max-width: 480px) {
     .stock-board-name-block{
-        grid-template-columns: 45px 1fr;
-        
+        grid-template-columns: 45px 1fr; 
     }
     .admin-button {
         width: 35px;

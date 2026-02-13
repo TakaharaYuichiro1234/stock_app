@@ -14,7 +14,6 @@ header {
     z-index: 1000;
 } 
 
-
 /* 戻るボタン */
 .prev-button {
     max-width: 40px;
@@ -92,9 +91,6 @@ header {
     display: block;
     position: relative;
     border: none;
-
-
-    /* border: 1px solid red; */
 }
 
 .three-dot-leader .dot,

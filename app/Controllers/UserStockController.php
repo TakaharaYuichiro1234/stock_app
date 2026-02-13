@@ -63,10 +63,6 @@ class UserStockController {
 
         unset($_SESSION['csrf_token']);
 
-        // $data = [
-        //     'users-stocks' => $_POST['users-stocks'] ?? '',
-        // ];
-
         $uuid = $_SESSION['user']['uuid'];
         $userId = $this->userModel->getUserIdByUuid($uuid);
 

@@ -88,7 +88,6 @@
 
     <section>
         <div class="stock-board">
-      
             <div class="stock-board-name"><?= htmlspecialchars($stock['name']) ?></div>    
             
             <div class="stock-board-info-block">

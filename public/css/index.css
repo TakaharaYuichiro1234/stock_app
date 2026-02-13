@@ -1,6 +1,3 @@
-
-
-
 .list {
     margin: 10px;
     overflow-y: scroll;
@@ -15,12 +12,7 @@
 .list-admin-button-container {
     justify-content: start;
     margin: 10px 10px 0px 0px;
-    /* border: 1px solid blue; */
 }
 .list-admin-button-container button {
     height: 25px;
 }
-
-
-
-
