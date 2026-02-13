@@ -7,7 +7,7 @@
     <title>株価取得アプリ</title>
     <link rel="stylesheet" href="<?= BASE_PATH ?>/css/style.css">
     <link rel="stylesheet" href="<?= BASE_PATH ?>/css/header.css">
-    <link rel="stylesheet" href="<?= BASE_PATH ?>/css/user-stock-index.css">
+    <link rel="stylesheet" href="<?= BASE_PATH ?>/css/user-stocks.css">
 </head>
 
 <body>
@@ -15,7 +15,7 @@
     <?php
         $backUrl = BASE_PATH. '/';
         $pageTitle = "マイ銘柄編集";
-        require __DIR__ . '/../common/header.php';
+        require __DIR__ . '/common/header.php';
     ?>
 
     <!-- メニュー用のボタン類(非表示) -->

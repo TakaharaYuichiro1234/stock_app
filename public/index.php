@@ -50,12 +50,10 @@ $webRoutes = [
 $adminRoutes = [
     ['GET', '/admins', AdminController::class, 'index', 'admin'],
     ['POST', '/stocks/store', StockController::class, 'store', 'admin'],
-    ['GET',  '/stocks/edit/{id}', StockController::class, 'edit', 'admin'],
     ['POST', '/stocks/update', StockController::class, 'update', 'admin'],
     ['POST', '/stocks/delete', StockController::class, 'delete', 'admin'],
     ['POST', '/stocks/update_stock_prices/{id}', StockController::class, 'updateStockPrices', 'admin'],   
-
-    ['POST', '/admins/update_stock_prices', AdminController::class, 'updateStockPricesAll', 'admin'],
+    ['POST', '/admins/update_stock_prices_all', AdminController::class, 'updateStockPricesAll', 'admin'],
 ];
 
 $userRoutes = [
@@ -63,7 +61,6 @@ $userRoutes = [
     ['GET', '/trades/index', TradeController::class, 'index', 'user'],
     ['GET', '/trades/create', TradeController::class, 'create', 'user'],
     ['POST', '/trades/store', TradeController::class, 'store', 'user'],
-    ['GET',  '/trades/edit/{id}', TradeController::class, 'edit', 'user'],
     ['POST', '/trades/update', TradeController::class, 'update', 'user'],
     ['POST', '/trades/delete', TradeController::class, 'delete', 'user'],
 

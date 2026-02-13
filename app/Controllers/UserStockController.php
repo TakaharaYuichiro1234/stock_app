@@ -42,7 +42,7 @@ class UserStockController {
             $stocks = $this->stockModel->allWithLatestPrice();
         }
 
-        require __DIR__ . '/../Views/userStocks/index.php';
+        require __DIR__ . '/../Views/user-stocks.php';
     }
 
     public function update()
@@ -60,9 +60,6 @@ class UserStockController {
             http_response_code(403);
             exit('Invalid CSRF token');
         }
-
-        // var_dump("test");
-        // exit;
 
         unset($_SESSION['csrf_token']);
 

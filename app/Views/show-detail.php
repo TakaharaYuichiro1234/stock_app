@@ -6,7 +6,7 @@
     <title>株価取得アプリ</title>
     <link rel="stylesheet" href="<?= BASE_PATH ?>/css/style.css">
     <link rel="stylesheet" href="<?= BASE_PATH ?>/css/header.css">
-    <link rel="stylesheet" href="<?= BASE_PATH ?>/css/show.css">
+    <link rel="stylesheet" href="<?= BASE_PATH ?>/css/show-detail.css">
 </head>
 
 <body>
@@ -14,7 +14,7 @@
     <?php
         $backUrl = $redirect ?? BASE_PATH. '/';
         $pageTitle = "詳細";
-        require __DIR__ . '/../common/header.php';
+        require __DIR__ . '/common/header.php';
     ?>
 
     <!-- フラッシュメッセージ -->
@@ -334,8 +334,8 @@
     <script src="<?= BASE_PATH ?>/js/app.js"></script>
     <script src="<?= BASE_PATH ?>/js/utils/menu-item.js"></script>
     <script src="<?= BASE_PATH ?>/js/utils/menu.js"></script>
-    <script src="<?= BASE_PATH ?>/js/pages/stocks/chart-mojule.js"></script>
-    <script src="<?= BASE_PATH ?>/js/pages/stocks/show.js"></script>
+    <script src="<?= BASE_PATH ?>/js/pages/show-detail/chart-mojule.js"></script>
+    <script src="<?= BASE_PATH ?>/js/pages/show-detail/init.js"></script>
     
     <script >
 

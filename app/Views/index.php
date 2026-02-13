@@ -14,7 +14,7 @@
     <?php
         $backUrl = null;
         $pageTitle = $user ? "マイ銘柄一覧" : "登録銘柄一覧";
-        require __DIR__ . '/../common/header.php';
+        require __DIR__ . '/common/header.php';
     ?>
 
     <!-- Javascriptからpostするためのform(非表示) -->
@@ -103,67 +103,13 @@
 <script src="<?= BASE_PATH ?>/js/app.js"></script>
 <script src="<?= BASE_PATH ?>/js/utils/menu-item.js"></script>
 <script src="<?= BASE_PATH ?>/js/utils/menu.js"></script>
+<script src="<?= BASE_PATH ?>/js/pages/index/init.js"></script>
 
 <script>
     const user = <?= json_encode($user, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT) ?>;
     const isAdmin = <?= json_encode($isAdmin, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT) ?>;
+    const stocks = <?= json_encode($stocks, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT) ?>;
 
-    const stocks = <?= json_encode($stocks) ?>;
-    for (stock of stocks) {
-        const id = stock['id'];
-        document.getElementById(`list-content_${id}`).addEventListener('click', () => {
-            window.location.href = `${BASE_PATH}/stocks/show-detail/${id}`;
-        })
-    }
-
-    // メニューアイテム初期設定
-    initMenu();
-
-    function initMenu() {
-        const items = [];
-
-        if (isAdmin) {
-            items.push(
-                new MenuItem({
-                    caption: '🛡️管理画面',
-                    name: 'admin',
-                    action: () => location.href = `${BASE_PATH}/admins`
-                })
-            );
-        }
-
-        if (user) {
-            items.push(
-                new MenuItem({
-                    caption: 'マイ銘柄編集',
-                    name: 'user-stock',
-                    action: () => location.href = `${BASE_PATH}/user-stocks`
-                }),
-                new MenuItem({
-                    caption: 'ログアウト',
-                    name: 'logout',
-                    action: () => document.getElementById('logout').submit()
-                })
-            );
-        } else {
-            items.push(
-                new MenuItem({
-                    caption: 'ログイン',
-                    name: 'login',
-                    action: () => location.href = `${BASE_PATH}/show_login`
-                })
-            );
-        }
-
-        const menu = new Menu({
-            menuBtnId: 'menu-btn',
-            menuPanelId: 'menu-panel',
-            items
-        });
-
-        menu.init();
-
-    }
-
+    init();
 </script>
 </html>

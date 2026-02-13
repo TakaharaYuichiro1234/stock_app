@@ -9,7 +9,7 @@ class AuthController {
             $_SESSION['redirect_after_login'] = $_GET['redirect'];
         }
 
-        require __DIR__ . '/../Views/users/login.php';
+        require __DIR__ . '/../Views/login.php';
     }
 
     public function login()

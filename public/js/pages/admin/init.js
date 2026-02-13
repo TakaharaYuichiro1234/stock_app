@@ -7,6 +7,7 @@ function init() {
 
     stockView = new StocksViewModule();
     initEventsFromStockView();
+    initModalScreenEvents();
     initRegisteredStocksSection();
 }
 
@@ -44,6 +45,7 @@ function initMenu() {
 
 // stockViewModuleからのイベントを受ける
 function initEventsFromStockView() {
+    // 株価更新
     document.addEventListener("update-prices", async (e) => {
         const { stockId } = e.detail;
         const url = `${BASE_PATH}/api/stocks/update-stock-prices`;
@@ -80,8 +82,8 @@ function initEventsFromStockView() {
 
     document.addEventListener("edit-stock", async (e) => {
         const { stockId } = e.detail;
-        // location.href=`${BASE_PATH}/stocks/edit/${stockId}`;
 
+        // 編集用画面に表示するために、現在の登録情報をAPIから取得
         let stock = null;
         try {
             const res = await fetch(`${BASE_PATH}/api/stocks/get/${stockId}`, {
@@ -105,7 +107,7 @@ function initEventsFromStockView() {
             return; 
         }
 
-        // モーダル画面にデータを設定して表示
+        // モーダル画面にデータを設定して、銘柄編集画面を表示
         document.getElementById('input-stock-name').value = stock.name;
         document.getElementById('input-digit').value = stock.digit;
         document.getElementById('modal-form-stock-id').value = stockId;
@@ -113,9 +115,7 @@ function initEventsFromStockView() {
         document.querySelector(".modal").classList.remove("hidden");
     });
 
-
-
-
+    // 登録銘柄削除
     document.addEventListener("remove-stock", async (e) => {
         if (!confirm('この銘柄を削除しますか？')) return;
 
@@ -151,6 +151,7 @@ function initEventsFromStockView() {
         }
     });
 
+    // 銘柄詳細画面に遷移
     document.addEventListener("show-detail", (e) => {
         const { stockId } = e.detail;
         const redirectUri = encodeURI(`${BASE_PATH}/admins`);
@@ -158,8 +159,53 @@ function initEventsFromStockView() {
     });
 }
 
-function initRegistrationEvents() {
+function initModalScreenEvents() {
+    // モーダル画面の閉じるボタン
+    document.querySelector(".modal-close").addEventListener("click", () => {
+        document.querySelector(".modal").classList.add("hidden");
+    });
 
+    // モーダル画面の更新ボタンを押した時の処理
+    document.getElementById('modal-form').addEventListener('submit', async (e) => {
+        e.preventDefault(); 
+
+        const form = e.target;
+        const formData = new FormData(form);
+
+        // バリデーションチェック
+        const name = formData.get('name');
+        const digit = formData.get('digit');
+        const validationErrors = [];
+
+        if (name === "") validationErrors.push("名前を入力して下さい");
+        if (name.length > 255) validationErrors.push("名前は255文字以下で入力して下さい");
+        if (!(/^\d+$/.test(digit))) validationErrors.push("桁数は正の整数を入力してください");
+
+        if (validationErrors.length > 0) {
+            showModalMessages(validationErrors.map(err => ({'message': err, 'type':'error'})));
+            return;
+        } 
+
+        // 更新処理
+        showModalMessages([]);
+        form.submit();
+        document.querySelector(".modal").classList.add("hidden");
+
+    });
+}
+
+function showModalMessages(messageObjects) {  // messageObjects: {message: string, type: string(error/success)}
+    const messageContainer = document.getElementById("modal-message-container");
+    messageContainer.innerHTML = '';
+    for (obj of messageObjects) {
+        const element = document.createElement('p');
+        element.textContent = obj.message;
+        element.className = obj.type;
+        messageContainer.appendChild(element);
+    }
+}
+
+function initRegistrationEvents() {
     // 新規銘柄登録
     document.getElementById('stockForm').addEventListener('submit', async (e) => {
         e.preventDefault(); 
@@ -197,8 +243,12 @@ function initRegistrationEvents() {
             }
 
             const result = await res.json();
+            if (!result.success) {
+                throw new Error('登録エラー');
+            }
 
             await refreshSearchedStocks("");
+            document.getElementById('formSubmit').toggleAttribute('disabled', true);
             alert('登録しました');
 
         } catch (err) {

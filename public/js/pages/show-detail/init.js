@@ -53,16 +53,6 @@ function initMenu() {
 
         items.push(
             new MenuItem({
-                caption: '🛡️編集',
-                name: 'edit-stock',
-                action: () => {
-                    location.href=`${BASE_PATH}/stocks/edit/${stockId}`;
-                }
-            })
-        );
-
-        items.push(
-            new MenuItem({
                 caption: '🛡️削除',
                 name: 'delete-stock',
                 action: () => {

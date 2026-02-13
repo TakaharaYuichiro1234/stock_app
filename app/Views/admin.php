@@ -15,7 +15,7 @@
     <?php
         $backUrl = BASE_PATH. '/';
         $pageTitle = "管理画面";
-        require __DIR__ . '/../common/header.php';
+        require __DIR__ . '/common/header.php';
     ?>
     
     <!-- フラッシュメッセージ -->
@@ -40,7 +40,7 @@
             <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($_SESSION['csrf_token']) ?>">
         </form>
 
-        <form id="update-stock-prices" action="<?= BASE_PATH ?>/admins/update_stock_prices" method="post" style="display:inline;">
+        <form id="update-stock-prices" action="<?= BASE_PATH ?>/admins/update_stock_prices_all" method="post" style="display:inline;">
             <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($_SESSION['csrf_token']) ?>">
         </form>
 
@@ -63,6 +63,7 @@
         </form>
     </div>
 
+    <!-- 銘柄を新規登録するためのセクション -->
     <section>
         <div class="section-header">
             <h3 class="section-title">新たに登録する銘柄</h3>
@@ -127,19 +128,17 @@
                             </tr>
                         </tbody>
                     </table>
-
-
                     <button type="submit" id="formSubmit">この銘柄を登録</button>
                 </form>
-                
             </div>
 
             <div class="section-content-message" id="message-container">
-                <p id="message">検索結果がありません。</p>
+                <!-- <p id="message">検索結果がありません。</p> -->
             </div>
         </div>
     </section>
 
+    <!-- 登録済みの銘柄を表示するセクション -->
     <section>
         <div class="section-header">
             <h3 class="section-title">登録済みの銘柄</h3>
@@ -155,6 +154,7 @@
         <div class="list" id="searched-stock-list"></div>
     </section>
 
+    <!-- 銘柄名などを編集するためのモーダル画面 -->
     <div class="modal hidden">
         <div class="modal-backdrop"></div>
         <div class="modal-content">
@@ -164,11 +164,7 @@
                 <form id="modal-form" action="<?= BASE_PATH ?>/stocks/update" method="post">
                     <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($_SESSION['csrf_token']) ?>">
                     <input type="hidden" name="redirect" value="<?= htmlspecialchars($_SERVER['REQUEST_URI']) ?>">
-
-                    <input type="hidden" name="symbol" value="<?= htmlspecialchars($stock['symbol'] ?? '') ?>">
-
                     <input type="hidden" name="stock_id" id="modal-form-stock-id">
-
                     <div class="modal-content-data-block">
                         <div>銘柄名</div>
                         <div>
@@ -192,10 +188,9 @@
                         </div>
                     </div>
 
-                    <div id="modal-message-container">
+                    <div class="section-content-message" id="modal-message-container">
                     </div>
                     
-
                     <div>
                         <button type="submit" id="modal-submit">更新</button>
                     </div>
@@ -203,9 +198,6 @@
             </div>
         </div>
     </div>
-
-
-
 
     <?php
         unset($_SESSION['flash'], $_SESSION['errors'], $_SESSION['old']);
@@ -215,70 +207,11 @@
     <script src="<?= BASE_PATH ?>/js/utils/menu-item.js"></script>
     <script src="<?= BASE_PATH ?>/js/utils/menu.js"></script>
     <script src="<?= BASE_PATH ?>/js/utils/stocks-view.js"></script>
-    <script src="<?= BASE_PATH ?>/js/pages/admins/init.js"></script>
+    <script src="<?= BASE_PATH ?>/js/pages/admin/init.js"></script>
 
     <script>
         const isAdmin = <?= json_encode($isAdmin) ?>;
         init();
-
-
-            // document.getElementById('modal-form').addEventListener('submit', (event) => {
-            //     event.preventDefault();
-            //     // const actionUrl = `${BASE_PATH}/trades/store`;
-
-            //     // const form = document.getElementById('modal-form');
-            //     // form.action = actionUrl;
-            //     this.submit();
-            // });
-
-        document.querySelector(".modal-close").addEventListener("click", () => {
-            document.querySelector(".modal").classList.add("hidden");
-        });
-        document.getElementById('modal-form').addEventListener('submit', async (e) => {
-            e.preventDefault(); 
-
-            const form = e.target;
-            const url  = form.action;
-            const formData = new FormData(form);
-
-            // バリデーションチェック
-            const name = formData.get('name');
-            const digit = formData.get('digit');
-            const validationErrors = [];
-
-            if (name === "") validationErrors.push("名前を入力して下さい");
-            if (name.length > 255) validationErrors.push("名前は255文字以下で入力して下さい");
-            if (!(/^\d+$/.test(digit))) validationErrors.push("桁数は正の整数を入力してください");
-
-            if (validationErrors.length > 0) {
-                showModalMessages(validationErrors.map(err => ({'message': err, 'type':'error'})));
-                
-                return;
-            } 
-
-            // 更新処理
-            showModalMessages([]);
-
-            
-
-
-            form.submit();
-            document.querySelector(".modal").classList.add("hidden");
-
-        });
-
-        function showModalMessages(messageObjects) {  // messageObjects: {message: string, type: string(error/success)}
-            const messageContainer = document.getElementById("modal-message-container");
-            messageContainer.innerHTML = '';
-            for (obj of messageObjects) {
-                const element = document.createElement('p');
-                element.textContent = obj.message;
-                element.className = obj.type;
-                messageContainer.appendChild(element);
-            }
-        }
-
-        
     </script>
 </body>
 

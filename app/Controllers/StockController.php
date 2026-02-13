@@ -57,7 +57,7 @@ class StockController {
             $stocks = $this->stockModel->allWithLatestPrice();
         }
 
-        require __DIR__ . '/../Views/stocks/index.php';
+        require __DIR__ . '/../Views/index.php';
     }
 
     public function store()
@@ -111,23 +111,6 @@ class StockController {
         $_SESSION['flash'] = '銘柄情報を作成しました';
         header('Location: '. BASE_PATH. '/admins');
         exit;
-    }
-
-    public function edit($id) {
-        // 管理者チェック
-        if (!Auth::isAdmin()) {
-            http_response_code(403);
-            exit('Forbidden');
-        }
-
-        $stock = $this->stockModel->find($id);
-        if(!$stock) {
-            http_response_code(404);
-            exit('銘柄情報が見つかりません');
-        }
-
-        $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
-        require __DIR__ . '/../Views/stocks/edit.php';
     }
 
     public function update() {
@@ -206,15 +189,6 @@ class StockController {
         $stock = $this->stockModel->find($id);
         $stockPrices = $this->stockPriceModel->filterByStockId($id);
 
-        // $latest = $stockPrices[count($stockPrices) - 1];  // 最新日
-        // $previous = $stockPrices[count($stockPrices) - 2];    // 最新の1日前（＝1つ前）
-        // $diff = $latest['close'] - $previous['close'];
-        // $percent_diff = ($latest['close'] - $previous['close'])/ $previous['close'] * 100;
-
-        // $daily = $this->stockPriceModel->getForChart($stockId, 'daily');
-        // $weekly = $this->stockPriceModel->getForChart($stockId, 'weekly');
-        // $monthly = $this->stockPriceModel->getForChart($stockId, 'monthly');
-
         $chartPrices = [
             'daily' => $this->stockPriceModel->getForChart($id, 'daily'),
             'weekly' => $this->stockPriceModel->getForChart($id, 'weekly'),
@@ -232,10 +206,6 @@ class StockController {
                 $trades = $this->tradeModel->getByUserIdAndStockId($userId, $id);
                 $tradeAmounts = $this->tradeModel->getAmounts($userId, $id);
 
-                // $daily = $this->model->getForChart($userId, $stockId, 'daily');
-                // $weekly = $this->model->getForChart($userId, $stockId, 'weekly');
-                // $monthly = $this->model->getForChart($userId, $stockId, 'monthly');
-
                 $chartTrades = [
                     'daily' => $this->tradeModel->getForChart($userId, $id, 'daily'),
                     'weekly' =>  $this->tradeModel->getForChart($userId, $id, 'weekly'),
@@ -244,7 +214,7 @@ class StockController {
             }   
         }
 
-        require __DIR__ . '/../Views/stocks/show.php';
+        require __DIR__ . '/../Views/show-detail.php';
     }
 
     public function updateStockPrices($stockId)

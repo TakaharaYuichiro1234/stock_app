@@ -62,7 +62,7 @@ class AdminController {
         if ($symbol !== '' && $this->stockService->isSymbolRegistered($symbol)) {
             $errors[] = 'この銘柄はすでに登録されています';
         }
-        require __DIR__ . '/../Views/admins/index.php';
+        require __DIR__ . '/../Views/admin.php';
     }
 
     public function updateStockPricesAll()
