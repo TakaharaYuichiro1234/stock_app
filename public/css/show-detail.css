@@ -8,11 +8,76 @@ section {
     margin: 5px 0;
 }
 
+/* 銘柄ボード  */
+.stock-board {
+    display: block;
+    white-space: nowrap;
+}
 
-/* 銘柄ボード  style.cssからの微調整 */
 .stock-board-name {
     font-size: 1.6rem;
+    font-weight: bold;
+    padding: 0;
+    margin: 0;
+    overflow:scroll;
+
+    &::-webkit-scrollbar {
+        display: none;
+    }
+    scrollbar-width: none;
 }
+
+.stock-board-info-block {
+    display: grid;
+    grid-template-columns: 1fr auto auto auto;
+    align-items: flex-end;
+    height: max-content;
+    margin: 0;
+    padding: 0;
+}
+
+.stock-board-symbol {
+    grid-column: 1;
+    color: #999;
+    width: auto;
+    padding: 0;
+    margin: 0;
+    height:100%;
+}
+.stock-board-latest-date {
+    grid-column: 2;
+}
+
+.stock-board-price {
+    grid-column: 3;
+    display: flex;
+    justify-content: flex-end;
+    align-items: flex-end;
+    width: 100px;
+    margin: 0 5px;
+}
+.stock-board-price-int-part {
+    text-align: right;
+    font-size: 1.6rem;
+    line-height: 1;
+}
+.stock-board-price-decimal-part {
+    margin-left: 2px;
+    font-size: 0.8rem;
+    line-height: 1;
+}
+
+.stock-board-diff-block {
+    grid-column: 4;
+    width: 60px;
+    display: flex;
+    flex-direction: column;
+    
+    gap: 3px;
+    line-height: 1;
+    font-size: 0.9rem;
+}
+
 
 /* チャートセクション */
 .chart-container {
@@ -147,4 +212,18 @@ section {
 .trade-content-button-cotainer {
     display: flex;
     gap: 10px;
+}
+
+
+@media screen and (max-width: 480px) {
+    .stock-board {
+        margin: 0;
+        padding: 0;
+    }
+    .stock-board-price {
+        width: 70px;
+    }
+    .stock-board-diff-block {
+        width: 50px;
+    }
 }

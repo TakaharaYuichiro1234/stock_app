@@ -88,15 +88,14 @@
 
     <section>
         <div class="stock-board">
-            <div class="stock-board-name-block">
-                <div class="stock-board-name"><?= htmlspecialchars($stock['name']) ?></div>    
-                <div class="stock-board-info-block">
-                    <div class="stock-board-symbol"><?= htmlspecialchars($stock['symbol']) ?></div>
-                    <div class="stock-board-latest-date"><?= htmlspecialchars($latest['date']) ?></div>
-                </div>         
-            </div>
+      
+            <div class="stock-board-name"><?= htmlspecialchars($stock['name']) ?></div>    
+            
+            <div class="stock-board-info-block">
+                <div class="stock-board-symbol"><?= htmlspecialchars($stock['symbol']) ?></div>
+                <div class="stock-board-latest-date"><?= htmlspecialchars($latest['date']) ?></div>
+        
 
-            <div class="stock-board-price">
                 <div class="stock-board-price">
                     <div class="stock-board-price-int-part">
                         <?= $latest['close'] ? number_format(floor($latest['close'])) : '-' ?>
@@ -106,12 +105,13 @@
                         <?= $latest['close'] ? formatDecimalPart($latest['close'], $stock['digit']) : '' ?>
                     </div>
                 </div>
+
+                <div class="stock-board-diff-block">
+                    <div class="stock-board-diff <?= diffClass($diff) ?>"> <?= formatDiff($diff, $stock['digit']) ?></div>
+                    <div class="stock-board-percent-diff <?= diffClass($diff) ?>"> <?= formatDiff($percent_diff, 2) ?>%</div>
+                </div>
             </div>
 
-            <div class="stock-board-diff-block">
-                <div class="stock-board-diff <?= diffClass($diff) ?>"> <?= formatDiff($diff, $stock['digit']) ?></div>
-                <div class="stock-board-percent-diff <?= diffClass($diff) ?>"> <?= formatDiff($percent_diff, 2) ?>%</div>
-            </div>
         </div>
     </section>
 
