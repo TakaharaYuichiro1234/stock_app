@@ -161,11 +161,13 @@
             <button class="modal-close" aria-label="閉じる"></button>
             <div class="modal-content-inner">
 
-                <form id="modal-form" action="<?= BASE_PATH ?>/stocks/update/<?= htmlspecialchars($stock['id']) ?>" method="post">
+                <form id="modal-form" action="<?= BASE_PATH ?>/stocks/update" method="post">
                     <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($_SESSION['csrf_token']) ?>">
                     <input type="hidden" name="redirect" value="<?= htmlspecialchars($_SERVER['REQUEST_URI']) ?>">
 
                     <input type="hidden" name="symbol" value="<?= htmlspecialchars($stock['symbol'] ?? '') ?>">
+
+                    <input type="hidden" name="stock_id" id="modal-form-stock-id">
 
                     <div class="modal-content-data-block">
                         <div>銘柄名</div>
@@ -188,6 +190,9 @@
                                 placeholder="整数(0, 1, 2, ・・・)"
                             >
                         </div>
+                    </div>
+
+                    <div id="modal-message-container">
                     </div>
                     
 
@@ -226,6 +231,9 @@
             //     this.submit();
             // });
 
+        document.querySelector(".modal-close").addEventListener("click", () => {
+            document.querySelector(".modal").classList.add("hidden");
+        });
         document.getElementById('modal-form').addEventListener('submit', async (e) => {
             e.preventDefault(); 
 
@@ -243,34 +251,33 @@
             if (!(/^\d+$/.test(digit))) validationErrors.push("桁数は正の整数を入力してください");
 
             if (validationErrors.length > 0) {
-                showMessages(validationErrors.map(err => ({'message': err, 'type':'error'})));
+                showModalMessages(validationErrors.map(err => ({'message': err, 'type':'error'})));
+                
                 return;
-            } else {
-                showMessages([]);
-            }
+            } 
 
-            // // 新規銘柄登録処理
-            // try {
-            //     const res = await fetch(url, {
-            //         method: 'POST',
-            //         body: formData,
-            //         credentials: 'same-origin', // セッション / CSRF用
-            //     });
+            // 更新処理
+            showModalMessages([]);
 
-            //     if (!res.ok) {
-            //         throw new Error('通信エラー');
-            //     }
+            
 
-            //     const result = await res.json();
 
-            //     await refreshSearchedStocks("");
-            //     alert('登録しました');
+            form.submit();
+            document.querySelector(".modal").classList.add("hidden");
 
-            // } catch (err) {
-            //     console.error(err);
-            //     alert('登録に失敗しました');
-            // }
         });
+
+        function showModalMessages(messageObjects) {  // messageObjects: {message: string, type: string(error/success)}
+            const messageContainer = document.getElementById("modal-message-container");
+            messageContainer.innerHTML = '';
+            for (obj of messageObjects) {
+                const element = document.createElement('p');
+                element.textContent = obj.message;
+                element.className = obj.type;
+                messageContainer.appendChild(element);
+            }
+        }
+
         
     </script>
 </body>

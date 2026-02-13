@@ -112,7 +112,7 @@
     for (stock of stocks) {
         const id = stock['id'];
         document.getElementById(`list-content_${id}`).addEventListener('click', () => {
-            window.location.href = `${BASE_PATH}/stocks/show/${id}`;
+            window.location.href = `${BASE_PATH}/stocks/show-detail/${id}`;
         })
     }
 

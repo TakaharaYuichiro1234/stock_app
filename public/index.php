@@ -38,7 +38,7 @@ $method = $_SERVER['REQUEST_METHOD'];
 $webRoutes = [
     ['GET', '/', StockController::class, 'index'],
     ['GET', '/stocks', StockController::class, 'index'],
-    ['GET', '/stocks/show/{id}', StockController::class, 'show'],
+    ['GET', '/stocks/show-detail/{id}', StockController::class, 'showDetail'],
 
     ['GET', '/user-stocks', UserStockController::class, 'index'],
 
@@ -51,8 +51,8 @@ $adminRoutes = [
     ['GET', '/admins', AdminController::class, 'index', 'admin'],
     ['POST', '/stocks/store', StockController::class, 'store', 'admin'],
     ['GET',  '/stocks/edit/{id}', StockController::class, 'edit', 'admin'],
-    ['POST', '/stocks/update/{id}', StockController::class, 'update', 'admin'],
-    ['POST', '/stocks/delete/{id}', StockController::class, 'delete', 'admin'],
+    ['POST', '/stocks/update', StockController::class, 'update', 'admin'],
+    ['POST', '/stocks/delete', StockController::class, 'delete', 'admin'],
     ['POST', '/stocks/update_stock_prices/{id}', StockController::class, 'updateStockPrices', 'admin'],   
 
     ['POST', '/admins/update_stock_prices', AdminController::class, 'updateStockPricesAll', 'admin'],
@@ -71,6 +71,7 @@ $userRoutes = [
 ];
 
 $apiRoutes = [
+    ['GET', '/api/stocks/get/{id}', StockApiController::class, 'show'],
     ['GET', '/api/stocks/get_for_chart/{id}', StockApiController::class, 'getForChart'],
     ['GET', '/api/stocks/get-user-stocks', StockApiController::class, 'getUserStocks'],
     ['GET', '/api/stocks/get-filtered', StockApiController::class, 'getFiltered'],

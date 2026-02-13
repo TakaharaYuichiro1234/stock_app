@@ -130,7 +130,7 @@ class StockController {
         require __DIR__ . '/../Views/stocks/edit.php';
     }
 
-    public function update($id) {
+    public function update() {
         // 管理者チェック
         if (!Auth::isAdmin()) {
             http_response_code(403);
@@ -145,6 +145,9 @@ class StockController {
             exit('Invalid CSRF token');
         }
         unset($_SESSION['csrf_token']);
+
+        
+        $id = $_POST['stock_id'] ?? '';
 
         $data = [
             'name' => $_POST['name'] ?? '',
@@ -156,17 +159,18 @@ class StockController {
         if ($errors) {
             $_SESSION['errors'] = $errors;
             $_SESSION['old'] = $data;
-            header('Location: '. BASE_PATH. '/stocks/show/' . $id);
+            header('Location: '. BASE_PATH. '/stocks/show-detail/' . $id);
             exit;
         }
 
         $this->stockModel->update($id, $data['name']);
         $_SESSION['flash'] = '銘柄情報を更新しました';
-        header('Location: '. BASE_PATH. '/stocks/show/' . $id);
+        $redirect = $_POST['redirect'] ??  BASE_PATH;
+        header('Location: ' .$redirect);
         exit;
     }
 
-    public function delete($id) {
+    public function delete() {
         // 管理者チェック
         if (!Auth::isAdmin()) {
             http_response_code(403);
@@ -183,13 +187,16 @@ class StockController {
 
         unset($_SESSION['csrf_token']);
 
+        $id = $_POST['stock_id'] ?? '';
+
         $this->stockModel->delete($id);
         $_SESSION['flash'] = '銘柄情報を削除しました';
-        header('Location: '. BASE_PATH);
+        $redirect = $_POST['redirect'] ??  BASE_PATH;
+        header('Location: ' .$redirect);
         exit;
     }
 
-    public function show($id) {
+    public function showDetail($id) {
         $redirect = $_GET['redirect'];
         $user = $_SESSION['user'];
         $isAdmin = Auth::isAdmin();
@@ -264,7 +271,7 @@ class StockController {
             $ok = $this->stockPriceService ->updateLatestPrices($stock['id'], $stock['symbol'], false);
         }
 
-        header('Location: '. BASE_PATH. '/stocks/show/' . $stock['id']);
+        header('Location: '. BASE_PATH. '/stocks/show-detail/' . $stock['id']);
         exit;
     }
 }

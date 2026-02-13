@@ -34,6 +34,26 @@ class StockApiController
         $this->stockPriceService = new StockPriceService($pdo);
     }
 
+    public function show($stockId) {
+        $success = false;
+        $errors = [];
+        $stock = null;
+
+        try {
+            $stock = $this->stockModel->find($stockId);   
+            $success = true; 
+        } catch (\Throwable $e) {
+            http_response_code(400);
+            $errors = ['データベースエラー'];
+        }
+        
+        echo json_encode([
+            'stock' => $stock,
+            'success' => $success,
+            'errors' => $errors,
+        ]);
+        exit;
+    }
     public function store()
     {
         // 管理者チェック

@@ -86,7 +86,7 @@ function initEventsFromStockView() {
         // 詳細画面へ遷移
         const { stockId } = e.detail;
         const redirectUri = encodeURI(`${BASE_PATH}/user-stocks`);
-        location.href=`${BASE_PATH}/stocks/show/${stockId}?redirect=${redirectUri}`
+        location.href=`${BASE_PATH}/stocks/show-detail/${stockId}?redirect=${redirectUri}`
     });
 }
 

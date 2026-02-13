@@ -78,17 +78,37 @@ function initEventsFromStockView() {
         }
     });
 
-    document.addEventListener("edit-stock", (e) => {
+    document.addEventListener("edit-stock", async (e) => {
         const { stockId } = e.detail;
         // location.href=`${BASE_PATH}/stocks/edit/${stockId}`;
 
+        let stock = null;
+        try {
+            const res = await fetch(`${BASE_PATH}/api/stocks/get/${stockId}`, {
+                method: 'GET',
+                headers: {
+                    'Accept': 'application/json'
+                }
+            });
 
+            if (!res.ok) {
+                throw new Error('通信エラー');
+            }
 
+            const result = await res.json();
+            if (!result.success) throw new Error('書き込みエラー');
 
-        setModalData();
-        document.getElementById('input-stock-name').value = ;
+            stock = result.stock;
 
+        } catch (err) {
+            console.error(err);
+            return; 
+        }
 
+        // モーダル画面にデータを設定して表示
+        document.getElementById('input-stock-name').value = stock.name;
+        document.getElementById('input-digit').value = stock.digit;
+        document.getElementById('modal-form-stock-id').value = stockId;
 
         document.querySelector(".modal").classList.remove("hidden");
     });
@@ -134,7 +154,7 @@ function initEventsFromStockView() {
     document.addEventListener("show-detail", (e) => {
         const { stockId } = e.detail;
         const redirectUri = encodeURI(`${BASE_PATH}/admins`);
-        location.href=`${BASE_PATH}/stocks/show/${stockId}?redirect=${redirectUri}`
+        location.href=`${BASE_PATH}/stocks/show-detail/${stockId}?redirect=${redirectUri}`
     });
 }
 
