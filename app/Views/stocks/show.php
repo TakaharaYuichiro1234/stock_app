@@ -29,7 +29,36 @@
         </p>
     <?php endif; ?>
 
-    <!-- メニュー用のフォーム(非表示) -->
+    <?php
+        function formatDiff($value, $digit) {
+            return ($value > 0 ? "+": "") . strval(number_format($value, $digit));
+        }
+
+        function formatDecimalPart($value, $digit) {
+            if ($digit == 0) return "";
+
+            $decimalPart = $value - floor($value);
+            $multi = pow(10, $digit);
+            return '.' . strval(floor($decimalPart*$multi));
+        }
+
+        function diffClass($d) {
+            if ($d > 0) {
+                return 'diff-plus';
+            } elseif ($d < 0) {
+                return 'diff-minus';
+            } else {
+                return 'diff-zero';
+            }
+        }
+
+        $latest = $stockPrices[count($stockPrices) - 1];    // 最新日のデータ
+        $previous = $stockPrices[count($stockPrices) - 2];  // 最新の1日前のデータ
+        $diff = $latest['close'] - $previous['close'];
+        $percent_diff = ($latest['close'] - $previous['close'])/ $previous['close'] * 100;
+    ?>
+
+    <!-- Javascriptからpostするためのform(非表示) -->
     <div class="hidden">
         <form id="logout" action="<?= BASE_PATH ?>/logout" method="post">
             <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($_SESSION['csrf_token']) ?>">
@@ -48,21 +77,14 @@
             method="post">
             <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($_SESSION['csrf_token']) ?>">
         </form>
+
+        <form id="delete-trade" method="post">
+            <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($_SESSION['csrf_token']) ?>">
+            <input type="hidden" name="redirect" value="<?= htmlspecialchars($_SERVER['REQUEST_URI']) ?>">
+            <input type="hidden" name="trade_id" id="trade-id-for-delete">
+        </form>
     </div>
 
-    <?php
-        function formatDiff($value, $digit) {
-            return ($value > 0 ? "+": "") . strval(number_format($value, $digit));
-        }
-
-        function formatDecimalPart($value, $digit) {
-            if ($digit == 0) return "";
-
-            $decimalPart = $value - floor($value);
-            $multi = pow(10, $digit);
-            return '.' . strval(floor($decimalPart*$multi));
-        }
-    ?>
 
     <section>
         <div class="stock-board">
@@ -85,18 +107,6 @@
                     </div>
                 </div>
             </div>
-
-            <?php
-                function diffClass($d) {
-                    if ($d > 0) {
-                        return 'diff-plus';
-                    } elseif ($d < 0) {
-                        return 'diff-minus';
-                    } else {
-                        return 'diff-zero';
-                    }
-                }
-            ?>
 
             <div class="stock-board-diff-block">
                 <div class="stock-board-diff <?= diffClass($diff) ?>"> <?= formatDiff($diff, $stock['digit']) ?></div>
@@ -212,8 +222,8 @@
                             <div>数量：<?= $trade['quantity'] ?></div>
                             <div><?= $trade['content'] ?></div>
                             <class class="trade-content-button-cotainer">
-                                <button onclick="">編集</button>
-                                <button>削除</button>
+                                <button onclick="edit(<?= htmlspecialchars($trade['id']) ?>)" id="edit_<?= htmlspecialchars($trade['id']) ?>">編集</button>
+                                <button onclick="deleteTrade(<?= htmlspecialchars($trade['id']) ?>)" id="remove_<?= htmlspecialchars($trade['id']) ?>">削除</button>
                             </class>
                         </div>
                     </div>
@@ -257,6 +267,7 @@
                     <input type="hidden" name="redirect" value="<?= htmlspecialchars($_SERVER['REQUEST_URI']) ?>">
                     <input type="hidden" name="uuid" value="<?= htmlspecialchars($_SESSION['user']['uuid']) ?>">
                     <input type="hidden" name="stock_id" value="<?= htmlspecialchars($stock['id']) ?>">
+                    <input type="hidden" name="trade_id" id="trade-id-for-update">
                     <div class="modal-content-data-block">
                         <div>日付</div>
                         <div>
@@ -290,7 +301,7 @@
                     <div class="modal-content-data-block">
                         <div>種類</div>
                         <div>
-                            <select name="type" name="type" id="modal-input-type">
+                            <select name="type" id="modal-input-type">
                                 <option value="1">買付</option>
                                 <option value="2">売付</option>
                                 <option value="0">メモ</option>
@@ -310,7 +321,8 @@
                     </div>
 
                     <div>
-                        <button type="submit" id="modal-submit">登録</button>
+                        <button type="button" id="modal-submit">登録</button>
+                        <button type="button" id="modal-update" class="hidden">更新</button>
                     </div>
                 </form>
             </div>
@@ -326,15 +338,17 @@
     <script src="<?= BASE_PATH ?>/js/pages/stocks/show.js"></script>
     
     <script >
-        (async () => {
-            const user = <?= json_encode($user, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT) ?>;
-            const isAdmin = <?= json_encode($isAdmin, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT) ?>;
-            const stockId = <?= json_encode($stock['id'], JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT)?>;
 
-            initShow(user, isAdmin, stockId);
-        })();        
+        const user = <?= json_encode($user, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT) ?>;
+        const isAdmin = <?= json_encode($isAdmin, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT) ?>;
+        const stockId = <?= json_encode($stock['id'], JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT)?>;
+
+        const chartPrices = <?= json_encode($chartPrices, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT)?>;
+        const trades = <?= json_encode($trades, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT)?>;
+        const chartTrades = <?= json_encode($chartTrades, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT)?>;
+
+        initShow();
     </script>
-
 
     <?php
         unset($_SESSION['flash'], $_SESSION['errors'], $_SESSION['old']);

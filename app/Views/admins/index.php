@@ -34,7 +34,7 @@
         <p style="color:red;">エラー：<?= htmlspecialchars($error) ?></p>
     <?php endif; ?>
 
-    <!-- メニュー用のボタン類(非表示) -->
+    <!-- Javascriptからpostするためのform(非表示) -->
     <div class="hidden">
         <form id="logout" action="<?= BASE_PATH ?>/logout" method="post">
             <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($_SESSION['csrf_token']) ?>">
@@ -43,10 +43,7 @@
         <form id="update-stock-prices" action="<?= BASE_PATH ?>/admins/update_stock_prices" method="post" style="display:inline;">
             <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($_SESSION['csrf_token']) ?>">
         </form>
-    </div>
 
-    <!-- 登録済み銘柄の操作ボタン用のフォーム(非表示) -->
-    <div class="hidden">  
         <form id="post-form" method="post" >
             <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($_SESSION['csrf_token']) ?>">
         </form>
@@ -141,8 +138,6 @@
                 <p id="message">検索結果がありません。</p>
             </div>
         </div>
-        
-
     </section>
 
     <section>
@@ -160,6 +155,53 @@
         <div class="list" id="searched-stock-list"></div>
     </section>
 
+    <div class="modal hidden">
+        <div class="modal-backdrop"></div>
+        <div class="modal-content">
+            <button class="modal-close" aria-label="閉じる"></button>
+            <div class="modal-content-inner">
+
+                <form id="modal-form" action="<?= BASE_PATH ?>/stocks/update/<?= htmlspecialchars($stock['id']) ?>" method="post">
+                    <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($_SESSION['csrf_token']) ?>">
+                    <input type="hidden" name="redirect" value="<?= htmlspecialchars($_SERVER['REQUEST_URI']) ?>">
+
+                    <input type="hidden" name="symbol" value="<?= htmlspecialchars($stock['symbol'] ?? '') ?>">
+
+                    <div class="modal-content-data-block">
+                        <div>銘柄名</div>
+                        <div>
+                            <input 
+                                type="text" 
+                                id="input-stock-name" 
+                                name="name" 
+                                placeholder="銘柄名を入力"
+                            >
+                        </div>
+                    </div>
+                    <div class="modal-content-data-block">
+                        <div>株価の小数点以下桁数</div>
+                        <div>
+                            <input 
+                                type="text" 
+                                id="input-digit" 
+                                name="digit" 
+                                placeholder="整数(0, 1, 2, ・・・)"
+                            >
+                        </div>
+                    </div>
+                    
+
+                    <div>
+                        <button type="submit" id="modal-submit">更新</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+
+
+
     <?php
         unset($_SESSION['flash'], $_SESSION['errors'], $_SESSION['old']);
     ?>
@@ -173,6 +215,62 @@
     <script>
         const isAdmin = <?= json_encode($isAdmin) ?>;
         init();
+
+
+            // document.getElementById('modal-form').addEventListener('submit', (event) => {
+            //     event.preventDefault();
+            //     // const actionUrl = `${BASE_PATH}/trades/store`;
+
+            //     // const form = document.getElementById('modal-form');
+            //     // form.action = actionUrl;
+            //     this.submit();
+            // });
+
+        document.getElementById('modal-form').addEventListener('submit', async (e) => {
+            e.preventDefault(); 
+
+            const form = e.target;
+            const url  = form.action;
+            const formData = new FormData(form);
+
+            // バリデーションチェック
+            const name = formData.get('name');
+            const digit = formData.get('digit');
+            const validationErrors = [];
+
+            if (name === "") validationErrors.push("名前を入力して下さい");
+            if (name.length > 255) validationErrors.push("名前は255文字以下で入力して下さい");
+            if (!(/^\d+$/.test(digit))) validationErrors.push("桁数は正の整数を入力してください");
+
+            if (validationErrors.length > 0) {
+                showMessages(validationErrors.map(err => ({'message': err, 'type':'error'})));
+                return;
+            } else {
+                showMessages([]);
+            }
+
+            // // 新規銘柄登録処理
+            // try {
+            //     const res = await fetch(url, {
+            //         method: 'POST',
+            //         body: formData,
+            //         credentials: 'same-origin', // セッション / CSRF用
+            //     });
+
+            //     if (!res.ok) {
+            //         throw new Error('通信エラー');
+            //     }
+
+            //     const result = await res.json();
+
+            //     await refreshSearchedStocks("");
+            //     alert('登録しました');
+
+            // } catch (err) {
+            //     console.error(err);
+            //     alert('登録に失敗しました');
+            // }
+        });
         
     </script>
 </body>

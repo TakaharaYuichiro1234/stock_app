@@ -64,6 +64,17 @@ class ChartModule{
                 locale: 'ja-JP',
                 dateFormat: 'MM-dd',
             },
+
+            handleScroll: {
+                mouseWheel: true,
+                pressedMouseMove: true,
+                horzTouchDrag: true,
+                vertTouchDrag: true,
+            },
+            handleScale: {
+                pinch: true,
+                axisPressedMouseMove: true,
+            }
         });
 
         this.#series = this.#chart.addSeries(LightweightCharts.CandlestickSeries, {

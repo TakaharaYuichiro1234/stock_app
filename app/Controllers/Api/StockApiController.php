@@ -34,6 +34,126 @@ class StockApiController
         $this->stockPriceService = new StockPriceService($pdo);
     }
 
+    public function store()
+    {
+        // 管理者チェック
+        if (!Auth::isAdmin()) {
+            http_response_code(403);
+            echo json_encode([
+                'success' => false,
+                'errors' => ['Forbidden'],
+            ]);
+            exit;
+        }
+
+        if (
+            !isset($_POST['csrf_token'], $_SESSION['csrf_token']) ||
+            !hash_equals($_SESSION['csrf_token'], $_POST['csrf_token'])
+        ) {
+            http_response_code(403);
+            echo json_encode([
+                'success' => false,
+                'errors' => ['Invalid CSRF token'],
+            ]);
+            exit;
+        }
+
+        // unset($_SESSION['csrf_token']);
+
+        $data = [
+            'name' => $_POST['name'] ?? '',
+            'digit' => $_POST['digit'] ?? '',
+        ];
+
+        $errors = StockValidator::validate($data);
+
+        if ($errors) {
+            http_response_code(400);
+            echo json_encode([
+                'success' => false,
+                'errors' => $errors,
+            ]);
+            exit;
+        }
+
+        $symbol = $_POST['symbol'] ?? '';
+        $shortName   = $_POST['short_name'] ?? '';
+        $longName   = $_POST['long_name'] ?? '';
+        $name   = $_POST['name'] ?? '';
+        $digit = (int)$_POST['digit'];
+
+        $stockId = null;
+        $this->pdo->beginTransaction();
+        try {
+            $stockId = $this->stockModel->create($symbol, $name, $shortName, $longName, $digit);
+            $this->stockPriceService->updateLatestPrices($stockId, $symbol);
+            $this->pdo->commit();
+        } catch (\Throwable $e) {
+            $this->pdo->rollBack();
+            http_response_code(400);
+            echo json_encode([
+                'success' => false,
+                'data' => null,
+                'errors' => ['書き込みエラー'],
+            ]);
+            exit;
+        }
+
+        echo json_encode([
+            'success' => true,
+            'data' => ['stockId'=>$stockId],
+            'errors' => [],
+        ]);
+        exit;
+    }
+
+    public function delete()
+    {
+        // 管理者チェック
+        if (!Auth::isAdmin()) {
+            http_response_code(403);
+            echo json_encode([
+                'success' => false,
+                'errors' => ['Forbidden'],
+            ]);
+            exit;
+        }
+
+        if (
+            !isset($_POST['csrf_token'], $_SESSION['csrf_token']) ||
+            !hash_equals($_SESSION['csrf_token'], $_POST['csrf_token'])
+        ) {
+            http_response_code(403);
+            echo json_encode([
+                'success' => false,
+                'errors' => ['Invalid CSRF token'],
+            ]);
+            exit;
+        }
+        
+        // unset($_SESSION['csrf_token']);
+
+        $stockId = $_POST['stockId'] ?? '';
+
+        $success = false;
+        $errors = [];
+
+        try {
+            $this->stockModel->delete($stockId);   
+            $success = true; 
+        } catch (\Throwable $e) {
+            http_response_code(400);
+            $errors = ['データベースエラー'];
+        }
+        
+        echo json_encode([
+            'success' => $success,
+            'errors' => $errors,
+        ]);
+        exit;
+    }
+
+
     public function getForChart($stockId): void
     {
         $daily = $this->stockPriceModel->getForChart($stockId, 'daily');
@@ -146,78 +266,6 @@ class StockApiController
         exit;
     }
 
-    public function store()
-    {
-        // 管理者チェック
-        if (!Auth::isAdmin()) {
-            http_response_code(403);
-            echo json_encode([
-                'success' => false,
-                'errors' => ['Forbidden'],
-            ]);
-            exit;
-        }
-
-        if (
-            !isset($_POST['csrf_token'], $_SESSION['csrf_token']) ||
-            !hash_equals($_SESSION['csrf_token'], $_POST['csrf_token'])
-        ) {
-            http_response_code(403);
-            echo json_encode([
-                'success' => false,
-                'errors' => ['Invalid CSRF token'],
-            ]);
-            exit;
-        }
-
-        // unset($_SESSION['csrf_token']);
-
-        $data = [
-            'name' => $_POST['name'] ?? '',
-            'digit' => $_POST['digit'] ?? '',
-        ];
-
-        $errors = StockValidator::validate($data);
-
-        if ($errors) {
-            http_response_code(400);
-            echo json_encode([
-                'success' => false,
-                'errors' => $errors,
-            ]);
-            exit;
-        }
-
-        $symbol = $_POST['symbol'] ?? '';
-        $shortName   = $_POST['short_name'] ?? '';
-        $longName   = $_POST['long_name'] ?? '';
-        $name   = $_POST['name'] ?? '';
-        $digit = (int)$_POST['digit'];
-
-        $stockId = null;
-        $this->pdo->beginTransaction();
-        try {
-            $stockId = $this->stockModel->create($symbol, $name, $shortName, $longName, $digit);
-            $this->stockPriceService->updateLatestPrices($stockId, $symbol);
-            $this->pdo->commit();
-        } catch (\Throwable $e) {
-            $this->pdo->rollBack();
-            http_response_code(400);
-            echo json_encode([
-                'success' => false,
-                'data' => null,
-                'errors' => ['書き込みエラー'],
-            ]);
-            exit;
-        }
-
-        echo json_encode([
-            'success' => true,
-            'data' => ['stockId'=>$stockId],
-            'errors' => [],
-        ]);
-        exit;
-    }
 
     public function updateStockPrices()
     {
@@ -267,50 +315,4 @@ class StockApiController
         exit;
     }
 
-
-    public function delete()
-    {
-        // 管理者チェック
-        if (!Auth::isAdmin()) {
-            http_response_code(403);
-            echo json_encode([
-                'success' => false,
-                'errors' => ['Forbidden'],
-            ]);
-            exit;
-        }
-
-        if (
-            !isset($_POST['csrf_token'], $_SESSION['csrf_token']) ||
-            !hash_equals($_SESSION['csrf_token'], $_POST['csrf_token'])
-        ) {
-            http_response_code(403);
-            echo json_encode([
-                'success' => false,
-                'errors' => ['Invalid CSRF token'],
-            ]);
-            exit;
-        }
-        
-        // unset($_SESSION['csrf_token']);
-
-        $stockId = $_POST['stockId'] ?? '';
-
-        $success = false;
-        $errors = [];
-
-        try {
-            $this->stockModel->delete($stockId);   
-            $success = true; 
-        } catch (\Throwable $e) {
-            http_response_code(400);
-            $errors = ['データベースエラー'];
-        }
-        
-        echo json_encode([
-            'success' => $success,
-            'errors' => $errors,
-        ]);
-        exit;
-    }
 }

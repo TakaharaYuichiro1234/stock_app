@@ -39,6 +39,34 @@ class Trade {
         return (int)$this->pdo->lastInsertId();
     }
 
+
+
+    public function update(int $id, TradeData $trade): void {
+        $stmt = $this->pdo->prepare(
+            'UPDATE trades SET date = ?, price = ?, quantity = ?, type = ?, content = ?, updated_at = NOW() WHERE id = ?'
+        );
+        $stmt->execute([
+            $trade->date,
+            $trade->price,
+            $trade->quantity,
+            $trade->type,
+            $trade->content,
+            $id
+        ]);
+    }
+
+    public function delete(int $id): void {
+        $stmt = $this->pdo->prepare(
+            'DELETE FROM trades WHERE id = ?'
+        );
+        $stmt->execute([$id]);
+    }
+
+
+
+
+
+
     public function getAmounts(int $userId, int $stockId): array {
         $stmt = $this->pdo->prepare("
             SELECT

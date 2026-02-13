@@ -64,8 +64,8 @@ $userRoutes = [
     ['GET', '/trades/create', TradeController::class, 'create', 'user'],
     ['POST', '/trades/store', TradeController::class, 'store', 'user'],
     ['GET',  '/trades/edit/{id}', TradeController::class, 'edit', 'user'],
-    ['POST', '/trades/update/{id}', TradeController::class, 'update', 'user'],
-    ['POST', '/trades/delete/{id}', TradeController::class, 'delete', 'user'],
+    ['POST', '/trades/update', TradeController::class, 'update', 'user'],
+    ['POST', '/trades/delete', TradeController::class, 'delete', 'user'],
 
     ['POST', '/user-stocks/update', UserStockController::class, 'update', 'user'],
 ];

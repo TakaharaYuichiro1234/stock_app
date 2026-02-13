@@ -80,8 +80,21 @@ function initEventsFromStockView() {
 
     document.addEventListener("edit-stock", (e) => {
         const { stockId } = e.detail;
-        location.href=`${BASE_PATH}/stocks/edit/${stockId}`;
+        // location.href=`${BASE_PATH}/stocks/edit/${stockId}`;
+
+
+
+
+        setModalData();
+        document.getElementById('input-stock-name').value = ;
+
+
+
+        document.querySelector(".modal").classList.remove("hidden");
     });
+
+
+
 
     document.addEventListener("remove-stock", async (e) => {
         if (!confirm('この銘柄を削除しますか？')) return;

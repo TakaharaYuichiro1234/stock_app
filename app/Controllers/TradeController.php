@@ -64,7 +64,84 @@ class TradeController {
 
         $redirect = $_POST['redirect'] ?? BASE_PATH;
 
-        $_SESSION['flash'] = '作成しました';
+        $_SESSION['flash'] = '取引情報を登録しました';
+        header('Location: ' . $redirect);
+    }
+
+    public function update() {
+        // ユーザーチェック
+        if (!Auth::isLogged()) {
+            http_response_code(403);
+            exit('Forbidden');
+        }
+
+        if (
+            !isset($_POST['csrf_token'], $_SESSION['csrf_token']) ||
+            !hash_equals($_SESSION['csrf_token'], $_POST['csrf_token'])
+        ) {
+            http_response_code(403);
+            exit('Invalid CSRF token');
+        }
+
+        unset($_SESSION['csrf_token']);
+
+        $uuid = $_SESSION['user']['uuid'];
+        $userId = $this->userModel->getUserIdByUuid($uuid);
+        if ($userId === null) {
+            throw new RuntimeException('ユーザーが存在しません');
+        }
+
+        $id = $_POST['trade_id'];
+
+        // ここでバリデーションチェック予定
+
+        $data = new TradeData(
+            $_POST['stock_id'] ?? '',
+            empty($_POST['date']) ? null: $_POST['date'],
+            (float)$_POST['price'],
+            (int)$_POST['quantity'],
+            (int)$_POST['type'],
+            $_POST['content'] ?? '',
+        );
+
+        $tradeId = $this->tradeModel->update($id, $data);
+
+        $redirect = $_POST['redirect'] ?? BASE_PATH;
+
+        $_SESSION['flash'] = '取引情報を更新しました';
+        header('Location: ' . $redirect);
+    }
+
+    public function delete() {
+        // ユーザーチェック
+        if (!Auth::isLogged()) {
+            http_response_code(403);
+            exit('Forbidden');
+        }
+
+        if (
+            !isset($_POST['csrf_token'], $_SESSION['csrf_token']) ||
+            !hash_equals($_SESSION['csrf_token'], $_POST['csrf_token'])
+        ) {
+            http_response_code(403);
+            exit('Invalid CSRF token');
+        }
+
+        unset($_SESSION['csrf_token']);
+
+        $uuid = $_SESSION['user']['uuid'];
+        $userId = $this->userModel->getUserIdByUuid($uuid);
+        if ($userId === null) {
+            throw new RuntimeException('ユーザーが存在しません');
+        }
+
+        $id = $_POST['trade_id'];
+
+        $tradeId = $this->tradeModel->delete($id);
+
+        $redirect = $_POST['redirect'] ?? BASE_PATH;
+
+        $_SESSION['flash'] = '取引情報を更新しました';
         header('Location: ' . $redirect);
     }
 }

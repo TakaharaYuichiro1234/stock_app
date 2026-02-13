@@ -17,7 +17,7 @@
         require __DIR__ . '/../common/header.php';
     ?>
 
-    <!-- メニュー用のボタン類(非表示) -->
+    <!-- Javascriptからpostするためのform(非表示) -->
     <div class="hidden">
         <form id="logout" action="<?= BASE_PATH ?>/logout" method="post">
             <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($_SESSION['csrf_token']) ?>">
