@@ -78,70 +78,135 @@ class Stock {
         $stmt->execute([$id]);
     }
 
-    public function allWithLatestPriceByUserId(int $userId): array {
-        $sql = "
-            SELECT
-                s.id,
-                s.symbol,
-                s.name,
-                s.digit,
+    // public function allWithLatestPriceByUserId(int $userId): array {
+    //     $sql = "
+    //         SELECT
+    //             s.id,
+    //             s.symbol,
+    //             s.name,
+    //             s.digit,
 
-                sp_latest.date  AS latest_date,
-                sp_latest.close AS latest_close,
+    //             sp_latest.date  AS latest_date,
+    //             sp_latest.close AS latest_close,
 
-                sp_prev.date  AS prev_date,
-                sp_prev.close AS prev_close,
+    //             sp_prev.date  AS prev_date,
+    //             sp_prev.close AS prev_close,
 
-                us.is_visible as is_visible
+    //             us.is_visible as is_visible
 
-            FROM user_stocks us
-            JOIN stocks s ON s.id = us.stock_id
+    //         FROM user_stocks us
+    //         JOIN stocks s ON s.id = us.stock_id
 
-            LEFT JOIN stock_prices sp_latest
-                ON sp_latest.stock_id = s.id
-                AND sp_latest.date = (
-                    SELECT MAX(date)
-                    FROM stock_prices
-                    WHERE stock_id = s.id
-                )
+    //         LEFT JOIN stock_prices sp_latest
+    //             ON sp_latest.stock_id = s.id
+    //             AND sp_latest.date = (
+    //                 SELECT MAX(date)
+    //                 FROM stock_prices
+    //                 WHERE stock_id = s.id
+    //             )
 
-            LEFT JOIN stock_prices sp_prev
-                ON sp_prev.stock_id = s.id
-                AND sp_prev.date = (
-                    SELECT MAX(date)
-                    FROM stock_prices
-                    WHERE stock_id = s.id
-                    AND date < (
-                        SELECT MAX(date)
-                        FROM stock_prices
-                        WHERE stock_id = s.id
-                    )
-                )
+    //         LEFT JOIN stock_prices sp_prev
+    //             ON sp_prev.stock_id = s.id
+    //             AND sp_prev.date = (
+    //                 SELECT MAX(date)
+    //                 FROM stock_prices
+    //                 WHERE stock_id = s.id
+    //                 AND date < (
+    //                     SELECT MAX(date)
+    //                     FROM stock_prices
+    //                     WHERE stock_id = s.id
+    //                 )
+    //             )
 
-            WHERE us.user_id = ?
-            ORDER BY us.sort_order;
+    //         WHERE us.user_id = ?
+    //         ORDER BY us.sort_order;
             
-        ";
+    //     ";
 
-        $stmt = $this->pdo->prepare($sql);
-        $stmt->execute([$userId]);
-        $stocks = $stmt->fetchAll(PDO::FETCH_ASSOC);
-        $addedStocks = array_map(function ($stock) {
-            $stock['diff'] =  $stock['latest_close'] - $stock['prev_close'] ;
-            $stock['percent_diff'] = ($stock['latest_close']- $stock['prev_close'])/ $stock['prev_close'] * 100;
-            return $stock;
-        }, $stocks);
+    //     $stmt = $this->pdo->prepare($sql);
+    //     $stmt->execute([$userId]);
+    //     $stocks = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    //     $addedStocks = array_map(function ($stock) {
+    //         $stock['diff'] =  $stock['latest_close'] - $stock['prev_close'] ;
+    //         $stock['percent_diff'] = ($stock['latest_close']- $stock['prev_close'])/ $stock['prev_close'] * 100;
+    //         return $stock;
+    //     }, $stocks);
 
-        return $addedStocks;
-    }
+    //     return $addedStocks;
+    // }
 
-    public function allWithLatestPrice(): array {
+    // public function allWithLatestPrice(): array {
+    //     $sql = "
+    //         SELECT
+    //             s.id,
+    //             s.symbol,
+    //             s.name,
+    //             s.digit,
+
+    //             sp_latest.date  AS latest_date,
+    //             sp_latest.close AS latest_close,
+
+    //             sp_prev.date  AS prev_date,
+    //             sp_prev.close AS prev_close
+
+    //         FROM stocks s
+
+    //         LEFT JOIN stock_prices sp_latest
+    //             ON sp_latest.stock_id = s.id
+    //             AND sp_latest.date = (
+    //                 SELECT MAX(date)
+    //                 FROM stock_prices
+    //                 WHERE stock_id = s.id
+    //             )
+
+    //         LEFT JOIN stock_prices sp_prev
+    //             ON sp_prev.stock_id = s.id
+    //             AND sp_prev.date = (
+    //                 SELECT MAX(date)
+    //                 FROM stock_prices
+    //                 WHERE stock_id = s.id
+    //                 AND date < (
+    //                     SELECT MAX(date)
+    //                     FROM stock_prices
+    //                     WHERE stock_id = s.id
+    //                 )
+    //             )
+
+    //         ORDER BY s.symbol
+    //     ";
+
+    //     $stmt = $this->pdo->query($sql);
+    //     $stocks = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    //     $addedStocks = array_map(function ($stock) {
+    //         $stock['diff'] =  $stock['latest_close'] - $stock['prev_close'] ;
+    //         $stock['percent_diff'] = ($stock['latest_close']- $stock['prev_close'])/ $stock['prev_close'] * 100;
+    //         return $stock;
+    //     }, $stocks);
+
+    //     return $addedStocks;
+    // }
+
+    public function allWithLatestPrice(?int $userId = null): array
+    {
+        $params = [];
+        $joinUserStocks = '';
+        $where = '';
+        $orderBy = 'ORDER BY s.symbol';
+
+        if ($userId !== null) {
+            $joinUserStocks = 'JOIN user_stocks us ON s.id = us.stock_id';
+            $where = 'WHERE us.user_id = ?';
+            $orderBy = 'ORDER BY us.sort_order';
+            $params[] = $userId;
+        }
+
         $sql = "
             SELECT
                 s.id,
                 s.symbol,
                 s.name,
                 s.digit,
+                " . ($userId !== null ? "us.is_visible," : "") . "
 
                 sp_latest.date  AS latest_date,
                 sp_latest.close AS latest_close,
@@ -150,6 +215,7 @@ class Stock {
                 sp_prev.close AS prev_close
 
             FROM stocks s
+            $joinUserStocks
 
             LEFT JOIN stock_prices sp_latest
                 ON sp_latest.stock_id = s.id
@@ -172,18 +238,29 @@ class Stock {
                     )
                 )
 
-            ORDER BY s.symbol
+            $where
+            $orderBy
         ";
 
-        $stmt = $this->pdo->query($sql);
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute($params);
+
         $stocks = $stmt->fetchAll(PDO::FETCH_ASSOC);
-        $addedStocks = array_map(function ($stock) {
-            $stock['diff'] =  $stock['latest_close'] - $stock['prev_close'] ;
-            $stock['percent_diff'] = ($stock['latest_close']- $stock['prev_close'])/ $stock['prev_close'] * 100;
+
+        return array_map(function ($stock) {
+            $latest = $stock['latest_close'] ?? null;
+            $prev   = $stock['prev_close'] ?? null;
+
+            if ($latest !== null && $prev !== null && $prev != 0) {
+                $stock['diff'] = $latest - $prev;
+                $stock['percent_diff'] = ($latest - $prev) / $prev * 100;
+            } else {
+                $stock['diff'] = null;
+                $stock['percent_diff'] = null;
+            }
+
             return $stock;
         }, $stocks);
-
-        return $addedStocks;
     }
 
 

@@ -190,7 +190,7 @@ class StockApiController extends BaseApiController
         }
 
         try {
-            $stocks = $this->stockModel->allWithLatestPriceByUserId($userId);
+            $stocks = $this->stockModel->allWithLatestPrice($userId);
 
             $this->jsonResponse([
                 'success' => true,

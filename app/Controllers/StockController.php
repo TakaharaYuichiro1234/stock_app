@@ -54,11 +54,12 @@ class StockController extends BaseWebController {
         $userId = $this->userModel->getUserIdByUuid($uuid);
 
         $stocks = null;
-        if ($userId) {
-            $stocks = $this->stockModel->allWithLatestPriceByUserId($userId);
-        } else {
-            $stocks = $this->stockModel->allWithLatestPrice();
-        }
+        // if ($userId) {
+        //     $stocks = $this->stockModel->allWithLatestPriceByUserId($userId);
+        // } else {
+        //     $stocks = $this->stockModel->allWithLatestPrice();
+        // }
+        $stocks = $this->stockModel->allWithLatestPrice($userId);   //userId=nullのときは、DBに登録されているすべての銘柄を取得
 
         require __DIR__ . '/../Views/index.php';
     }
