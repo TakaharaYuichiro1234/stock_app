@@ -2,7 +2,7 @@
 namespace App\Validations;
 
 use App\Data\TradeData;
-require_once __DIR__ . '/../Data/TradeData.php';
+// require_once __DIR__ . '/../Data/TradeData.php';
 
 class TradeValidator
 {

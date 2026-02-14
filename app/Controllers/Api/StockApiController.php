@@ -11,13 +11,13 @@ use App\Services\StockPriceService;
 use App\Validations\StockValidator;
 
 
-require_once __DIR__ . '/../../Core/Auth.php';
-require_once __DIR__ . '/../../Core/BaseApiController.php';
-require_once __DIR__ . '/../../Models/Stock.php';
-require_once __DIR__ . '/../../Models/StockPrice.php';
-require_once __DIR__ . '/../../Models/User.php';
-require_once __DIR__ . '/../../Services/StockPriceService.php';
-require_once __DIR__ . '/../../Validations/StockValidator.php';
+// require_once __DIR__ . '/../../Core/Auth.php';
+// require_once __DIR__ . '/../../Core/BaseApiController.php';
+// require_once __DIR__ . '/../../Models/Stock.php';
+// require_once __DIR__ . '/../../Models/StockPrice.php';
+// require_once __DIR__ . '/../../Models/User.php';
+// require_once __DIR__ . '/../../Services/StockPriceService.php';
+// require_once __DIR__ . '/../../Validations/StockValidator.php';
 
 class StockApiController extends BaseApiController
 {

@@ -2,7 +2,7 @@
 namespace App\Services;
 use PDO;
 use App\Models\Stock;
-require_once __DIR__ . '/../Models/Stock.php';
+// require_once __DIR__ . '/../Models/Stock.php';
 
 class StockService
 {

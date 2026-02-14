@@ -3,7 +3,7 @@ namespace App\Models;
 use PDO;
 use App\Data\TradeData;
 
-require_once __DIR__ . '/../Data/TradeData.php';
+// require_once __DIR__ . '/../Data/TradeData.php';
 
 class Trade {
     private PDO $pdo;

@@ -2,7 +2,7 @@
 namespace App\Core;
 
 use App\Core\Auth;
-require_once __DIR__ . '/Auth.php';
+// require_once __DIR__ . '/Auth.php';
 
 abstract class BaseApiController
 {

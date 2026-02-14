@@ -13,15 +13,15 @@ use App\Validations\StockValidator;
 use App\Models\Trade;
 use App\Data\TradeData;
 
-require_once __DIR__ . '/../Core/BaseWebController.php';
-require_once __DIR__ . '/../Models/Stock.php';
-require_once __DIR__ . '/../Models/StockPrice.php';
-require_once __DIR__ . '/../Models/User.php';
-require_once __DIR__ . '/../Validations/StockValidator.php';
-require_once __DIR__ . '/../Services/StockPriceService.php';
-require_once __DIR__ . '/../Services/StockService.php';
-require_once __DIR__ . '/../Models/Trade.php';
-require_once __DIR__ . '/../Data/TradeData.php';
+// require_once __DIR__ . '/../Core/BaseWebController.php';
+// require_once __DIR__ . '/../Models/Stock.php';
+// require_once __DIR__ . '/../Models/StockPrice.php';
+// require_once __DIR__ . '/../Models/User.php';
+// require_once __DIR__ . '/../Validations/StockValidator.php';
+// require_once __DIR__ . '/../Services/StockPriceService.php';
+// require_once __DIR__ . '/../Services/StockService.php';
+// require_once __DIR__ . '/../Models/Trade.php';
+// require_once __DIR__ . '/../Data/TradeData.php';
 
 class AdminController extends BaseWebController {
     private PDO $pdo;

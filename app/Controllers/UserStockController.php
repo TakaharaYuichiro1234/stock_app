@@ -8,10 +8,10 @@ use App\Models\Stock;
 use App\Models\User;
 use App\Models\UserStock;
 
-require_once __DIR__ . '/../Core/BaseWebController.php';
-require_once __DIR__ . '/../Models/Stock.php';
-require_once __DIR__ . '/../Models/User.php';
-require_once __DIR__ . '/../Models/UserStock.php';
+// require_once __DIR__ . '/../Core/BaseWebController.php';
+// require_once __DIR__ . '/../Models/Stock.php';
+// require_once __DIR__ . '/../Models/User.php';
+// require_once __DIR__ . '/../Models/UserStock.php';
 
 class UserStockController extends BaseWebController {
     private PDO $pdo;

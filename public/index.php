@@ -1,17 +1,11 @@
 <?php
 
+
+
 session_name('STOCK_APP_SESSID');
 session_start();
 
-require_once __DIR__ . '/../app/Core/Auth.php';
-require_once __DIR__ . '/../app/Controllers/AdminController.php';
-require_once __DIR__ . '/../app/Controllers/StockController.php';
-require_once __DIR__ . '/../app/Controllers/TradeController.php';
-require_once __DIR__ . '/../app/Controllers/AuthController.php';
-require_once __DIR__ . '/../app/Controllers/Api/AdminApiController.php';
-require_once __DIR__ . '/../app/Controllers/Api/StockApiController.php';
-require_once __DIR__ . '/../app/Controllers/Api/TradeApiController.php';
-require_once __DIR__ . '/../app/Controllers/UserStockController.php';
+require_once __DIR__ . '/../vendor/autoload.php';
 
 use App\Controllers\AdminController;
 use App\Controllers\StockController;

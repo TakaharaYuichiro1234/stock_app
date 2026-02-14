@@ -1,10 +1,10 @@
 <?php
 namespace App\Controllers\Api;
 
-require_once __DIR__ . '/../../Core/Auth.php';
-require_once __DIR__ . '/../../Core/BaseApiController.php';
-require_once __DIR__ . '/../../Models/Trade.php';
-require_once __DIR__ . '/../../Models/User.php';
+// require_once __DIR__ . '/../../Core/Auth.php';
+// require_once __DIR__ . '/../../Core/BaseApiController.php';
+// require_once __DIR__ . '/../../Models/Trade.php';
+// require_once __DIR__ . '/../../Models/User.php';
 
 use PDO;
 use App\Core\Auth;

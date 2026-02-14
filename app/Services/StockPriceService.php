@@ -3,7 +3,7 @@ namespace App\Services;
 use PDO;
 use DateTime;
 use App\Models\StockPrice;
-require_once __DIR__ . '/../Models/StockPrice.php';
+// require_once __DIR__ . '/../Models/StockPrice.php';
 
 class StockPriceService
 {

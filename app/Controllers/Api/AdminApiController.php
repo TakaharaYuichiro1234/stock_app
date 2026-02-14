@@ -6,9 +6,9 @@ use App\Core\Auth;
 use App\Core\BaseApiController;
 use App\Services\StockService;
 
-require_once __DIR__ . '/../../Core/Auth.php';
-require_once __DIR__ . '/../../Core/BaseApiController.php';
-require_once __DIR__ . '/../../Services/StockService.php';
+// require_once __DIR__ . '/../../Core/Auth.php';
+// require_once __DIR__ . '/../../Core/BaseApiController.php';
+// require_once __DIR__ . '/../../Services/StockService.php';
 
 class AdminApiController extends BaseApiController
 {
