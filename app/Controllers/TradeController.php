@@ -5,12 +5,12 @@ use PDO;
 use App\Models\Trade;
 use App\Models\User;
 use App\Core\Auth;
-use App\Validations\StockValidator;
+use App\Validations\TradeValidator;
 use App\Data\TradeData;
 
 require_once __DIR__ . '/../Models/Trade.php';
 require_once __DIR__ . '/../Models/User.php';
-require_once __DIR__ . '/../Validations/StockValidator.php';
+require_once __DIR__ . '/../Validations/TradeValidator.php';
 require_once __DIR__ . '/../Data/TradeData.php';
 
 class TradeController {
@@ -49,7 +49,7 @@ class TradeController {
             throw new RuntimeException('ユーザーが存在しません');
         }
 
-        // ここでバリデーションチェック予定
+        $redirect = $_POST['redirect'] ?? BASE_PATH;
 
         $data = new TradeData(
             $_POST['stock_id'] ?? '',
@@ -60,10 +60,16 @@ class TradeController {
             $_POST['content'] ?? '',
         );
 
+        $errors = TradeValidator::validate($data);
+
+        if ($errors) {
+            $_SESSION['errors'] = $errors;
+            $_SESSION['old'] = $data;
+            header('Location: '. $redirect);
+            exit;
+        }
+
         $tradeId = $this->tradeModel->create($userId, $data);
-
-        $redirect = $_POST['redirect'] ?? BASE_PATH;
-
         $_SESSION['flash'] = '取引情報を登録しました';
         header('Location: ' . $redirect);
     }
@@ -92,9 +98,6 @@ class TradeController {
         }
 
         $id = $_POST['trade_id'];
-
-        // ここでバリデーションチェック予定
-
         $data = new TradeData(
             $_POST['stock_id'] ?? '',
             empty($_POST['date']) ? null: $_POST['date'],
@@ -104,10 +107,16 @@ class TradeController {
             $_POST['content'] ?? '',
         );
 
-        $tradeId = $this->tradeModel->update($id, $data);
-
         $redirect = $_POST['redirect'] ?? BASE_PATH;
+        $errors = TradeValidator::validate($data);
+        if ($errors) {
+            $_SESSION['errors'] = $errors;
+            $_SESSION['old'] = $data;
+            header('Location: '. $redirect);
+            exit;
+        }
 
+        $tradeId = $this->tradeModel->update($id, $data);
         $_SESSION['flash'] = '取引情報を更新しました';
         header('Location: ' . $redirect);
     }

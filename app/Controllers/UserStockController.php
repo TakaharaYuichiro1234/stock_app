@@ -28,7 +28,7 @@ class UserStockController {
     public function index()
     {
         $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
-        $isSort = $_GET['is_sort'] === 'true';
+        // $isSort = $_GET['is_sort'] === 'true';
         
         $isAdmin = Auth::isAdmin();
         $user = $_SESSION['user'];
@@ -36,7 +36,8 @@ class UserStockController {
         $userId = $this->userModel->getUserIdByUuid($uuid);
 
         $stocks = null;
-        if ($isSort && $userId) {
+        // if ($isSort && $userId) {
+        if ($userId) {
             $stocks = $this->stockModel->allWithLatestPriceByUserId($userId);
         } else {
             $stocks = $this->stockModel->allWithLatestPrice();
@@ -69,29 +70,11 @@ class UserStockController {
         $jsonstr = $_POST['users-stocks'] ?? '';
         $stockIds = json_decode($jsonstr, true);
 
-
-        // $errors = StockValidator::validate($data);
-
-        // if ($errors) {
-        //     $_SESSION['errors'] = $errors;
-        //     $_SESSION['old'] = $data;
-        //     header('Location: '. BASE_PATH. '/stocks/create');
-        //     exit;
-        // }
-
-        // $symbol = $_POST['symbol'] ?? '';
-        // $shortName   = $_POST['short_name'] ?? '';
-        // $longName   = $_POST['long_name'] ?? '';
-        // $name   = $_POST['name'] ?? '';
-        // $digit = (int)$_POST['digit'];
-
-
         if (!$userId || !is_array($stockIds)) {
             http_response_code(400);
-            echo json_encode(['error' => 'invalid request']);
+            $_SESSION['errors'] = ['invalid request'];
             return;
         }
-
 
         try {
             $this->pdo->beginTransaction();
@@ -101,9 +84,8 @@ class UserStockController {
 
         } catch (\Throwable $e) {
             $this->pdo->rollBack();
-            http_response_code(500);
-            // echo json_encode(['error' => 'failed to update order']);
-            $_SESSION['flash'] = '登録に失敗しました';
+            http_response_code(400);
+            $_SESSION['errors'] = ['登録に失敗しました'];
         }
         header('Location: '. BASE_PATH. '/user-stocks');
         exit;

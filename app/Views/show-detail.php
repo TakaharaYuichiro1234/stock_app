@@ -24,9 +24,9 @@
         </p>
     <?php endif; ?>
     <?php if (!empty($_SESSION['errors'])): ?>
-        <p style="color:red;">
-            エラー
-        </p>
+        <?php foreach ($_SESSION['errors'] as $err): ?>
+            <p style="color:red;"><?= htmlspecialchars($err) ?></p>
+        <?php endforeach ?>
     <?php endif; ?>
 
     <?php
