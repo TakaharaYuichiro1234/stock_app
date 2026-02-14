@@ -209,8 +209,9 @@ footer {
         right: 0px;
         top: 0;
         bottom: 0;
+        padding: 0;
         display: flex;
-        width: 200%;
+        width: 160%;
         transition: transform 0.3s ease;
     }
 
@@ -222,7 +223,7 @@ footer {
 
     .space-section {
         width: 4%;
-        background-color: #ccc;
+        /* background-color: #ccc; */
     }
 
     #main-container.left #main-wrapper {
@@ -230,7 +231,7 @@ footer {
     }
 
     #main-container.right #main-wrapper {
-        transform: translateX(-50%);
+        transform: translateX(-38%);
     }
 }
 
