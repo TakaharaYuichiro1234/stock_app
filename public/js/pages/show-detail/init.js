@@ -1,6 +1,6 @@
 let chart;
 
-async function initShow() {
+async function init() {
     initMenu();
     initView();
  
@@ -39,28 +39,6 @@ async function initShow() {
 
 function initMenu() {
     const items = [];
-
-    if (isAdmin) {
-        items.push(
-            new MenuItem({
-                caption: '🛡️株価を更新',
-                name: 'update-stock-price',
-                action: () => {
-                    if (confirm('この銘柄の株価を更新しますか？')) document.getElementById('update-stock-price').submit();
-                }
-            })
-        );
-
-        items.push(
-            new MenuItem({
-                caption: '🛡️削除',
-                name: 'delete-stock',
-                action: () => {
-                    if (confirm('この銘柄を削除しますか？')) document.getElementById('delete-stock').submit();
-                }
-            })
-        );
-    }
 
     if (user) {
         items.push(

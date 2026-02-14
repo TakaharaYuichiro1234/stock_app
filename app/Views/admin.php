@@ -54,13 +54,6 @@
             method="post" >
             <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($_SESSION['csrf_token']) ?>">
         </form>
-
-        <form 
-            id="delete-stock" 
-            action="<?= BASE_PATH. '/stocks/delete/'. htmlspecialchars($stock['id']) ?>" 
-            method="post">
-            <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($_SESSION['csrf_token']) ?>">
-        </form>
     </div>
 
     <!-- 銘柄を新規登録するためのセクション -->
@@ -161,7 +154,7 @@
             <button class="modal-close" aria-label="閉じる"></button>
             <div class="modal-content-inner">
 
-                <form id="modal-form" action="<?= BASE_PATH ?>/stocks/update" method="post">
+                <form id="modal-form" method="post">
                     <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($_SESSION['csrf_token']) ?>">
                     <input type="hidden" name="redirect" value="<?= htmlspecialchars($_SERVER['REQUEST_URI']) ?>">
                     <input type="hidden" name="stock_id" id="modal-form-stock-id">

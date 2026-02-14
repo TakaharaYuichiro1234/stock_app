@@ -6,15 +6,16 @@ class StockValidator
     {
         $errors = [];
 
-        $name = trim($data['name'] ?? '');
+        $name = $data['name'];
         if ($name === '') {
             $errors['name'] = '銘柄名は必須です';
         } elseif (mb_strlen($name) > 255) {
             $errors['name'] = '銘柄名は255文字以内で入力してください';
         }
 
-        if (!ctype_digit($data['digit'])) { 
-            $errors['digit'] = '桁数は正の整数で入力してください';
+        $digit = $data['digit'];
+        if (filter_var($digit, FILTER_VALIDATE_INT) === false) {
+            $errors['digit'] = '桁数は整数で入力してください';
         }
 
         return $errors;

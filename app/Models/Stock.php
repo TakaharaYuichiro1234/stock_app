@@ -55,19 +55,20 @@ class Stock {
         return $stock ?: null;
     }
 
-    public function create(string $symbol, string $name, string $shortName, string $longName, int $digit): int{
+    public function create(array $data): int{
         $stmt = $this->pdo->prepare(
             'INSERT INTO stocks (symbol, name, short_name, long_name, digit) VALUES (?, ?, ?, ?, ?)'
         );
-        $stmt->execute([$symbol, $name, $shortName, $longName, $digit]);
+        $stmt->execute([$data['symbol'], $data['name'], $data['shortName'], $data['longName'], $data['digit']]);
+
         return (int)$this->pdo->lastInsertId();
     }
 
-    public function update(int $id, string $name): void {
+    public function update(int $id, array $data): void {
         $stmt = $this->pdo->prepare(
-            'UPDATE stocks SET name = ?, updated_at = NOW() WHERE id = ?'
+            'UPDATE stocks SET name = ?, digit = ?, updated_at = NOW() WHERE id = ?'
         );
-        $stmt->execute([$name, $id]);
+        $stmt->execute([$data['name'], (int)$data['digit'], $id]);
     }
 
     public function delete(int $id): void {

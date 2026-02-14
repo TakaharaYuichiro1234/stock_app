@@ -64,20 +64,6 @@
             <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($_SESSION['csrf_token']) ?>">
         </form>
      
-        <form 
-            id="update-stock-price" 
-            action="<?= BASE_PATH. '/stocks/update_stock_prices/'. htmlspecialchars($stock['id']) ?>" 
-            method="post" >
-            <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($_SESSION['csrf_token']) ?>">
-        </form>
-
-        <form 
-            id="delete-stock" 
-            action="<?= BASE_PATH. '/stocks/delete/'. htmlspecialchars($stock['id']) ?>" 
-            method="post">
-            <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($_SESSION['csrf_token']) ?>">
-        </form>
-
         <form id="delete-trade" method="post">
             <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($_SESSION['csrf_token']) ?>">
             <input type="hidden" name="redirect" value="<?= htmlspecialchars($_SERVER['REQUEST_URI']) ?>">
@@ -346,7 +332,7 @@
         const trades = <?= json_encode($trades, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT)?>;
         const chartTrades = <?= json_encode($chartTrades, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT)?>;
 
-        initShow();
+        init();
     </script>
 
     <?php

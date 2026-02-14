@@ -49,9 +49,9 @@ $webRoutes = [
 
 $adminRoutes = [
     ['GET', '/admins', AdminController::class, 'index', 'admin'],
-    ['POST', '/stocks/store', StockController::class, 'store', 'admin'],
-    ['POST', '/stocks/update', StockController::class, 'update', 'admin'],
-    ['POST', '/stocks/delete', StockController::class, 'delete', 'admin'],
+    // ['POST', '/stocks/store', StockController::class, 'store', 'admin'],
+    // ['POST', '/stocks/update', StockController::class, 'update', 'admin'],
+    // ['POST', '/stocks/delete', StockController::class, 'delete', 'admin'],
     ['POST', '/stocks/update_stock_prices/{id}', StockController::class, 'updateStockPrices', 'admin'],   
     ['POST', '/admins/update_stock_prices_all', AdminController::class, 'updateStockPricesAll', 'admin'],
 ];
@@ -76,6 +76,7 @@ $apiRoutes = [
 
     ['GET', '/api/admins/show', AdminApiController::class, 'show', 'admin'],
     ['POST', '/api/stocks/store', StockApiController::class, 'store', 'admin'],
+    ['POST', '/api/stocks/update', StockApiController::class, 'update', 'admin'],
     ['POST', '/api/stocks/delete', StockApiController::class, 'delete', 'admin'],
     ['POST', '/api/stocks/update-stock-prices', StockApiController::class, 'updateStockPrices', 'admin'],
 
