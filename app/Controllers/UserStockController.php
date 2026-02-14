@@ -3,15 +3,17 @@ namespace App\Controllers;
 
 use PDO;
 use App\Core\Auth;
+use App\Core\BaseWebController;
 use App\Models\Stock;
 use App\Models\User;
 use App\Models\UserStock;
 
+require_once __DIR__ . '/../Core/BaseWebController.php';
 require_once __DIR__ . '/../Models/Stock.php';
 require_once __DIR__ . '/../Models/User.php';
 require_once __DIR__ . '/../Models/UserStock.php';
 
-class UserStockController {
+class UserStockController extends BaseWebController {
     private PDO $pdo;
     private Stock $stockModel;
     private User $userModel;
@@ -48,46 +50,41 @@ class UserStockController {
 
     public function update()
     {
-        // ログインチェック
-        if (!Auth::isLogged()) {
-            http_response_code(403);
-            exit('Forbidden');
-        }
-
-        if (
-            !isset($_POST['csrf_token'], $_SESSION['csrf_token']) ||
-            !hash_equals($_SESSION['csrf_token'], $_POST['csrf_token'])
-        ) {
-            http_response_code(403);
-            exit('Invalid CSRF token');
-        }
-
-        unset($_SESSION['csrf_token']);
-
-        $uuid = $_SESSION['user']['uuid'];
-        $userId = $this->userModel->getUserIdByUuid($uuid);
-
-        $jsonstr = $_POST['users-stocks'] ?? '';
-        $stockIds = json_decode($jsonstr, true);
-
-        if (!$userId || !is_array($stockIds)) {
-            http_response_code(400);
-            $_SESSION['errors'] = ['invalid request'];
-            return;
-        }
-
         try {
-            $this->pdo->beginTransaction();
-            $this->userStockModel->replace($userId, $stockIds);
-            $this->pdo->commit();
-            $_SESSION['flash'] = '登録しました';
+            $this->requireLogin();
+            $this->verifyCsrf();
 
-        } catch (\Throwable $e) {
-            $this->pdo->rollBack();
-            http_response_code(400);
-            $_SESSION['errors'] = ['登録に失敗しました'];
+            $uuid = $_SESSION['user']['uuid'];
+            $userId = $this->userModel->getUserIdByUuid($uuid);
+
+            $jsonstr = $_POST['users-stocks'] ?? '';
+            $stockIds = json_decode($jsonstr, true);
+
+            if (!$userId || !is_array($stockIds)) {
+                http_response_code(400);
+                $_SESSION['errors'] = ['invalid request'];
+                return;
+            }
+
+            try {
+                $this->pdo->beginTransaction();
+                $this->userStockModel->replace($userId, $stockIds);
+                $this->pdo->commit();
+                $_SESSION['flash'] = '登録しました';
+
+            } catch (\Throwable $e) {
+                $this->pdo->rollBack();
+                http_response_code(400);
+                $_SESSION['errors'] = ['登録に失敗しました'];
+            }
+
+            header('Location: '. BASE_PATH. '/user-stocks');
+
+        } catch (\Exception $e) {
+            http_response_code($e->getCode() ?: 500);
+            exit($e->getMessage());
+        } finally {
+            unset($_SESSION['csrf_token']);
         }
-        header('Location: '. BASE_PATH. '/user-stocks');
-        exit;
     }
 }

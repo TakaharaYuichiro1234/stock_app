@@ -3,6 +3,7 @@ namespace App\Controllers;
 
 use PDO;
 use App\Core\Auth;
+use App\Core\BaseWebController;
 use App\Models\Stock;
 use App\Models\StockPrice;
 use App\Models\Trade;
@@ -12,6 +13,7 @@ use App\Services\StockService;
 use App\Validations\StockValidator;
 use App\Data\TradeData;
 
+require_once __DIR__ . '/../Core/BaseWebController.php';
 require_once __DIR__ . '/../Models/Stock.php';
 require_once __DIR__ . '/../Models/StockPrice.php';
 require_once __DIR__ . '/../Models/Trade.php';
@@ -21,7 +23,8 @@ require_once __DIR__ . '/../Services/StockPriceService.php';
 require_once __DIR__ . '/../Services/StockService.php';
 require_once __DIR__ . '/../Data/TradeData.php';
 
-class StockController {
+
+class StockController extends BaseWebController {
     private PDO $pdo;
     private Stock $stockModel;
     private StockPriceService $stockPriceService;
@@ -60,125 +63,6 @@ class StockController {
         require __DIR__ . '/../Views/index.php';
     }
 
-    // public function store()
-    // {
-    //     // 管理者チェック
-    //     if (!Auth::isAdmin()) {
-    //         http_response_code(403);
-    //         exit('Forbidden');
-    //     }
-
-    //     if (
-    //         !isset($_POST['csrf_token'], $_SESSION['csrf_token']) ||
-    //         !hash_equals($_SESSION['csrf_token'], $_POST['csrf_token'])
-    //     ) {
-    //         http_response_code(403);
-    //         exit('Invalid CSRF token');
-    //     }
-
-    //     unset($_SESSION['csrf_token']);
-
-    //     $data = [
-    //         'name' => $_POST['name'] ?? '',
-    //         'digit' => $_POST['digit'] ?? '',
-    //     ];
-
-    //     $errors = StockValidator::validate($data);
-
-    //     if ($errors) {
-    //         $_SESSION['errors'] = $errors;
-    //         $_SESSION['old'] = $data;
-    //         header('Location: '. BASE_PATH. '/stocks/create');
-    //         exit;
-    //     }
-
-    //     $symbol = $_POST['symbol'] ?? '';
-    //     $shortName   = $_POST['short_name'] ?? '';
-    //     $longName   = $_POST['long_name'] ?? '';
-    //     $name   = $_POST['name'] ?? '';
-    //     $digit = (int)$_POST['digit'];
-
-    //     $this->pdo->beginTransaction();
-    //     try {
-    //         $stockId = $this->stockModel->create($symbol, $name, $shortName, $longName, $digit);
-    //         $this->stockPriceService->updateLatestPrices($stockId, $symbol);
-    //         $this->pdo->commit();
-    //     } catch (\Throwable $e) {
-    //         $this->pdo->rollBack();
-    //         throw $e;
-    //     }
-
-    //     $_SESSION['flash'] = '銘柄情報を作成しました';
-    //     header('Location: '. BASE_PATH. '/admins');
-    //     exit;
-    // }
-
-    // public function update() {
-    //     // 管理者チェック
-    //     if (!Auth::isAdmin()) {
-    //         http_response_code(403);
-    //         exit('Forbidden');
-    //     }
-
-    //     if (
-    //         !isset($_POST['csrf_token'], $_SESSION['csrf_token']) ||
-    //         !hash_equals($_SESSION['csrf_token'], $_POST['csrf_token'])
-    //     ) {
-    //         http_response_code(403);
-    //         exit('Invalid CSRF token');
-    //     }
-    //     unset($_SESSION['csrf_token']);
-
-        
-    //     $id = $_POST['stock_id'] ?? '';
-
-    //     $data = [
-    //         'name' => $_POST['name'] ?? '',
-    //         'digit' => $_POST['digit'] ?? '',
-    //     ];
-
-    //     $errors = StockValidator::validate($data);
-
-    //     if ($errors) {
-    //         $_SESSION['errors'] = $errors;
-    //         $_SESSION['old'] = $data;
-    //         header('Location: '. BASE_PATH. '/stocks/show-detail/' . $id);
-    //         exit;
-    //     }
-
-    //     $this->stockModel->update($id, $data['name']);
-    //     $_SESSION['flash'] = '銘柄情報を更新しました';
-    //     $redirect = $_POST['redirect'] ??  BASE_PATH;
-    //     header('Location: ' .$redirect);
-    //     exit;
-    // }
-
-    // public function delete() {
-    //     // 管理者チェック
-    //     if (!Auth::isAdmin()) {
-    //         http_response_code(403);
-    //         exit('Forbidden');
-    //     }
-
-    //     if (
-    //         !isset($_POST['csrf_token'], $_SESSION['csrf_token']) ||
-    //         !hash_equals($_SESSION['csrf_token'], $_POST['csrf_token'])
-    //     ) {
-    //         http_response_code(403);
-    //         exit('Invalid CSRF token');
-    //     }
-
-    //     unset($_SESSION['csrf_token']);
-
-    //     $id = $_POST['stock_id'] ?? '';
-
-    //     $this->stockModel->delete($id);
-    //     $_SESSION['flash'] = '銘柄情報を削除しました';
-    //     $redirect = $_POST['redirect'] ??  BASE_PATH;
-    //     header('Location: ' .$redirect);
-    //     exit;
-    // }
-
     public function showDetail($id) {
         $redirect = $_GET['redirect'];
         $user = $_SESSION['user'];
@@ -194,7 +78,6 @@ class StockController {
             'weekly' => $this->stockPriceModel->getForChart($id, 'weekly'),
             'monthly' => $this->stockPriceModel->getForChart($id, 'monthly'),
         ];
-
 
         $trades = null;
         $tradeAmounts = null;
@@ -213,35 +96,6 @@ class StockController {
                 ];
             }   
         }
-
         require __DIR__ . '/../Views/show-detail.php';
-    }
-
-    public function updateStockPrices($stockId)
-    {
-        // 管理者チェック
-        if (!Auth::isAdmin()) {
-            http_response_code(403);
-            exit('Forbidden');
-        }
-
-        // CSRFチェック
-        if (
-            !isset($_POST['csrf_token'], $_SESSION['csrf_token']) ||
-            !hash_equals($_SESSION['csrf_token'], $_POST['csrf_token'])
-        ) {
-            http_response_code(403);
-            exit('Invalid CSRF token');
-        }
-
-        unset($_SESSION['csrf_token']);
-
-        $stock = $this->stockModel->find($stockId);
-        if ($stock) {
-            $ok = $this->stockPriceService ->updateLatestPrices($stock['id'], $stock['symbol'], false);
-        }
-
-        header('Location: '. BASE_PATH. '/stocks/show-detail/' . $stock['id']);
-        exit;
     }
 }

@@ -2,18 +2,20 @@
 namespace App\Controllers;
 
 use PDO;
+use App\Core\Auth;
+use App\Core\BaseWebController;
 use App\Models\Trade;
 use App\Models\User;
-use App\Core\Auth;
 use App\Validations\TradeValidator;
 use App\Data\TradeData;
 
+require_once __DIR__ . '/../Core/BaseWebController.php';
 require_once __DIR__ . '/../Models/Trade.php';
 require_once __DIR__ . '/../Models/User.php';
 require_once __DIR__ . '/../Validations/TradeValidator.php';
 require_once __DIR__ . '/../Data/TradeData.php';
 
-class TradeController {
+class TradeController extends BaseWebController {
     private PDO $pdo;
     private Trade $tradeModel;
     private User $userModel;
@@ -27,130 +29,117 @@ class TradeController {
 
     public function store()
     {
-        // ユーザーチェック
-        if (!Auth::isLogged()) {
-            http_response_code(403);
-            exit('Forbidden');
+        try {
+            $this->requireLogin();
+            $this->verifyCsrf();
+
+            $uuid = $_SESSION['user']['uuid'];
+            $userId = $this->userModel->getUserIdByUuid($uuid);
+            if ($userId === null) {
+                throw new RuntimeException('ユーザーが存在しません', 400);
+            }
+
+            $redirect = $_POST['redirect'] ?? BASE_PATH;
+
+            $data = new TradeData(
+                $_POST['stock_id'] ?? '',
+                empty($_POST['date']) ? null: $_POST['date'],
+                (float)$_POST['price'],
+                (int)$_POST['quantity'],
+                (int)$_POST['type'],
+                $_POST['content'] ?? '',
+            );
+
+            $errors = TradeValidator::validate($data);
+
+            if ($errors) {
+                $_SESSION['errors'] = $errors;
+                $_SESSION['old'] = $data;
+                header('Location: '. $redirect);
+                exit;
+            }
+
+            $tradeId = $this->tradeModel->create($userId, $data);
+            $_SESSION['flash'] = '取引情報を登録しました';
+            header('Location: ' . $redirect);
+
+        } catch (\Exception $e) {
+            http_response_code($e->getCode() ?: 500);
+            exit($e->getMessage());
+        } finally {
+            unset($_SESSION['csrf_token']);
         }
-
-        if (
-            !isset($_POST['csrf_token'], $_SESSION['csrf_token']) ||
-            !hash_equals($_SESSION['csrf_token'], $_POST['csrf_token'])
-        ) {
-            http_response_code(403);
-            exit('Invalid CSRF token');
-        }
-
-        unset($_SESSION['csrf_token']);
-
-        $uuid = $_SESSION['user']['uuid'];
-        $userId = $this->userModel->getUserIdByUuid($uuid);
-        if ($userId === null) {
-            throw new RuntimeException('ユーザーが存在しません');
-        }
-
-        $redirect = $_POST['redirect'] ?? BASE_PATH;
-
-        $data = new TradeData(
-            $_POST['stock_id'] ?? '',
-            empty($_POST['date']) ? null: $_POST['date'],
-            (float)$_POST['price'],
-            (int)$_POST['quantity'],
-            (int)$_POST['type'],
-            $_POST['content'] ?? '',
-        );
-
-        $errors = TradeValidator::validate($data);
-
-        if ($errors) {
-            $_SESSION['errors'] = $errors;
-            $_SESSION['old'] = $data;
-            header('Location: '. $redirect);
-            exit;
-        }
-
-        $tradeId = $this->tradeModel->create($userId, $data);
-        $_SESSION['flash'] = '取引情報を登録しました';
-        header('Location: ' . $redirect);
     }
 
     public function update() {
-        // ユーザーチェック
-        if (!Auth::isLogged()) {
-            http_response_code(403);
-            exit('Forbidden');
+        try {
+            $this->requireLogin();
+            $this->verifyCsrf();
+
+            $uuid = $_SESSION['user']['uuid'];
+            $userId = $this->userModel->getUserIdByUuid($uuid);
+            if ($userId === null) {
+                throw new RuntimeException('ユーザーが存在しません', 400);
+            }
+
+            $id = $_POST['trade_id'];
+            $data = new TradeData(
+                $_POST['stock_id'] ?? '',
+                empty($_POST['date']) ? null: $_POST['date'],
+                (float)$_POST['price'],
+                (int)$_POST['quantity'],
+                (int)$_POST['type'],
+                $_POST['content'] ?? '',
+            );
+
+            $redirect = $_POST['redirect'] ?? BASE_PATH;
+            $errors = TradeValidator::validate($data);
+            if ($errors) {
+                $_SESSION['errors'] = $errors;
+                $_SESSION['old'] = $data;
+                header('Location: '. $redirect);
+                exit;
+            }
+
+            $tradeId = $this->tradeModel->update($id, $data);
+            $_SESSION['flash'] = '取引情報を更新しました';
+            header('Location: ' . $redirect);
+
+           
+
+        } catch (\Exception $e) {
+            http_response_code($e->getCode() ?: 500);
+            exit($e->getMessage());
+        } finally {
+            unset($_SESSION['csrf_token']);
         }
-
-        if (
-            !isset($_POST['csrf_token'], $_SESSION['csrf_token']) ||
-            !hash_equals($_SESSION['csrf_token'], $_POST['csrf_token'])
-        ) {
-            http_response_code(403);
-            exit('Invalid CSRF token');
-        }
-
-        unset($_SESSION['csrf_token']);
-
-        $uuid = $_SESSION['user']['uuid'];
-        $userId = $this->userModel->getUserIdByUuid($uuid);
-        if ($userId === null) {
-            throw new RuntimeException('ユーザーが存在しません');
-        }
-
-        $id = $_POST['trade_id'];
-        $data = new TradeData(
-            $_POST['stock_id'] ?? '',
-            empty($_POST['date']) ? null: $_POST['date'],
-            (float)$_POST['price'],
-            (int)$_POST['quantity'],
-            (int)$_POST['type'],
-            $_POST['content'] ?? '',
-        );
-
-        $redirect = $_POST['redirect'] ?? BASE_PATH;
-        $errors = TradeValidator::validate($data);
-        if ($errors) {
-            $_SESSION['errors'] = $errors;
-            $_SESSION['old'] = $data;
-            header('Location: '. $redirect);
-            exit;
-        }
-
-        $tradeId = $this->tradeModel->update($id, $data);
-        $_SESSION['flash'] = '取引情報を更新しました';
-        header('Location: ' . $redirect);
     }
 
     public function delete() {
-        // ユーザーチェック
-        if (!Auth::isLogged()) {
-            http_response_code(403);
-            exit('Forbidden');
+        try {
+            $this->requireLogin();
+            $this->verifyCsrf();
+
+           $uuid  = $_SESSION['user']['uuid'];
+            $userId = $this->userModel->getUserIdByUuid($uuid);
+            if ($userId === null) {
+                throw new RuntimeException('ユーザーが存在しません');
+            }
+
+            $id = $_POST['trade_id'];
+
+            $tradeId = $this->tradeModel->delete($id);
+
+            $redirect = $_POST['redirect'] ?? BASE_PATH;
+
+            $_SESSION['flash'] = '取引情報を更新しました';
+            header('Location: ' . $redirect);
+
+        } catch (\Exception $e) {
+            http_response_code($e->getCode() ?: 500);
+            exit($e->getMessage());
+        } finally {
+            unset($_SESSION['csrf_token']);
         }
-
-        if (
-            !isset($_POST['csrf_token'], $_SESSION['csrf_token']) ||
-            !hash_equals($_SESSION['csrf_token'], $_POST['csrf_token'])
-        ) {
-            http_response_code(403);
-            exit('Invalid CSRF token');
-        }
-
-        unset($_SESSION['csrf_token']);
-
-        $uuid = $_SESSION['user']['uuid'];
-        $userId = $this->userModel->getUserIdByUuid($uuid);
-        if ($userId === null) {
-            throw new RuntimeException('ユーザーが存在しません');
-        }
-
-        $id = $_POST['trade_id'];
-
-        $tradeId = $this->tradeModel->delete($id);
-
-        $redirect = $_POST['redirect'] ?? BASE_PATH;
-
-        $_SESSION['flash'] = '取引情報を更新しました';
-        header('Location: ' . $redirect);
     }
 }

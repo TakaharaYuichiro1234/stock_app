@@ -22,10 +22,6 @@
         <form id="logout" action="<?= BASE_PATH ?>/logout" method="post">
             <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($_SESSION['csrf_token']) ?>">
         </form>
-
-        <form id="update-stock-prices" action="<?= BASE_PATH ?>/stocks/update_stock_prices" method="post" style="display:inline;">
-            <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($_SESSION['csrf_token']) ?>">
-        </form>
     </div>
 
     <!-- フラッシュメッセージ -->

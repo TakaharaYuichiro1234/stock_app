@@ -3,20 +3,23 @@ namespace App\Controllers\Api;
 
 use PDO;
 use App\Core\Auth;
+use App\Core\BaseApiController;
 use App\Models\Stock;
 use App\Models\StockPrice;
 use App\Models\User;
 use App\Services\StockPriceService;
 use App\Validations\StockValidator;
 
+
 require_once __DIR__ . '/../../Core/Auth.php';
+require_once __DIR__ . '/../../Core/BaseApiController.php';
 require_once __DIR__ . '/../../Models/Stock.php';
 require_once __DIR__ . '/../../Models/StockPrice.php';
 require_once __DIR__ . '/../../Models/User.php';
 require_once __DIR__ . '/../../Services/StockPriceService.php';
 require_once __DIR__ . '/../../Validations/StockValidator.php';
 
-class StockApiController
+class StockApiController extends BaseApiController
 {
     private PDO $pdo;
     private Stock $stockModel;
@@ -35,49 +38,26 @@ class StockApiController
     }
 
     public function show($stockId) {
-        $success = false;
-        $errors = [];
-        $stock = null;
-
         try {
             $stock = $this->stockModel->find($stockId);   
-            $success = true; 
+
+            $this->jsonResponse([
+                'stock' => $stock,
+                'success' => true,
+                'errors' => [],
+            ]);
         } catch (\Throwable $e) {
-            http_response_code(400);
-            $errors = ['データベースエラー'];
+            $this->jsonResponse([
+                'success' => false,
+                'errors'  => ['データベースエラー']
+            ], 400);
         }
-        
-        echo json_encode([
-            'stock' => $stock,
-            'success' => $success,
-            'errors' => $errors,
-        ]);
-        exit;
     }
 
     public function store()
     {
-        // 管理者チェック
-        if (!Auth::isAdmin()) {
-            http_response_code(403);
-            echo json_encode([
-                'success' => false,
-                'errors' => ['Forbidden'],
-            ]);
-            exit;
-        }
-
-        if (
-            !isset($_POST['csrf_token'], $_SESSION['csrf_token']) ||
-            !hash_equals($_SESSION['csrf_token'], $_POST['csrf_token'])
-        ) {
-            http_response_code(403);
-            echo json_encode([
-                'success' => false,
-                'errors' => ['Invalid CSRF token'],
-            ]);
-            exit;
-        }
+        if (!$this->requireAdmin()) return;
+        if (!$this->verifyCsrf()) return;
 
         $data = [
             'name' => trim($_POST['name'] ?? ''),
@@ -88,14 +68,12 @@ class StockApiController
         ];
 
         $errors = StockValidator::validate($data);
-
         if ($errors) {
-            http_response_code(400);
-            echo json_encode([
+            $this->jsonResponse([
                 'success' => false,
-                'errors' => $errors,
-            ]);
-            exit;
+                'errors'  => $errors,
+            ], 400);
+            return;
         }
 
         $stockId = null;
@@ -104,48 +82,25 @@ class StockApiController
             $stockId = $this->stockModel->create($data);
             $this->stockPriceService->updateLatestPrices($stockId, $data['symbol']);
             $this->pdo->commit();
+
+            $this->jsonResponse([
+                'success' => true,
+                'data' => ['stockId'=>$stockId],
+                'errors' => [],
+            ]);
         } catch (\Throwable $e) {
             $this->pdo->rollBack();
-            http_response_code(400);
-            echo json_encode([
+            $this->jsonResponse([
                 'success' => false,
-                'data' => null,
-                'errors' => ['書き込みエラー'],
-            ]);
-            exit;
+                'errors'  => ['書き込みエラー'],
+            ], 400);
         }
-
-        echo json_encode([
-            'success' => true,
-            'data' => ['stockId'=>$stockId],
-            'errors' => [],
-        ]);
-        exit;
     }
 
     public function update()
     {
-        // 管理者チェック
-        if (!Auth::isAdmin()) {
-            http_response_code(403);
-            echo json_encode([
-                'success' => false,
-                'errors' => ['Forbidden'],
-            ]);
-            exit;
-        }
-
-        if (
-            !isset($_POST['csrf_token'], $_SESSION['csrf_token']) ||
-            !hash_equals($_SESSION['csrf_token'], $_POST['csrf_token'])
-        ) {
-            http_response_code(403);
-            echo json_encode([
-                'success' => false,
-                'errors' => ['Invalid CSRF token'],
-            ]);
-            exit;
-        }
+        if (!$this->requireAdmin()) return;
+        if (!$this->verifyCsrf()) return;
 
         $data = [
             'name' => trim($_POST['name'] ?? ''),
@@ -153,230 +108,185 @@ class StockApiController
         ];
 
         $errors = StockValidator::validate($data);
-
         if ($errors) {
-            http_response_code(400);
-            echo json_encode([
+            $this->jsonResponse([
                 'success' => false,
-                'errors' => $errors,
-            ]);
-            exit;
+                'errors'  => $errors,
+            ], 400);
+            return;
         }
 
         $id = $_POST['stock_id'] ?? '';
         try {
             $this->stockModel->update($id, $data);
-        } catch (\Throwable $e) {
-            http_response_code(400);
-            echo json_encode([
-                'success' => false,
-                'errors' => ['書き込みエラー'],
+                $this->jsonResponse([
+                'success' => true,
+                'errors'  => [],
             ]);
-            exit;
+        } catch (\Throwable $e) {
+            $this->jsonResponse([
+                'success' => false,
+                'errors'  => ['書き込みエラー'],
+            ], 400);
         }
-        
-        echo json_encode([
-            'success' => true,
-            'errors' => [],
-        ]);
-        exit;
     }
 
     public function delete()
     {
-        // 管理者チェック
-        if (!Auth::isAdmin()) {
-            http_response_code(403);
-            echo json_encode([
-                'success' => false,
-                'errors' => ['Forbidden'],
-            ]);
-            exit;
-        }
-
-        if (
-            !isset($_POST['csrf_token'], $_SESSION['csrf_token']) ||
-            !hash_equals($_SESSION['csrf_token'], $_POST['csrf_token'])
-        ) {
-            http_response_code(403);
-            echo json_encode([
-                'success' => false,
-                'errors' => ['Invalid CSRF token'],
-            ]);
-            exit;
-        }
+        if (!$this->requireAdmin()) return;
+        if (!$this->verifyCsrf()) return;
 
         $stockId = $_POST['stockId'] ?? '';
 
-        $success = false;
-        $errors = [];
-
         try {
             $this->stockModel->delete($stockId);   
-            $success = true; 
+            $this->jsonResponse([
+                'success' => true,
+                'errors'  => [],
+            ]);
         } catch (\Throwable $e) {
-            http_response_code(400);
-            $errors = ['データベースエラー'];
+            $this->jsonResponse([
+                'success' => false,
+                'errors'  => ['データベースエラー'],
+            ], 400);
+            return;
         }
-        
-        echo json_encode([
-            'success' => $success,
-            'errors' => $errors,
-        ]);
-        exit;
     }
 
     public function getForChart($stockId): void
     {
-        $daily = $this->stockPriceModel->getForChart($stockId, 'daily');
-        $weekly = $this->stockPriceModel->getForChart($stockId, 'weekly');
-        $monthly = $this->stockPriceModel->getForChart($stockId, 'monthly');
+        try {
+            $prices = [
+                'daily' => $this->stockPriceModel->getForChart($stockId, 'daily'),
+                'weekly' => $this->stockPriceModel->getForChart($stockId, 'weekly'),
+                'monthly' => $this->stockPriceModel->getForChart($stockId, 'monthly'),
+            ];
 
-        $prices = ['daily'=>$daily, 'weekly'=>$weekly, 'monthly'=>$monthly];
-
-        header('Content-Type: application/json; charset=utf-8');
-        echo json_encode([
-            'success' => true,
-            'data' => $prices,
-            'errors' => [],
-        ]);
-        exit;
+            $this->jsonResponse([
+                'success' => true,
+                'data' => $prices,
+                'errors' => [],
+            ]);
+        } catch (\Throwable $e) {
+            $this->jsonResponse([
+                'success' => false,
+                'errors'  => ['データベースエラー'],
+            ], 400);
+        }
     }
 
     public function getUserStocks(): void
     {
-        // ユーザーチェック
-        if (!Auth::isLogged()) {
-            http_response_code(403);
-            echo json_encode([
-                'success' => false,
-                'errors' => ['Forbidden'],
-            ]);
-            exit;
-        }
+        if (!$this->requireLogin()) return;
 
         $uuid = $_SESSION['user']['uuid'];
         $userId = $this->userModel->getUserIdByUuid($uuid);
         if (!$userId) {
-            http_response_code(400);
-            echo json_encode([
+            $this->jsonResponse([
                 'success' => false,
-                'errors' => ['invalid request'],
-            ]);
+                'errors'  => ['invalid request'],
+            ], 400);
             return;
         }
 
-        $stocks = $this->stockModel->allWithLatestPriceByUserId($userId);
+        try {
+            $stocks = $this->stockModel->allWithLatestPriceByUserId($userId);
 
-        header('Content-Type: application/json; charset=utf-8');
-        echo json_encode([
-            'success' => true,
-            'data' => $stocks,
-            'errors' => [],
-        ]);
-        exit;
+            $this->jsonResponse([
+                'success' => true,
+                'data' => $stocks,
+                'errors' => [],
+            ]);
+        } catch (\Throwable $e) {
+            $this->jsonResponse([
+                'success' => false,
+                'errors'  => ['データベースエラー'],
+            ], 400);
+        }
     }
 
     public function getFiltered(): void
     {
         $input = $_GET['keywords'] ?? '';
-        if (!is_string($input)) {
-            http_response_code(400);
-            echo json_encode([
+        if (!is_string($input) || mb_strlen($input) > 100) {
+            $this->jsonResponse([
                 'success' => false,
-                'errors' => ['invalid request'],
-            ]);
-            exit;
-        }
-
-        if (mb_strlen($input) > 100) {
-            http_response_code(400);
-            echo json_encode([
-                'success' => false,
-                'errors' => ['invalid request'],
-            ]);
-            exit;
+                'errors'  => ['invalid request'],
+            ], 400);
+            return;
         }
 
         if ($input === '') {
-            $stocks = $this->stockModel->all();
-            header('Content-Type: application/json; charset=utf-8');
-            echo json_encode([
-                'success' => true,
-                'errors' => [],
-                'data' => $stocks,
-            ]);
-            exit;
+            try {
+                $stocks = $this->stockModel->all();
+
+                $this->jsonResponse([
+                    'success' => true,
+                    'errors'  => [],
+                    'data' => $stocks,
+                ]);
+            } catch (\Throwable $e) {
+                $this->jsonResponse([
+                    'success' => false,
+                    'errors'  => ['データベースエラー'],
+                ], 400);
+            }      
+            return;      
         }
 
         $keywords = preg_split('/\s+/', trim($input));
-        
         $keywords = array_values(array_filter($keywords, fn($k) => $k !== ''));
         $keywords = array_slice($keywords, 0, 5);
         if (empty($keywords)) {
-            echo json_encode([
+            $this->jsonResponse([
                 'success' => false,
-                'errors' => ['invalid request'],
-            ]);
-            exit;
+                'errors'  => ['invalid request'],
+            ], 400);
         }
 
-        $stocks = $this->stockModel->filter($keywords);
-        header('Content-Type: application/json; charset=utf-8');
-        // echo json_encode($stocks);
-        echo json_encode([
+        try {
+            $stocks = $this->stockModel->filter($keywords);
+            $this->jsonResponse([
                 'success' => true,
-                'errors' => [],
+                'errors'  => [],
                 'data' => $stocks,
             ]);
-        exit;
+        } catch (\Throwable $e) {
+            $this->jsonResponse([
+                'success' => false,
+                'errors'  => ['データベースエラー'],
+            ], 400);
+        }       
     }
 
 
     public function updateStockPrices()
     {
-        // 管理者チェック
-        if (!Auth::isAdmin()) {
-            http_response_code(403);
-            echo json_encode([
-                'success' => false,
-                'errors' => ['Forbidden'],
-            ]);
-            exit;
-        }
-
-        if (
-            !isset($_POST['csrf_token'], $_SESSION['csrf_token']) ||
-            !hash_equals($_SESSION['csrf_token'], $_POST['csrf_token'])
-        ) {
-            http_response_code(403);
-            echo json_encode([
-                'success' => false,
-                'errors' => ['Invalid CSRF token'],
-            ]);
-            exit;
-        }
+        if (!$this->requireAdmin()) return;
+        if (!$this->verifyCsrf()) return;
 
         $stockId = $_POST['stockId'] ?? '';
 
-        $success = false;
-        $errors = [];
+        try {
+            $stock = $this->stockModel->find($stockId);
+            if ($stock) {
+                $success = $this->stockPriceService ->updateLatestPrices($stock['id'], $stock['symbol'], false);
 
-        $stock = $this->stockModel->find($stockId);
-        if ($stock) {
-            $success = $this->stockPriceService ->updateLatestPrices($stock['id'], $stock['symbol'], false);
-        }
+                if (!$success) {
+                    throw new RuntimeException('更新失敗');
+                }
+            }
 
-        if (!$success) {
-            http_response_code(400);
-            $errors = ['データベースエラー'];
-        }
-
-        echo json_encode([
-            'success' => $success,
-            'errors' => $errors,
-        ]);
-        exit;
+            $this->jsonResponse([
+                'success' => true,
+                'errors'  => [],
+                'data' => $stocks,
+            ]);
+        } catch (\Throwable $e) {
+            $this->jsonResponse([
+                'success' => false,
+                'errors'  => ['データベースエラー'],
+            ], 400);
+        }   
     }
-
 }

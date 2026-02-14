@@ -30,8 +30,10 @@
         </p>
     <?php endif; ?>
 
-    <?php if ($error): ?>
-        <p style="color:red;">エラー：<?= htmlspecialchars($error) ?></p>
+    <?php if ($errors): ?>
+        <?php foreach ($errors as $error): ?>
+            <p style="color:red;"><?= htmlspecialchars($error) ?></p>
+        <?php endforeach ?>
     <?php endif; ?>
 
     <!-- Javascriptからpostするためのform(非表示) -->
@@ -40,18 +42,7 @@
             <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($_SESSION['csrf_token']) ?>">
         </form>
 
-        <form id="update-stock-prices" action="<?= BASE_PATH ?>/admins/update_stock_prices_all" method="post" style="display:inline;">
-            <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($_SESSION['csrf_token']) ?>">
-        </form>
-
-        <form id="post-form" method="post" >
-            <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($_SESSION['csrf_token']) ?>">
-        </form>
-
-        <form 
-            id="update-stock-price" 
-            action="<?= BASE_PATH. '/stocks/update_stock_prices/'. htmlspecialchars($stock['id']) ?>" 
-            method="post" >
+        <form id="update-stock-prices-all" action="<?= BASE_PATH ?>/admins/update_stock_prices_all" method="post" style="display:inline;">
             <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($_SESSION['csrf_token']) ?>">
         </form>
     </div>

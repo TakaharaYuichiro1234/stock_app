@@ -3,12 +3,14 @@ namespace App\Controllers\Api;
 
 use PDO;
 use App\Core\Auth;
+use App\Core\BaseApiController;
 use App\Services\StockService;
 
 require_once __DIR__ . '/../../Core/Auth.php';
+require_once __DIR__ . '/../../Core/BaseApiController.php';
 require_once __DIR__ . '/../../Services/StockService.php';
 
-class AdminApiController
+class AdminApiController extends BaseApiController
 {
     private PDO $pdo;
     private StockService $stockService;
@@ -22,24 +24,15 @@ class AdminApiController
 
     public function show(): void
     {
-        // 管理者チェック
-        if (!Auth::isAdmin()) {
-            http_response_code(403);
-            echo json_encode([
-                'success' => false,
-                'errors' => ['Forbidden'],
-            ]);
-            exit;
-        }
+        if (!$this->requireAdmin()) return;
 
         $input = $_GET['keywords'] ?? '';
         if (!is_string($input) || mb_strlen($input) > 20) {
-            http_response_code(400);
-            echo json_encode([
+            $this->jsonResponse([
                 'success' => false,
-                'errors' => ['不正な入力です'],
-            ]);
-            exit;
+                'errors'  => ['不正な入力です'],
+            ], 400);
+            return;
         }
 
         $symbol = trim($input);
@@ -54,24 +47,19 @@ class AdminApiController
             $isRegistered = true;
         }
 
-        header('Content-Type: application/json; charset=utf-8');
-
         if (!empty($errors)) {
-            http_response_code(400);
-            echo json_encode([
+            $this->jsonResponse([
                 'success' => false,
-                'data' => null,
-                'errors' => $errors,
-            ]);
-            exit;
+                'errors'  => $errors,
+            ], 400);
+            return;
         }
 
-        echo json_encode([
+        $this->jsonResponse([
             'success' => true,
             'data' => $data,
             'isRegistered' => $isRegistered,
             'errors' => [],
         ]);
-        exit;
     }
 }

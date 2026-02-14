@@ -47,15 +47,6 @@ $webRoutes = [
     ['POST', '/logout', AuthController::class, 'logout'],
 ];
 
-$adminRoutes = [
-    ['GET', '/admins', AdminController::class, 'index', 'admin'],
-    // ['POST', '/stocks/store', StockController::class, 'store', 'admin'],
-    // ['POST', '/stocks/update', StockController::class, 'update', 'admin'],
-    // ['POST', '/stocks/delete', StockController::class, 'delete', 'admin'],
-    ['POST', '/stocks/update_stock_prices/{id}', StockController::class, 'updateStockPrices', 'admin'],   
-    ['POST', '/admins/update_stock_prices_all', AdminController::class, 'updateStockPricesAll', 'admin'],
-];
-
 $userRoutes = [
     ['GET', '/trades', TradeController::class, 'index', 'user'],
     ['GET', '/trades/index', TradeController::class, 'index', 'user'],
@@ -67,22 +58,29 @@ $userRoutes = [
     ['POST', '/user-stocks/update', UserStockController::class, 'update', 'user'],
 ];
 
+$adminRoutes = [
+    ['GET', '/admins', AdminController::class, 'index', 'admin'],
+    ['POST', '/admins/update_stock_prices_all', AdminController::class, 'updateStockPricesAll', 'admin'],
+];
+
 $apiRoutes = [
     ['GET', '/api/stocks/get/{id}', StockApiController::class, 'show'],
     ['GET', '/api/stocks/get_for_chart/{id}', StockApiController::class, 'getForChart'],
     ['GET', '/api/stocks/get-user-stocks', StockApiController::class, 'getUserStocks'],
     ['GET', '/api/stocks/get-filtered', StockApiController::class, 'getFiltered'],
     ['GET', '/api/trades/get_for_chart/{uuid}/{stockId}', TradeApiController::class, 'getForChart'],
+];
 
+$adminApiRoutes = [
     ['GET', '/api/admins/show', AdminApiController::class, 'show', 'admin'],
+
     ['POST', '/api/stocks/store', StockApiController::class, 'store', 'admin'],
     ['POST', '/api/stocks/update', StockApiController::class, 'update', 'admin'],
     ['POST', '/api/stocks/delete', StockApiController::class, 'delete', 'admin'],
     ['POST', '/api/stocks/update-stock-prices', StockApiController::class, 'updateStockPrices', 'admin'],
-
 ];
 
-$routes = array_merge($webRoutes, $adminRoutes, $userRoutes, $apiRoutes);
+$routes = array_merge($webRoutes, $userRoutes, $adminRoutes, $apiRoutes, $adminApiRoutes);
 
 $matched = false;
 

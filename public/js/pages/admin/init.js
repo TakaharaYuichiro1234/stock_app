@@ -18,9 +18,9 @@ function initMenu() {
         items.push(
             new MenuItem({
                 caption: '🛡️全ての銘柄の株価を更新',
-                name: 'update-stock-prices',
+                name: 'update-stock-prices-all',
                 action: () => {
-                    if (confirm('全銘柄の最新の株価を追加しますか？')) document.getElementById('update-stock-prices').submit();
+                    if (confirm('全銘柄の最新の株価を追加しますか？')) document.getElementById('update-stock-prices-all').submit();
                 }
             })
         );
