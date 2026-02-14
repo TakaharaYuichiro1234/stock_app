@@ -41,8 +41,18 @@
             if ($digit == 0) return "";
 
             $decimalPart = $value - floor($value);
-            $multi = pow(10, $digit);
-            return '.' . strval(floor($decimalPart*$multi));
+            $multi = pow(10, $digit);            
+            return '.'. str_pad(floor($decimalPart*$multi), $digit, 0, STR_PAD_BOTH);
+        }
+
+        function diffClass($d) {
+            if ($d > 0) {
+                return 'diff-plus';
+            } elseif ($d < 0) {
+                return 'diff-minus';
+            } else {
+                return 'diff-zero';
+            }
         }
     ?>
 
@@ -71,19 +81,9 @@
                     </div>
                 </div>
 
-                <?php
-                    if ($stock['diff'] > 0) {
-                        $diffClass = 'diff-plus';
-                    } elseif ($stock['diff'] < 0) {
-                        $diffClass = 'diff-minus';
-                    } else {
-                        $diffClass = 'diff-zero';
-                    }
-                ?>
-
                 <div class="stock-board-diff-block">
-                    <div class="stock-board-diff <?= $diffClass ?>"> <?= formatDiff($stock['diff'], $stock['digit']) ?></div>
-                    <div class="stock-board-percent-diff <?= $diffClass ?>"> <?= formatDiff($stock['percent_diff'],2) ?>%</div>
+                    <div class="stock-board-diff <?= diffClass($stock['diff']) ?>"> <?= formatDiff($stock['diff'], $stock['digit']) ?></div>
+                    <div class="stock-board-percent-diff <?= diffClass($stock['diff']) ?>"> <?= formatDiff($stock['percent_diff'],2) ?>%</div>
                 </div>
             </div>
 

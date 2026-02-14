@@ -38,8 +38,8 @@
             if ($digit == 0) return "";
 
             $decimalPart = $value - floor($value);
-            $multi = pow(10, $digit);
-            return '.' . strval(floor($decimalPart*$multi));
+            $multi = pow(10, $digit);            
+            return '.'. str_pad(floor($decimalPart*$multi), $digit, 0, STR_PAD_BOTH);
         }
 
         function diffClass($d) {

@@ -2,12 +2,10 @@
 namespace App\Models;
 use PDO;
 
-class StockPrice
-{
+class StockPrice {
     private PDO $pdo;
 
-    public function __construct(PDO $pdo)
-    {
+    public function __construct(PDO $pdo) {
         $this->pdo = $pdo;
     }
 
@@ -22,8 +20,7 @@ class StockPrice
         return $stockPrices;
     }
 
-    public function upsertPrices(int $stockId, array $prices): void
-    {
+    public function upsertPrices(int $stockId, array $prices): void {
         $sql = "
             INSERT INTO stock_prices
             (stock_id, date, open, high, low, close, volume)
@@ -63,8 +60,7 @@ class StockPrice
         return $latestDate ?: null;
     }
 
-    public function getForChart(int $stockId, $granularity = "daily"): array
-    {
+    public function getForChart(int $stockId, $granularity = "daily"): array {
         $stmt = null;
         switch ($granularity) {
             case 'daily':
@@ -86,7 +82,7 @@ class StockPrice
         }
     }
 
-    function dailySql(): string{
+    function dailySql(): string {
         $partition = 'date';
         return "
             SELECT
@@ -98,7 +94,7 @@ class StockPrice
         ";
     }
 
-    function weeklySql(): string{
+    function weeklySql(): string {
         return "
             WITH data AS (
                 SELECT
@@ -141,7 +137,7 @@ class StockPrice
         ";
     }
 
-    function monthlySql(): string{
+    function monthlySql(): string {
         return "
             WITH data AS (
                 SELECT

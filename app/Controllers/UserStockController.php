@@ -8,11 +8,6 @@ use App\Models\Stock;
 use App\Models\User;
 use App\Models\UserStock;
 
-// require_once __DIR__ . '/../Core/BaseWebController.php';
-// require_once __DIR__ . '/../Models/Stock.php';
-// require_once __DIR__ . '/../Models/User.php';
-// require_once __DIR__ . '/../Models/UserStock.php';
-
 class UserStockController extends BaseWebController {
     private PDO $pdo;
     private Stock $stockModel;
@@ -27,10 +22,8 @@ class UserStockController extends BaseWebController {
         $this->userStockModel = new UserStock($this->pdo);
     }
 
-    public function index()
-    {
+    public function index() {
         $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
-        // $isSort = $_GET['is_sort'] === 'true';
         
         $isAdmin = Auth::isAdmin();
         $user = $_SESSION['user'];
@@ -38,19 +31,12 @@ class UserStockController extends BaseWebController {
         $userId = $this->userModel->getUserIdByUuid($uuid);
 
         $stocks = null;
-        // if ($isSort && $userId) {
-        // if ($userId) {
-        //     $stocks = $this->stockModel->allWithLatestPriceByUserId($userId);
-        // } else {
-        //     $stocks = $this->stockModel->allWithLatestPrice();
-        // }
         $stocks = $this->stockModel->allWithLatestPrice($userId);   //userId=nullのときは、DBに登録されているすべての銘柄を取得
 
         require __DIR__ . '/../Views/user-stocks.php';
     }
 
-    public function update()
-    {
+    public function update() {
         try {
             $this->requireLogin();
             $this->verifyCsrf();

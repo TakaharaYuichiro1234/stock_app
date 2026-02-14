@@ -2,9 +2,7 @@
 namespace App\Controllers;
 
 class AuthController {
-
-    public function showLogin()
-    {
+    public function showLogin() {
         if (isset($_GET['redirect']) && str_starts_with($_GET['redirect'], BASE_PATH)) {
             $_SESSION['redirect_after_login'] = $_GET['redirect'];
         }
@@ -12,8 +10,7 @@ class AuthController {
         require __DIR__ . '/../Views/login.php';
     }
 
-    public function login()
-    {
+    public function login()  {
         $email = $_POST['email'];
         $password = $_POST['password'];
 
@@ -52,8 +49,7 @@ class AuthController {
         exit;
     }
 
-    public function logout()
-    {
+    public function logout() {
         $_SESSION = [];
         session_destroy();
 

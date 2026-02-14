@@ -2,10 +2,8 @@
 namespace App\Core;
 
 use App\Core\Auth;
-// require_once __DIR__ . '/Auth.php';
 
-abstract class BaseApiController
-{
+abstract class BaseApiController {
     protected function jsonResponse(array $data, int $status = 200): void
     {
         http_response_code($status);

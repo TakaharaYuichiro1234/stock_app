@@ -6,24 +6,17 @@ use App\Core\Auth;
 use App\Core\BaseApiController;
 use App\Services\StockService;
 
-// require_once __DIR__ . '/../../Core/Auth.php';
-// require_once __DIR__ . '/../../Core/BaseApiController.php';
-// require_once __DIR__ . '/../../Services/StockService.php';
-
-class AdminApiController extends BaseApiController
-{
+class AdminApiController extends BaseApiController {
     private PDO $pdo;
     private StockService $stockService;
 
-    public function __construct()
-    {
+    public function __construct() {
         require __DIR__ . '/../../../config/db.php';
         $this->pdo = $pdo;
         $this->stockService = new StockService($pdo);
     }
 
-    public function show(): void
-    {
+    public function show(): void {
         if (!$this->requireAdmin()) return;
 
         $input = $_GET['keywords'] ?? '';

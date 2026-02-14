@@ -10,25 +10,14 @@ use App\Models\User;
 use App\Services\StockPriceService;
 use App\Validations\StockValidator;
 
-
-// require_once __DIR__ . '/../../Core/Auth.php';
-// require_once __DIR__ . '/../../Core/BaseApiController.php';
-// require_once __DIR__ . '/../../Models/Stock.php';
-// require_once __DIR__ . '/../../Models/StockPrice.php';
-// require_once __DIR__ . '/../../Models/User.php';
-// require_once __DIR__ . '/../../Services/StockPriceService.php';
-// require_once __DIR__ . '/../../Validations/StockValidator.php';
-
-class StockApiController extends BaseApiController
-{
+class StockApiController extends BaseApiController {
     private PDO $pdo;
     private Stock $stockModel;
     private StockPrice $stockPriceModel;
     private User $userModel;
     private StockPriceService $stockPriceService;
 
-    public function __construct()
-    {
+    public function __construct() {
         require __DIR__ . '/../../../config/db.php';
         $this->pdo = $pdo;
         $this->stockModel = new Stock($this->pdo);
@@ -54,8 +43,7 @@ class StockApiController extends BaseApiController
         }
     }
 
-    public function store()
-    {
+    public function store() {
         if (!$this->requireAdmin()) return;
         if (!$this->verifyCsrf()) return;
 
@@ -97,8 +85,7 @@ class StockApiController extends BaseApiController
         }
     }
 
-    public function update()
-    {
+    public function update() {
         if (!$this->requireAdmin()) return;
         if (!$this->verifyCsrf()) return;
 
@@ -131,8 +118,7 @@ class StockApiController extends BaseApiController
         }
     }
 
-    public function delete()
-    {
+    public function delete() {
         if (!$this->requireAdmin()) return;
         if (!$this->verifyCsrf()) return;
 
@@ -153,8 +139,7 @@ class StockApiController extends BaseApiController
         }
     }
 
-    public function getForChart($stockId): void
-    {
+    public function getForChart($stockId): void {
         try {
             $prices = [
                 'daily' => $this->stockPriceModel->getForChart($stockId, 'daily'),
@@ -175,8 +160,7 @@ class StockApiController extends BaseApiController
         }
     }
 
-    public function getUserStocks(): void
-    {
+    public function getUserStocks(): void {
         if (!$this->requireLogin()) return;
 
         $uuid = $_SESSION['user']['uuid'];
@@ -205,8 +189,7 @@ class StockApiController extends BaseApiController
         }
     }
 
-    public function getFiltered(): void
-    {
+    public function getFiltered(): void {
         $input = $_GET['keywords'] ?? '';
         if (!is_string($input) || mb_strlen($input) > 100) {
             $this->jsonResponse([
@@ -260,8 +243,7 @@ class StockApiController extends BaseApiController
     }
 
 
-    public function updateStockPrices()
-    {
+    public function updateStockPrices() {
         if (!$this->requireAdmin()) return;
         if (!$this->verifyCsrf()) return;
 

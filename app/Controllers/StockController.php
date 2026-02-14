@@ -13,17 +13,6 @@ use App\Services\StockService;
 use App\Validations\StockValidator;
 use App\Data\TradeData;
 
-// require_once __DIR__ . '/../Core/BaseWebController.php';
-// require_once __DIR__ . '/../Models/Stock.php';
-// require_once __DIR__ . '/../Models/StockPrice.php';
-// require_once __DIR__ . '/../Models/Trade.php';
-// require_once __DIR__ . '/../Models/User.php';
-// require_once __DIR__ . '/../Validations/StockValidator.php';
-// require_once __DIR__ . '/../Services/StockPriceService.php';
-// require_once __DIR__ . '/../Services/StockService.php';
-// require_once __DIR__ . '/../Data/TradeData.php';
-
-
 class StockController extends BaseWebController {
     private PDO $pdo;
     private Stock $stockModel;
@@ -43,8 +32,7 @@ class StockController extends BaseWebController {
         $this->userModel = new User($this->pdo);
     }
 
-    public function index()
-    {
+    public function index() {
         $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
         $isSort = $_GET['is_sort'] === 'true';
         
@@ -54,11 +42,6 @@ class StockController extends BaseWebController {
         $userId = $this->userModel->getUserIdByUuid($uuid);
 
         $stocks = null;
-        // if ($userId) {
-        //     $stocks = $this->stockModel->allWithLatestPriceByUserId($userId);
-        // } else {
-        //     $stocks = $this->stockModel->allWithLatestPrice();
-        // }
         $stocks = $this->stockModel->allWithLatestPrice($userId);   //userId=nullのときは、DBに登録されているすべての銘柄を取得
 
         require __DIR__ . '/../Views/index.php';

@@ -1,10 +1,8 @@
 <?php
 
-
-
 session_name('STOCK_APP_SESSID');
 session_start();
-
+define('BASE_PATH', '/stock_app');
 require_once __DIR__ . '/../vendor/autoload.php';
 
 use App\Controllers\AdminController;
@@ -16,8 +14,6 @@ use App\Controllers\Api\StockApiController;
 use App\Controllers\Api\TradeApiController;
 use App\Controllers\UserStockController;
 use App\Core\Auth;
-
-define('BASE_PATH', '/stock_app');
 
 $uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
 if (strpos($uri, BASE_PATH) === 0) {

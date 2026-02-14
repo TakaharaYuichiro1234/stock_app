@@ -1,33 +1,25 @@
 <?php
 namespace App\Controllers\Api;
 
-// require_once __DIR__ . '/../../Core/Auth.php';
-// require_once __DIR__ . '/../../Core/BaseApiController.php';
-// require_once __DIR__ . '/../../Models/Trade.php';
-// require_once __DIR__ . '/../../Models/User.php';
-
 use PDO;
 use App\Core\Auth;
 use App\Core\BaseApiController;
 use App\Models\Trade;
 use App\Models\User;
 
-class TradeApiController extends BaseApiController
-{
+class TradeApiController extends BaseApiController {
     private PDO $pdo;
     private Trade $model;
     private User $userModel;
 
-    public function __construct()
-    {
+    public function __construct() {
         require __DIR__ . '/../../../config/db.php';
         $this->pdo = $pdo;
         $this->model = new Trade($this->pdo);
         $this->userModel = new User($this->pdo);
     }
 
-    public function getForChart($uuid, $stockId): void
-    {
+    public function getForChart($uuid, $stockId): void {
         if (!$this->requireLogin()) return;
                 
         try {

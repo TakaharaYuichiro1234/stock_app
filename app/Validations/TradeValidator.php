@@ -1,13 +1,9 @@
 <?php
 namespace App\Validations;
-
 use App\Data\TradeData;
-// require_once __DIR__ . '/../Data/TradeData.php';
 
-class TradeValidator
-{
-    public static function validate(TradeData $data): array
-    {
+class TradeValidator {
+    public static function validate(TradeData $data): array {
         $errors = [];
 
         $date = $data->date ?? '';

@@ -1,9 +1,8 @@
 <?php
 namespace App\Models;
+
 use PDO;
 use App\Data\TradeData;
-
-// require_once __DIR__ . '/../Data/TradeData.php';
 
 class Trade {
     private PDO $pdo;
@@ -20,8 +19,7 @@ class Trade {
         return $stmt->fetchAll();
     }
 
-    public function create(int $userId, TradeData $trade): int
-    {
+    public function create(int $userId, TradeData $trade): int {
         $stmt = $this->pdo->prepare('
             INSERT INTO trades (user_id, stock_id, date, price, quantity, type, content) VALUES (?, ?, ?, ?, ?, ?, ?);
         ');
@@ -94,8 +92,7 @@ class Trade {
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
 
-    public function getForChart(int $userId, int $stockId, $granularity = "daily"): array
-    {
+    public function getForChart(int $userId, int $stockId, $granularity = "daily"): array {
         $stmt = null;
         switch ($granularity) {
             case 'daily':
@@ -117,7 +114,7 @@ class Trade {
         }
         
     }
-    function dailySql(): string{
+    function dailySql(): string {
         return "
             SELECT
                 type,
@@ -131,7 +128,7 @@ class Trade {
         ";
     }
 
-    function weeklySql(): string{
+    function weeklySql(): string {
         return "
             SELECT
                 type,
@@ -145,7 +142,7 @@ class Trade {
         ";
     }
     
-    function monthlySql(): string{
+    function monthlySql(): string {
         return "
             SELECT
                 type,
