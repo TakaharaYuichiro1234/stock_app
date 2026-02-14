@@ -195,32 +195,19 @@ function initModalScreenEvents() {
 
         const url = `${BASE_PATH}/api/stocks/update`;
         try {
-            // const csrfToken = document
-            //     .querySelector('meta[name="csrf-token"]')
-            //     ?.getAttribute('content');
-
-            // const formData = new FormData();
-            // formData.append('csrf_token', csrfToken);
-            // formData.append('stockId', stockId);
-
             const res = await fetch(url, {
                 method: 'POST',
                 body: formData,
                 credentials: 'same-origin', // セッション / CSRF用
             });
 
-            console.log("res: ", res);
-
             if (!res.ok) {
                 throw new Error('通信エラー');
             }
 
             const result = await res.json();
-            console.log("result: ", result);
 
             if (!result.success) throw new Error('書き込みエラー');
-
-
 
             // 画面更新処理
             await refreshSearchedStocks("");
@@ -231,11 +218,7 @@ function initModalScreenEvents() {
             alert('更新に失敗しました');
         }
 
-
-
-        // form.submit();
         document.querySelector(".modal").classList.add("hidden");
-
     });
 }
 
