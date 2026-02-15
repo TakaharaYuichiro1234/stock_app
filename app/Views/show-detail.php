@@ -18,17 +18,11 @@
     ?>
 
     <!-- フラッシュメッセージ -->
-    <?php if (!empty($_SESSION['flash'])): ?>
-        <p style="color: green;">
-            <?= htmlspecialchars($_SESSION['flash']) ?>
-        </p>
-    <?php endif; ?>
-    <?php if (!empty($_SESSION['errors'])): ?>
-        <?php foreach ($_SESSION['errors'] as $err): ?>
-            <p style="color:red;"><?= htmlspecialchars($err) ?></p>
-        <?php endforeach ?>
-    <?php endif; ?>
+    <?php
+        require __DIR__ . '/common/flash.php';
+    ?>
 
+     <!-- 株価表示用の関数（後で整理） -->
     <?php
         function formatDiff($value, $digit) {
             return ($value > 0 ? "+": "") . strval(number_format($value, $digit));
@@ -59,11 +53,7 @@
     ?>
 
     <!-- Javascriptからpostするためのform(非表示) -->
-    <div class="hidden">
-        <form id="logout" action="<?= BASE_PATH ?>/logout" method="post">
-            <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($_SESSION['csrf_token']) ?>">
-        </form>
-     
+    <div class="hidden">     
         <form id="delete-trade" method="post">
             <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($_SESSION['csrf_token']) ?>">
             <input type="hidden" name="redirect" value="<?= htmlspecialchars($_SERVER['REQUEST_URI']) ?>">

@@ -3,35 +3,6 @@ let chart;
 async function init() {
     initMenu();
     initView();
- 
-    // // この銘柄の株価データ取得
-    // let pricesData = null;
-    // try {
-    //     const res = await fetch(`${BASE_PATH}/api/stocks/get_for_chart/${stockId}`);
-    //     if (!res.ok) throw new Error('APIエラー');
-    //     const json = await res.json();
-    //     pricesData = json.data;
-    // } catch (err) {
-    //     console.error(err);
-    //     return;
-    // }
-
-    // // このユーザーがこの銘柄に登録した取引データ取得
-    // let tradeData = [];
-    // if (user){
-    //     try {
-    //         const res = await fetch(`${BASE_PATH}/api/trades/get_for_chart/${user['uuid']}/${stockId}`);
-    //         if (!res.ok) throw new Error('APIエラー');
-    //         const json = await res.json();
-    //         tradeData = json.data;
-
-    //         console.log("tradeData: ", tradeData);
-    //     } catch (err) {
-    //         console.error(err);
-    //         return;
-    //     }
-    // }
-
     initChart();
     initModal();
     initOtherEvents();
@@ -54,7 +25,7 @@ function initMenu() {
             new MenuItem({
                 caption: 'ログイン',
                 name: 'login',
-                action: () => location.href = `${BASE_PATH}/show_login`
+                action: () => location.href = `${BASE_PATH}/show_login?redirect=${BASE_PATH}/stocks/show-detail/${stockId}`
             })
         );
     }
@@ -150,10 +121,7 @@ function initModal() {
     const inputDate = document.getElementById("input-date");
     inputDate.addEventListener("change", () => {
         const date = inputDate.value;
-        // const chartType = selectChart.accessibleradio.value;
-        // const prices = chartPrices[chartType].find(p => p.time ===  date);
         const prices = chartPrices['daily'].find(p => p.time ===  date);
-
         setModalPriceTable(date, prices);
     });
 
@@ -183,13 +151,7 @@ function edit(tradeId){
     const index = trades.findIndex(trade => trade.id === tradeId);
     if (index>=0) {
         const trade = trades[index];
-        
         const date = trade.date;
-        // const prices = trade
-
-        console.log(trade);
-
-        // const chartType = selectChart.accessibleradio.value;
         const prices = chartPrices['daily'].find(p => p.time ===  date);
 
         setModalPriceTable(date, prices);
@@ -204,10 +166,6 @@ function edit(tradeId){
 }
 
 function setModalPriceTable(date, prices) {
-    // 1. チャートクリック時
-    // 2. モーダル画面内の日付を変更した時
-    // 3. 登録済みの取引データの編集時
-
     document.getElementById('input-date').value = date;
 
     const domMessage = document.getElementById("selected-date-message");
@@ -242,26 +200,17 @@ function setModalEditingData(price, quantity, type, content) {
     document.getElementById('input-quantity').value = quantity;
     document.getElementById('modal-input-type').value = type;
     document.getElementById('input-content').value = content;
-
-
-
 }
-
-
 
 function deleteTrade(tradeId){
     console.log(tradeId);
     if (!confirm("この取引データを削除してもよろしいですか？")) return;
 
     document.getElementById('trade-id-for-delete').value = tradeId;
-
-
     const actionUrl = `${BASE_PATH}/trades/delete`;
-
     const form = document.getElementById('delete-trade');
     form.action = actionUrl;
     form.submit();
-
 }
 
 function initOtherEvents() {

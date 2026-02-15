@@ -23,4 +23,11 @@
 
         <div class="menu-panel" id="menu-panel"></div>
     </div>
+
+    <!-- Javascriptからpostするためのform(非表示) -->
+    <div class="hidden">
+        <form id="logout" action="<?= BASE_PATH ?>/logout" method="post">
+            <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($_SESSION['csrf_token']) ?>">
+        </form>
+    </div>
 </header>

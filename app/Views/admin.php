@@ -19,29 +19,12 @@
     ?>
     
     <!-- フラッシュメッセージ -->
-    <?php if (!empty($_SESSION['flash'])): ?>
-        <p style="color: green;">
-            <?= htmlspecialchars($_SESSION['flash']) ?>
-        </p>
-    <?php endif; ?>
-    <?php if (!empty($_SESSION['errors']['name'])): ?>
-        <p style="color:red;">
-            <?= htmlspecialchars($_SESSION['errors']['name']) ?>
-        </p>
-    <?php endif; ?>
-
-    <?php if ($errors): ?>
-        <?php foreach ($errors as $error): ?>
-            <p style="color:red;"><?= htmlspecialchars($error) ?></p>
-        <?php endforeach ?>
-    <?php endif; ?>
+    <?php
+        require __DIR__ . '/common/flash.php';
+    ?>
 
     <!-- Javascriptからpostするためのform(非表示) -->
     <div class="hidden">
-        <form id="logout" action="<?= BASE_PATH ?>/logout" method="post">
-            <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($_SESSION['csrf_token']) ?>">
-        </form>
-
         <form id="update-stock-prices-all" action="<?= BASE_PATH ?>/admins/update_stock_prices_all" method="post" style="display:inline;">
             <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($_SESSION['csrf_token']) ?>">
         </form>

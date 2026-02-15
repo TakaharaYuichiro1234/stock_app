@@ -213,9 +213,7 @@ footer {
         display: flex;
         width: 160%;
         transition: transform 0.3s ease;
-
         touch-action: pan-y;
-
     }
 
     .list-section {
@@ -226,7 +224,6 @@ footer {
 
     .space-section {
         width: 4%;
-        /* background-color: #ccc; */
     }
 
     #main-container.left #main-wrapper {
@@ -237,5 +234,3 @@ footer {
         transform: translateX(-38%);
     }
 }
-
-

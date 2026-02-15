@@ -11,32 +11,17 @@
 </head>
 
 <body>
-
+    <!-- ヘッダー -->
     <?php
         $backUrl = BASE_PATH. '/';
         $pageTitle = "マイ銘柄編集";
         require __DIR__ . '/common/header.php';
     ?>
 
-    <!-- メニュー用のボタン類(非表示) -->
-    <div class="hidden">
-        <form id="logout" action="<?= BASE_PATH ?>/logout" method="post">
-            <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($_SESSION['csrf_token']) ?>">
-        </form>
-    </div>
-
     <!-- フラッシュメッセージ -->
-    <?php if (!empty($_SESSION['flash'])): ?>
-        <p style="color: green;">
-            <?= htmlspecialchars($_SESSION['flash']) ?>
-        </p>
-    <?php endif; ?>
-
-    <?php if (!empty($_SESSION['errors'])): ?>
-        <p style="color: green;">
-            <?= htmlspecialchars($_SESSION['errors']) ?>
-        </p>
-    <?php endif; ?>
+    <?php
+        require __DIR__ . '/common/flash.php';
+    ?>
 
     <div id="main-container" >
         <div id="main-wrapper">

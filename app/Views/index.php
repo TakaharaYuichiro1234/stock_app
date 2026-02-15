@@ -10,26 +10,17 @@
 </head>
 
 <body>
-
+    <!-- ヘッダー -->
     <?php
         $backUrl = null;
         $pageTitle = $user ? "マイ銘柄一覧" : "登録銘柄一覧";
         require __DIR__ . '/common/header.php';
     ?>
 
-    <!-- Javascriptからpostするためのform(非表示) -->
-    <div class="hidden">
-        <form id="logout" action="<?= BASE_PATH ?>/logout" method="post">
-            <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($_SESSION['csrf_token']) ?>">
-        </form>
-    </div>
-
     <!-- フラッシュメッセージ -->
-    <?php if (!empty($_SESSION['flash'])): ?>
-        <p style="color: green;">
-            <?= htmlspecialchars($_SESSION['flash']) ?>
-        </p>
-    <?php endif; ?>
+    <?php
+        require __DIR__ . '/common/flash.php';
+    ?>
 
     <!-- 株価表示用の関数（後で整理） -->
     <?php
