@@ -7,8 +7,7 @@ class AuthController extends BaseWebController {
         if (isset($_GET['redirect']) && str_starts_with($_GET['redirect'], BASE_PATH)) {
             $_SESSION['redirect_after_login'] = $_GET['redirect'];
         }
-
-        // require __DIR__ . '/../Views/login.php';
+        
         $this->view('login');
     }
 

@@ -168,7 +168,6 @@ function initModalScreenEvents() {
     // モーダル画面の更新ボタンを押した時の処理
     document.getElementById('modal-form').addEventListener('submit', async (e) => {
         e.preventDefault(); 
-        console.log("trap0 ");
 
         const form = e.target;
         const formData = new FormData(form);
@@ -189,9 +188,6 @@ function initModalScreenEvents() {
 
         // 更新処理
         showModalMessages([]);
-
-        console.log("trap1 ");
-
 
         const url = `${BASE_PATH}/api/stocks/update`;
         try {

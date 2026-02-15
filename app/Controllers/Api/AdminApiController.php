@@ -17,8 +17,6 @@ class AdminApiController extends BaseApiController {
     }
 
     public function show(): void {
-        // if (!$this->requireAdmin()) return;
-
         $input = $_GET['keywords'] ?? '';
         if (!is_string($input) || mb_strlen($input) > 20) {
             $this->jsonResponse([

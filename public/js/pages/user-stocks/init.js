@@ -202,8 +202,6 @@ function setUserOperationButtonsListener() {
                 .querySelector('meta[name="csrf-token"]')
                 ?.getAttribute('content');
 
-             console.log(stockIdList);
-
             const formData = new FormData();
             formData.append('csrf_token', csrfToken);
             formData.append('users-stocks', data);
@@ -214,12 +212,10 @@ function setUserOperationButtonsListener() {
                 credentials: 'same-origin', // セッション / CSRF用
             });
 
-            console.log(res);
-
             if (!res.ok) {
                 throw new Error('通信エラー');
             }
-            // location.reload();
+            
             currentStockIdList = stockView.getUsersStockIdList();
             alert('登録しました');
 

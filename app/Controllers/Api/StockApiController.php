@@ -44,9 +44,6 @@ class StockApiController extends BaseApiController {
     }
 
     public function store() {
-        // if (!$this->requireAdmin()) return;
-        // if (!$this->verifyCsrf()) return;
-
         $data = [
             'name' => trim($_POST['name'] ?? ''),
             'digit' => (int)$_POST['digit'],
@@ -86,9 +83,6 @@ class StockApiController extends BaseApiController {
     }
 
     public function update() {
-        // if (!$this->requireAdmin()) return;
-        // if (!$this->verifyCsrf()) return;
-
         $data = [
             'name' => trim($_POST['name'] ?? ''),
             'digit' => (int)$_POST['digit']
@@ -119,9 +113,6 @@ class StockApiController extends BaseApiController {
     }
 
     public function delete() {
-        // if (!$this->requireAdmin()) return;
-        // if (!$this->verifyCsrf()) return;
-
         $stockId = $_POST['stockId'] ?? '';
 
         try {
@@ -161,8 +152,6 @@ class StockApiController extends BaseApiController {
     }
 
     public function getUserStocks(): void {
-        // if (!$this->requireLogin()) return;
-
         $uuid = $_SESSION['user']['uuid'];
         $userId = $this->userModel->getUserIdByUuid($uuid);
         if (!$userId) {
@@ -244,9 +233,6 @@ class StockApiController extends BaseApiController {
 
 
     public function updateStockPrices() {
-        // if (!$this->requireAdmin()) return;
-        // if (!$this->verifyCsrf()) return;
-
         $stockId = $_POST['stockId'] ?? '';
 
         try {

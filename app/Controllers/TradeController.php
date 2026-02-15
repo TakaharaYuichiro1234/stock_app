@@ -23,9 +23,6 @@ class TradeController extends BaseWebController {
 
     public function store() {
         try {
-            // $this->requireLogin();
-            // $this->verifyCsrf();
-
             $uuid = $_SESSION['user']['uuid'];
             $userId = $this->userModel->getUserIdByUuid($uuid);
             if ($userId === null) {
@@ -66,9 +63,6 @@ class TradeController extends BaseWebController {
 
     public function update() {
         try {
-            // $this->requireLogin();
-            // $this->verifyCsrf();
-
             $uuid = $_SESSION['user']['uuid'];
             $userId = $this->userModel->getUserIdByUuid($uuid);
             if ($userId === null) {
@@ -110,9 +104,6 @@ class TradeController extends BaseWebController {
 
     public function delete() {
         try {
-            // $this->requireLogin();
-            // $this->verifyCsrf();
-
            $uuid  = $_SESSION['user']['uuid'];
             $userId = $this->userModel->getUserIdByUuid($uuid);
             if ($userId === null) {

@@ -148,7 +148,6 @@ function initModal() {
 }
 
 function edit(tradeId){
-    console.log(tradeId);
     const index = trades.findIndex(trade => trade.id === tradeId);
     if (index>=0) {
         const trade = trades[index];
@@ -204,7 +203,6 @@ function setModalEditingData(price, quantity, type, content) {
 }
 
 function deleteTrade(tradeId){
-    console.log(tradeId);
     if (!confirm("この取引データを削除してもよろしいですか？")) return;
 
     document.getElementById('trade-id-for-delete').value = tradeId;

@@ -44,7 +44,6 @@ class StockController extends BaseWebController {
         $stocks = null;
         $stocks = $this->stockModel->allWithLatestPrice($userId);   //userId=nullのときは、DBに登録されているすべての銘柄を取得
 
-        // require __DIR__ . '/../Views/index.php';
         $this->view('index', [
                 'isAdmin' => $isAdmin,
                 'user'    => $user,
@@ -85,7 +84,7 @@ class StockController extends BaseWebController {
                 ];
             }   
         }
-        // require __DIR__ . '/../Views/show-detail.php';
+
         $this->view('show-detail', [
                 'isAdmin' => $isAdmin,
                 'user'    => $user,
@@ -97,6 +96,5 @@ class StockController extends BaseWebController {
                 'tradeAmounts' => $tradeAmounts,
                 'chartTrades' => $chartTrades,
         ]);
-
     }
 }
