@@ -43,4 +43,6 @@ class StockService {
     public function isSymbolRegistered(?string $symbol): bool {
         return $symbol ? $this->stockModel->existsBySymbol($symbol) : false;
     }
+
+
 }

@@ -14,7 +14,7 @@
     <!-- ヘッダー -->
     <?php
         $backUrl = BASE_PATH. '/';
-        $pageTitle = "マイ銘柄編集";
+        $pageTitle = "お気に入り編集";
         require __DIR__ . '/common/header.php';
     ?>
 
@@ -47,7 +47,7 @@
 
             <section class="list-section">
                 <div class="section-header">
-                    <h3 class="section-title">マイ銘柄</h3>
+                    <h3 class="section-title">お気に入り</h3>
                     <button class="section-header-button" id="update-button">登録</button>
                 </div>
 
@@ -68,7 +68,7 @@
     <footer>
         <div class="view-switch">
             <button id="view-switch-searched" class="view-switch-button">候補リスト</button>
-            <button id="view-switch-users" class="view-switch-button">マイ銘柄</button>
+            <button id="view-switch-users" class="view-switch-button">お気に入り</button>
         </div>
     </footer>
 

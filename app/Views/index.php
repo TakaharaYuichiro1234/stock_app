@@ -13,7 +13,7 @@
     <!-- ヘッダー -->
     <?php
         $backUrl = null;
-        $pageTitle = $user ? "マイ銘柄一覧" : "登録銘柄一覧";
+        $pageTitle = $user ? "お気に入り銘柄一覧" : "登録銘柄一覧";
         require __DIR__ . '/common/header.php';
     ?>
 
@@ -22,33 +22,13 @@
         require __DIR__ . '/common/flash.php';
     ?>
 
-    <!-- 株価表示用の関数（後で整理） -->
+    <!-- 株価表示用の関数 -->
     <?php
-        function formatDiff($value, $digit) {
-            return ($value > 0 ? "+": "") . strval(number_format($value, $digit));
-        }
-
-        function formatDecimalPart($value, $digit) {
-            if ($digit == 0) return "";
-
-            $decimalPart = $value - floor($value);
-            $multi = pow(10, $digit);            
-            return '.'. str_pad(floor($decimalPart*$multi), $digit, 0, STR_PAD_BOTH);
-        }
-
-        function diffClass($d) {
-            if ($d > 0) {
-                return 'diff-plus';
-            } elseif ($d < 0) {
-                return 'diff-minus';
-            } else {
-                return 'diff-zero';
-            }
-        }
+        require_once __DIR__ . '/../Helpers/ViewHelper.php';
     ?>
 
     <div>
-        <?= count($stocks) === 0 ? "マイ銘柄リストに登録されている銘柄がありません。": "" ?> 
+        <?= count($stocks) === 0 ? "対象の銘柄がありません。": "" ?> 
     </div>
 
     <div class="list">
@@ -68,13 +48,13 @@
                     </div>
 
                     <div class="stock-board-price-decimal-part">
-                        <?= $stock['latest_close'] ? formatDecimalPart($stock['latest_close'], $stock['digit']) : '' ?>
+                        <?= $stock['latest_close'] ? ViewHelper::formatDecimalPart($stock['latest_close'], $stock['digit']) : '' ?>
                     </div>
                 </div>
 
                 <div class="stock-board-diff-block">
-                    <div class="stock-board-diff <?= diffClass($stock['diff']) ?>"> <?= formatDiff($stock['diff'], $stock['digit']) ?></div>
-                    <div class="stock-board-percent-diff <?= diffClass($stock['diff']) ?>"> <?= formatDiff($stock['percent_diff'],2) ?>%</div>
+                    <div class="stock-board-diff <?= ViewHelper::diffClass($stock['diff']) ?>"> <?= ViewHelper::formatDiff($stock['diff'], $stock['digit']) ?></div>
+                    <div class="stock-board-percent-diff <?= ViewHelper::diffClass($stock['diff']) ?>"> <?= ViewHelper::formatDiff($stock['percent_diff'],2) ?>%</div>
                 </div>
             </div>
 

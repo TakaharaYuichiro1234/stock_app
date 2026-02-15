@@ -34,7 +34,6 @@ class StockController extends BaseWebController {
 
     public function index() {
         $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
-        $isSort = $_GET['is_sort'] === 'true';
         
         $isAdmin = Auth::isAdmin();
         $user = $_SESSION['user'];

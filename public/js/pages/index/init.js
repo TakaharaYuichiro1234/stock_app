@@ -28,7 +28,7 @@ function initMenu() {
     if (user) {
         items.push(
             new MenuItem({
-                caption: 'マイ銘柄編集',
+                caption: 'お気に入り銘柄編集',
                 name: 'user-stock',
                 action: () => location.href = `${BASE_PATH}/user-stocks`
             }),
