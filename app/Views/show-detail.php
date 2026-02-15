@@ -83,7 +83,7 @@
                 <div class="amount-block">
                     <div class="amount-caption">平均取得単価</div>
                     <div class="amount-value"> 
-                        <?= formatDiff(
+                        <?= ViewHelper::formatDiff(
                             $tradeAmounts['quantity'] > 0 ? 
                             $tradeAmounts['total'] / $tradeAmounts['quantity'] : 
                             0, 
@@ -98,8 +98,8 @@
                                   0;
                     ?>
                     <div class="amount-caption">評価損益</div>
-                    <div class="amount-value <?= diffClass($profit) ?>"> 
-                        <?= formatDiff($profit, $stock['digit']) ?>
+                    <div class="amount-value <?= ViewHelper::diffClass($profit) ?>"> 
+                        <?= ViewHelper::formatDiff($profit, $stock['digit']) ?>
                     </div>
                 </div>
 
