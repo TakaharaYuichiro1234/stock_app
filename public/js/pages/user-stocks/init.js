@@ -1,9 +1,11 @@
 let stockView;
 let currentStockIdList = [];
+let swipeStartX = 0;         
 
 async function init() {
     initMenu();
     initViewSwitch();
+    initOtherEvents();
 
     stockView = new StocksViewModule();
     initEventsFromStockView();
@@ -42,16 +44,7 @@ function initMenu() {
     menu.init();
 }
 
-function initViewSwitch() {
-    const viewSwitch = (isSearch) => {
-        document.getElementById("view-switch-searched").classList.toggle("unselected", !isSearch);
-        document.getElementById("view-switch-users").classList.toggle("unselected", isSearch);
-
-        const container = document.getElementById("main-container");
-        container.classList.remove("left", "right");
-        container.classList.add(isSearch ? "left" : "right");
-    }
-            
+function initViewSwitch() {            
     viewSwitch(true);
 
     document.getElementById("view-switch-searched").addEventListener("click", function () {
@@ -62,10 +55,17 @@ function initViewSwitch() {
     });
 }
 
-// stockViewModuleからのイベントを受ける
-function initEventsFromStockView() {
-    document.addEventListener("show-detail", (e) => {
-        // 変更されている場合は確認を促す
+function viewSwitch(isLeft) {
+    document.getElementById("view-switch-searched").classList.toggle("unselected", !isLeft);
+    document.getElementById("view-switch-users").classList.toggle("unselected", isLeft);
+
+    const container = document.getElementById("main-container");
+    container.classList.remove("left", "right");
+    container.classList.add(isLeft ? "left" : "right");
+}
+
+function initOtherEvents() {
+    window.addEventListener('beforeunload', (event) => {
         const newStockIdList = stockView.getUsersStockIdList();
 
         const isEqualArray = function (array1, array2) {
@@ -78,11 +78,39 @@ function initEventsFromStockView() {
             return true;
         };
 
-        if (!isEqualArray(currentStockIdList, newStockIdList)) {
-            alert("マイ銘柄リストが編集されています。登録ボタンで編集内容を保存してください。");
+        if (isEqualArray(currentStockIdList, newStockIdList)) {
             return;
         }
 
+        // 登録内容が変更されている時の警告
+        event.preventDefault(); // 推奨
+        event.returnValue = ''; // 非推奨だが、クロスブラウザ対応のために設定が必要な場合もある
+    });
+
+    // スワイプで画面切り替えの処理
+    const container = document.getElementById('main-container');
+    container.addEventListener('touchstart', (e) => {
+        swipeStartX = e.touches[0].clientX;
+    });
+
+    container.addEventListener('touchend', (e) => {
+        const THRESHOLD = 50;   // これ以上動いたらスワイプ判定
+        const swipeEndX = e.changedTouches[0].clientX;
+
+        const diff = swipeEndX - swipeStartX;
+        if (Math.abs(diff) > THRESHOLD) {
+            viewSwitch(diff > 0);
+        }
+    });
+}
+
+// -----------------------------------------------------
+// StockView関連のメソッド
+// -----------------------------------------------------
+
+// stockViewModuleからのイベントを受ける
+function initEventsFromStockView() {
+    document.addEventListener("show-detail", (e) => {
         // 詳細画面へ遷移
         const { stockId } = e.detail;
         const redirectUri = encodeURI(`${BASE_PATH}/user-stocks`);
@@ -165,13 +193,7 @@ function setUserOperationButtonsListener() {
     document.getElementById('update-button').addEventListener('click', async () => {
         if(!confirm("登録しますか？")) return;
         const stockIdList = stockView.getUsersStockIdList();
-
-        // const inputElement = document.getElementById('users-stocks-data');
         const data = JSON.stringify(stockIdList);
-        
-        // inputElement.value = data;
-        // document.getElementById('update-users-stocks').submit();
-
         const url = `${BASE_PATH}/user-stocks/update`;
 
         try {
@@ -192,7 +214,9 @@ function setUserOperationButtonsListener() {
             if (!res.ok) {
                 throw new Error('通信エラー');
             }
-            location.reload();
+            // location.reload();
+            currentStockIdList = stockView.getUsersStockIdList();
+
 
         } catch (err) {
             console.error(err);

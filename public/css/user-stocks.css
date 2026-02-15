@@ -213,6 +213,9 @@ footer {
         display: flex;
         width: 160%;
         transition: transform 0.3s ease;
+
+        touch-action: pan-y;
+
     }
 
     .list-section {
