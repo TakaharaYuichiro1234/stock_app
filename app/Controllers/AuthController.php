@@ -1,13 +1,15 @@
 <?php
 namespace App\Controllers;
+use App\Core\BaseWebController;
 
-class AuthController {
+class AuthController extends BaseWebController {
     public function showLogin() {
         if (isset($_GET['redirect']) && str_starts_with($_GET['redirect'], BASE_PATH)) {
             $_SESSION['redirect_after_login'] = $_GET['redirect'];
         }
 
-        require __DIR__ . '/../Views/login.php';
+        // require __DIR__ . '/../Views/login.php';
+        $this->view('login');
     }
 
     public function login()  {

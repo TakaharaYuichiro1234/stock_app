@@ -44,7 +44,12 @@ class StockController extends BaseWebController {
         $stocks = null;
         $stocks = $this->stockModel->allWithLatestPrice($userId);   //userId=nullのときは、DBに登録されているすべての銘柄を取得
 
-        require __DIR__ . '/../Views/index.php';
+        // require __DIR__ . '/../Views/index.php';
+        $this->view('index', [
+                'isAdmin' => $isAdmin,
+                'user'    => $user,
+                'stocks' => $stocks,
+            ]);
     }
 
     public function showDetail($id) {
@@ -80,6 +85,18 @@ class StockController extends BaseWebController {
                 ];
             }   
         }
-        require __DIR__ . '/../Views/show-detail.php';
+        // require __DIR__ . '/../Views/show-detail.php';
+        $this->view('show-detail', [
+                'isAdmin' => $isAdmin,
+                'user'    => $user,
+                'redirect' => $redirect,
+                'stock' => $stock,
+                'stockPrices' => $stockPrices,
+                'chartPrices' => $chartPrices,
+                'trades' => $trades,
+                'tradeAmounts' => $tradeAmounts,
+                'chartTrades' => $chartTrades,
+        ]);
+
     }
 }

@@ -20,7 +20,7 @@ class TradeApiController extends BaseApiController {
     }
 
     public function getForChart($uuid, $stockId): void {
-        if (!$this->requireLogin()) return;
+        // if (!$this->requireLogin()) return;
                 
         try {
             $uuid = $_SESSION['user']['uuid'];
@@ -35,8 +35,14 @@ class TradeApiController extends BaseApiController {
 
             $trades = ['daily'=>$daily, 'weekly'=>$weekly, 'monthly'=>$monthly];
 
-            header('Content-Type: application/json; charset=utf-8');
-            echo json_encode([
+            // header('Content-Type: application/json; charset=utf-8');
+            // echo json_encode([
+            //     'success' => true,
+            //     'data' => $trades,
+            //     'errors' => [],
+            // ]);
+
+            $this->jsonResponse([
                 'success' => true,
                 'data' => $trades,
                 'errors' => [],

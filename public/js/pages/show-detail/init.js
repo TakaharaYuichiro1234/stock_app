@@ -47,6 +47,7 @@ function initView() {
 }
 
 function initChart() {
+
     // 株価チャート初期化
     chart = new ChartModule('chart');
     chart.init();

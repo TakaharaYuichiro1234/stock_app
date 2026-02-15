@@ -32,6 +32,12 @@ class StocksViewModule{
         for (const stock of stocks) {
             const stockBoard = this.#createStockBoard(stock, type);
             stockList.appendChild(stockBoard);
+        }
+        this.setAddButtonDisable();
+    }
+
+    setAddButtonDisable() {
+        for (const stock of this.#usersStocks) {
             this.#setDisableAddButton(stock.id);
         }
     }
@@ -225,6 +231,8 @@ class StocksViewModule{
 
     #setDisableAddButton(stockId) {
         const targetBoard = document.getElementById(`searched-stock_${stockId}`);
+        if (!targetBoard) return;
+
         const descendantButton = targetBoard.querySelector('.add-button');
         if (descendantButton) descendantButton.disabled = this.#isRegistered(stockId);
     }

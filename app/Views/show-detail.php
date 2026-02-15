@@ -322,6 +322,13 @@
         const trades = <?= json_encode($trades, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT)?>;
         const chartTrades = <?= json_encode($chartTrades, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT)?>;
 
+        console.log('user: ', user);
+        console.log('isAdmin: ', isAdmin);
+        console.log('stockId: ', stockId);
+        console.log('chartPrices: ', chartPrices);
+        console.log('trades: ', trades);
+        console.log('chartTrades: ', chartTrades);
+   
         init();
     </script>
 

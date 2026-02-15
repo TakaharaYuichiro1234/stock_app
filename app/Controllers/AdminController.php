@@ -31,13 +31,19 @@ class AdminController extends BaseWebController {
 
     public function index() {
         try {
-            $this->requireAdmin();
+            // $this->requireAdmin();
 
             $isAdmin = Auth::isAdmin();
             $user = $_SESSION['user'];
             $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
 
-            require __DIR__ . '/../Views/admin.php';
+            // require __DIR__ . '/../Views/admin.php';
+            // view('admin', [$isAdmin, $user]);
+            // $this->view('admin');
+            $this->view('admin', [
+                'isAdmin' => $isAdmin,
+                'user'    => $user,
+            ]);
 
         } catch (\Exception $e) {
             http_response_code($e->getCode() ?: 500);
@@ -47,8 +53,8 @@ class AdminController extends BaseWebController {
 
     public function updateStockPricesAll() {
         try {
-            $this->requireAdmin();
-            $this->verifyCsrf();
+            // $this->requireAdmin();
+            // $this->verifyCsrf();
 
             // 銘柄一覧取得
             $stmt = $this->pdo->query("SELECT id, symbol FROM stocks");

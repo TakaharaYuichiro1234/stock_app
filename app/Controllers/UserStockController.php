@@ -30,16 +30,22 @@ class UserStockController extends BaseWebController {
         $uuid = $_SESSION['user']['uuid'];
         $userId = $this->userModel->getUserIdByUuid($uuid);
 
-        $stocks = null;
         $stocks = $this->stockModel->allWithLatestPrice($userId);   //userId=nullのときは、DBに登録されているすべての銘柄を取得
 
-        require __DIR__ . '/../Views/user-stocks.php';
+        // require __DIR__ . '/../Views/user-stocks.php';
+
+        $this->view('user-stocks', [
+            'isAdmin' => $isAdmin,
+            'user'    => $user,
+            'redirect' => $redirect,
+            'stocks' => $stocks,
+        ]);
     }
 
     public function update() {
         try {
-            $this->requireLogin();
-            $this->verifyCsrf();
+            // $this->requireLogin();
+            // $this->verifyCsrf();
 
             $uuid = $_SESSION['user']['uuid'];
             $userId = $this->userModel->getUserIdByUuid($uuid);

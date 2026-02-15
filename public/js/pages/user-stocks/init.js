@@ -159,6 +159,7 @@ async function refreshSearchedStocks(keywordInputs) {
 
     const listDomId = "searched-stock-list";
     stockView.initFirstStockView(searchedStocks, listDomId);
+    stockView.setAddButtonDisable();
 }
 
 async function initUsersSection() {
@@ -194,12 +195,14 @@ function setUserOperationButtonsListener() {
         if(!confirm("登録しますか？")) return;
         const stockIdList = stockView.getUsersStockIdList();
         const data = JSON.stringify(stockIdList);
-        const url = `${BASE_PATH}/user-stocks/update`;
+        const url = `${BASE_PATH}/api/user-stocks/update`;
 
         try {
             const csrfToken = document
                 .querySelector('meta[name="csrf-token"]')
                 ?.getAttribute('content');
+
+             console.log(stockIdList);
 
             const formData = new FormData();
             formData.append('csrf_token', csrfToken);
@@ -211,12 +214,14 @@ function setUserOperationButtonsListener() {
                 credentials: 'same-origin', // セッション / CSRF用
             });
 
+            console.log(res);
+
             if (!res.ok) {
                 throw new Error('通信エラー');
             }
             // location.reload();
             currentStockIdList = stockView.getUsersStockIdList();
-
+            alert('登録しました');
 
         } catch (err) {
             console.error(err);
