@@ -69,8 +69,6 @@ class AdminController extends BaseWebController {
         } catch (\Exception $e) {
             http_response_code($e->getCode() ?: 500);
             exit($e->getMessage());
-        } finally {
-            unset($_SESSION['csrf_token']);
         }
     }
 }
