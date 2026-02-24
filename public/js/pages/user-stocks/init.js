@@ -1,3 +1,12 @@
+import { BASE_PATH } from '../../config.js';
+import { MenuItem } from '../../utils/menu-item.js';
+import { Menu } from '../../utils/menu.js';
+import { StocksViewModule } from '../../utils/stocks-view.js';
+
+document.addEventListener("DOMContentLoaded", () => {
+    init();
+});
+
 let stockView;
 let currentStockIdList = [];
 let swipeStartX = 0;         

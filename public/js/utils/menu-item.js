@@ -1,4 +1,4 @@
-class MenuItem {
+export class MenuItem {
     constructor({ caption = null, name = null, action = null, type = 'action' }) {
         this.caption = caption;
         this.name = name;

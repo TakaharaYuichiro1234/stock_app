@@ -1,4 +1,13 @@
+import { BASE_PATH } from '../../config.js';
+import { MenuItem } from '../../utils/menu-item.js';
+import { Menu } from '../../utils/menu.js';
+import { StocksViewModule } from '../../utils/stocks-view.js';
+
 let stockView;
+
+document.addEventListener("DOMContentLoaded", () => {
+    init();
+});
 
 function init() {
     initMenu();

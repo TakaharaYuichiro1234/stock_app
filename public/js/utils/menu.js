@@ -1,4 +1,4 @@
-class Menu {
+export class Menu {
     constructor({ menuBtnId, menuPanelId, items = [] }) {
         this.menuBtn = document.getElementById(menuBtnId);
         this.menuPanel = document.getElementById(menuPanelId);

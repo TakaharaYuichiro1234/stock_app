@@ -170,15 +170,15 @@
         unset($_SESSION['flash'], $_SESSION['errors'], $_SESSION['old']);
     ?>
 
-    <script src="<?= BASE_PATH ?>/js/app.js"></script>
+    <!-- <script src="<?= BASE_PATH ?>/js/app.js"></script>
     <script src="<?= BASE_PATH ?>/js/utils/menu-item.js"></script>
     <script src="<?= BASE_PATH ?>/js/utils/menu.js"></script>
-    <script src="<?= BASE_PATH ?>/js/utils/stocks-view.js"></script>
-    <script src="<?= BASE_PATH ?>/js/pages/admin/init.js"></script>
+    <script src="<?= BASE_PATH ?>/js/utils/stocks-view.js"></script> -->
+    <script type="module" src="<?= BASE_PATH ?>/js/pages/admin/init.js"></script>
 
     <script>
         const isAdmin = <?= json_encode($isAdmin) ?>;
-        init();
+        // init();
     </script>
 </body>
 

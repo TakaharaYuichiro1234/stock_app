@@ -1,4 +1,4 @@
-class ChartModule{
+export class ChartModule{
     #domId;
     #chart;
     #series;

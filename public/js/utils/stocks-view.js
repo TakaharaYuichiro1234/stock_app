@@ -1,5 +1,5 @@
 
-class StocksViewModule{
+export class StocksViewModule{
     #searchedStocks= [];
     #usersStocks= [];
     #mSelectedId= -1;

@@ -1,3 +1,12 @@
+import { BASE_PATH } from '../../config.js';
+import { MenuItem } from '../../utils/menu-item.js';
+import { Menu } from '../../utils/menu.js';
+import { ChartModule } from './chart-mojule.js';
+
+document.addEventListener("DOMContentLoaded", () => {
+    init();
+});
+
 let chart;
 
 async function init() {
@@ -41,13 +50,12 @@ function initMenu() {
 
 function initView() {
     // ユーザー権限ごとの要素の表示非表示設定
-    for (dom of document.getElementsByClassName("user-valid")) {
+    for (const dom of document.getElementsByClassName("user-valid")) {
         dom.classList.toggle("hidden", !user)
     }
 }
 
 function initChart() {
-
     // 株価チャート初期化
     chart = new ChartModule('chart');
     chart.init();

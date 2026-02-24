@@ -1,10 +1,19 @@
+import { BASE_PATH } from '../../config.js';
+import { MenuItem } from '../../utils/menu-item.js';
+import { Menu } from '../../utils/menu.js';
+
+
+document.addEventListener("DOMContentLoaded", () => {
+    init();
+});
+
 function init() {
     initEvents();
     initMenu();
 }
 
 function initEvents() {
-    for (stock of stocks) {
+    for (const stock of stocks) {
         const id = stock['id'];
         document.getElementById(`list-content_${id}`).addEventListener('click', () => {
             window.location.href = `${BASE_PATH}/stocks/show-detail/${id}`;
