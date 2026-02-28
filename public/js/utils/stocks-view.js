@@ -1,12 +1,12 @@
 
-export class StocksViewModule{
-    #searchedStocks= [];
-    #usersStocks= [];
-    #mSelectedId= -1;
+export class StocksViewModule {
+    #searchedStocks = [];
+    #usersStocks = [];
+    #mSelectedId = -1;
     #searchedContainerId;
     #usersContainerId;
 
-    constructor() {}
+    constructor() { }
 
     // ==================================================================
     // パブリックメソッド
@@ -48,14 +48,14 @@ export class StocksViewModule{
         Array.from(usersStockList.children).forEach(element => element.style.backgroundColor = "#000");
     }
 
-    up(){
+    up() {
         if (this.#mSelectedId < 0) return;
         const index = this.#usersStocks.findIndex(s => s.id === this.#mSelectedId);
         if (index === 0) return;    // 一番上なら動けない
 
-        const replacedStockId = this.#usersStocks[index-1]['id'];
+        const replacedStockId = this.#usersStocks[index - 1]['id'];
 
-        [this.#usersStocks[index], this.#usersStocks[index-1]] = [this.#usersStocks[index-1], this.#usersStocks[index]];
+        [this.#usersStocks[index], this.#usersStocks[index - 1]] = [this.#usersStocks[index - 1], this.#usersStocks[index]];
 
         // 例：リストの「要素2」を「要素1」の前に移動する
         const parent = document.getElementById(this.#usersContainerId);
@@ -66,14 +66,14 @@ export class StocksViewModule{
         parent.insertBefore(item2, item1);
     }
 
-    down(){
+    down() {
         if (this.#mSelectedId < 0) return;
         const index = this.#usersStocks.findIndex(s => s.id === this.#mSelectedId);
-        if (index === this.#usersStocks.length-1) return;    // 一番下なら動けない
+        if (index === this.#usersStocks.length - 1) return;    // 一番下なら動けない
 
-        const replacedStockId = this.#usersStocks[index+1]['id'];
+        const replacedStockId = this.#usersStocks[index + 1]['id'];
 
-        [this.#usersStocks[index], this.#usersStocks[index+1]] = [this.#usersStocks[index+1], this.#usersStocks[index]];
+        [this.#usersStocks[index], this.#usersStocks[index + 1]] = [this.#usersStocks[index + 1], this.#usersStocks[index]];
 
         // 例：リストの「要素2」を「要素1」の前に移動する
         const parent = document.getElementById(this.#usersContainerId);
@@ -103,7 +103,7 @@ export class StocksViewModule{
         let button2Action;
         let button3Text;
         let button3Action;
-        
+
         switch (type) {
             case "admin":
                 boardClass = 'searched-stock';
@@ -171,7 +171,7 @@ export class StocksViewModule{
         const button = document.createElement('button');
         button.className = buttonClass;
         button.textContent = buttonText;
-        button.addEventListener('click', (e)=> {
+        button.addEventListener('click', (e) => {
             e.stopPropagation();
             if (buttonAnimation) buttonAnimation(stock['id'], stockBoard);
             buttonAction(stock['id']);
@@ -183,8 +183,8 @@ export class StocksViewModule{
             const button2 = document.createElement('button');
             button2.className = buttonClass;
             button2.textContent = button2Text;
-            button2.addEventListener('click', (e)=> {
-                e.stopPropagation();        
+            button2.addEventListener('click', (e) => {
+                e.stopPropagation();
                 button2Action(stock['id']);
             })
 
@@ -195,8 +195,8 @@ export class StocksViewModule{
             const button3 = document.createElement('button');
             button3.className = buttonClass;
             button3.textContent = button3Text;
-            button3.addEventListener('click', (e)=> {
-                e.stopPropagation();        
+            button3.addEventListener('click', (e) => {
+                e.stopPropagation();
                 button3Action(stock['id']);
             })
 
@@ -205,20 +205,20 @@ export class StocksViewModule{
 
         stockBoard.appendChild(stockBoardNameBlock);
         stockBoard.appendChild(stockBoardButtonContainer);
-        
+
         return stockBoard;
     }
 
     #slideAnimation(stockId, element) {
         if (!this.#isRegistered(stockId)) {
             element.classList.add('slide-out-right');
-                setTimeout(() => {
+            setTimeout(() => {
                 element.classList.remove('slide-out-right');
             }, 350);
         }
     }
 
-    #showDetailAction(stockId){
+    #showDetailAction(stockId) {
         document.dispatchEvent(new CustomEvent('show-detail', {
             detail: { stockId: stockId }
         }))
@@ -226,7 +226,7 @@ export class StocksViewModule{
 
     #isRegistered(stockId) {
         const index = this.#usersStocks.findIndex(s => s.id === stockId);
-        return index>=0;
+        return index >= 0;
     }
 
     #setDisableAddButton(stockId) {
@@ -237,7 +237,7 @@ export class StocksViewModule{
         if (descendantButton) descendantButton.disabled = this.#isRegistered(stockId);
     }
 
-    #addAction(stockId) {    
+    #addAction(stockId) {
         if (this.#isRegistered(stockId)) {
             alert('この銘柄は登録済みです。');
             return;
@@ -277,19 +277,19 @@ export class StocksViewModule{
         this.#setDisableAddButton(stockId)
     }
 
-    #updatePricesForAdmin(stockId) {    
+    #updatePricesForAdmin(stockId) {
         document.dispatchEvent(new CustomEvent('update-prices', {
             detail: { stockId: stockId }
         }))
     }
 
-    #editStockForAdmin(stockId) {    
+    #editStockForAdmin(stockId) {
         document.dispatchEvent(new CustomEvent('edit-stock', {
             detail: { stockId: stockId }
         }))
     }
 
-    #removeStockForAdmin(stockId) {    
+    #removeStockForAdmin(stockId) {
         document.dispatchEvent(new CustomEvent('remove-stock', {
             detail: { stockId: stockId }
         }))

@@ -1,7 +1,11 @@
 <?php
+
 namespace App\Validations;
-class StockValidator {
-    public static function validate(array $data): array {
+
+class StockValidator
+{
+    public static function validate(array $data): array
+    {
         $errors = [];
 
         $name = $data['name'];

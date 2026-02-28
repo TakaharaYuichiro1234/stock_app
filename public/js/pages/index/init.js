@@ -20,7 +20,7 @@ function initEvents() {
         })
     }
 }
-    
+
 function initMenu() {
     const items = [];
 

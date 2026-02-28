@@ -1,17 +1,21 @@
 <?php
+
 namespace App\Models;
 
 use PDO;
 use App\Data\TradeData;
 
-class Trade {
+class Trade
+{
     private PDO $pdo;
 
-    public function __construct(PDO $pdo) {
-        $this -> pdo = $pdo;
+    public function __construct(PDO $pdo)
+    {
+        $this->pdo = $pdo;
     }
 
-    public function getByUserIdAndStockId($user_id, $stock_id): array {
+    public function getByUserIdAndStockId($user_id, $stock_id): array
+    {
         $stmt = $this->pdo->prepare(
             'SELECT * FROM trades WHERE (user_id = ?) AND (stock_id = ?)'
         );
@@ -19,7 +23,8 @@ class Trade {
         return $stmt->fetchAll();
     }
 
-    public function create(int $userId, TradeData $trade): int {
+    public function create(int $userId, TradeData $trade): int
+    {
         $stmt = $this->pdo->prepare('
             INSERT INTO trades (user_id, stock_id, date, price, quantity, type, content) VALUES (?, ?, ?, ?, ?, ?, ?);
         ');
@@ -39,7 +44,8 @@ class Trade {
 
 
 
-    public function update(int $id, TradeData $trade): void {
+    public function update(int $id, TradeData $trade): void
+    {
         $stmt = $this->pdo->prepare(
             'UPDATE trades SET date = ?, price = ?, quantity = ?, type = ?, content = ?, updated_at = NOW() WHERE id = ?'
         );
@@ -53,14 +59,16 @@ class Trade {
         ]);
     }
 
-    public function delete(int $id): void {
+    public function delete(int $id): void
+    {
         $stmt = $this->pdo->prepare(
             'DELETE FROM trades WHERE id = ?'
         );
         $stmt->execute([$id]);
     }
 
-    public function getAmounts(int $userId, int $stockId): array {
+    public function getAmounts(int $userId, int $stockId): array
+    {
         $stmt = $this->pdo->prepare("
             SELECT
                 SUM(CASE WHEN type = 1 THEN quantity * price ELSE 0 END)
@@ -92,7 +100,8 @@ class Trade {
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
 
-    public function getForChart(int $userId, int $stockId, $granularity = "daily"): array {
+    public function getForChart(int $userId, int $stockId, $granularity = "daily"): array
+    {
         $stmt = null;
         switch ($granularity) {
             case 'daily':
@@ -112,9 +121,9 @@ class Trade {
         } else {
             return [];
         }
-        
     }
-    function dailySql(): string {
+    function dailySql(): string
+    {
         return "
             SELECT
                 type,
@@ -128,7 +137,8 @@ class Trade {
         ";
     }
 
-    function weeklySql(): string {
+    function weeklySql(): string
+    {
         return "
             SELECT
                 type,
@@ -141,8 +151,9 @@ class Trade {
             ORDER BY YEARWEEK(date, 1);
         ";
     }
-    
-    function monthlySql(): string {
+
+    function monthlySql(): string
+    {
         return "
             SELECT
                 type,

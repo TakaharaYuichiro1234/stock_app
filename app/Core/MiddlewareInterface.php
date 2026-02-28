@@ -1,6 +1,8 @@
 <?php
+
 namespace App\Core;
 
-interface MiddlewareInterface {
+interface MiddlewareInterface
+{
     public function handle(): void;
 }

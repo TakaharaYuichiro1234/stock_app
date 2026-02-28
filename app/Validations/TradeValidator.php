@@ -1,9 +1,13 @@
 <?php
+
 namespace App\Validations;
+
 use App\Data\TradeData;
 
-class TradeValidator {
-    public static function validate(TradeData $data): array {
+class TradeValidator
+{
+    public static function validate(TradeData $data): array
+    {
         $errors = [];
 
         $date = $data->date ?? '';
@@ -12,9 +16,9 @@ class TradeValidator {
             if (preg_match($pattern, $date, $matches, PREG_UNMATCHED_AS_NULL)) {  // $matches(検索結果の戻り値)：[1]=年, [2]=月, [3]=日
                 if (!checkdate((int)$matches[2], (int)$matches[3], (int)$matches[1])) {
                     $errors['date'] = '日付が正しくありません';
-                } 
+                }
             } else {
-                 $errors['date'] = '日付が正しくありません';
+                $errors['date'] = '日付が正しくありません';
             }
         }
 

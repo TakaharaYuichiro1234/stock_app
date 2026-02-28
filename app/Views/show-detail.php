@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="ja">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, user-scalable=yes">
@@ -12,28 +13,28 @@
 <body>
     <!-- ヘッダー -->
     <?php
-        $backUrl = $redirect ?? BASE_PATH. '/';
-        $pageTitle = "詳細";
-        require __DIR__ . '/common/header.php';
+    $backUrl = $redirect ?? BASE_PATH . '/';
+    $pageTitle = "詳細";
+    require __DIR__ . '/common/header.php';
     ?>
 
     <!-- フラッシュメッセージ -->
     <?php
-        require __DIR__ . '/common/flash.php';
+    require __DIR__ . '/common/flash.php';
     ?>
 
     <!-- 株価表示用の関数とその他の変数 -->
     <?php
-        require_once __DIR__ . '/../Helpers/ViewHelper.php';
+    require_once __DIR__ . '/../Helpers/ViewHelper.php';
 
-        $latest = $stockPrices[count($stockPrices) - 1];    // 最新日のデータ
-        $previous = $stockPrices[count($stockPrices) - 2];  // 最新の1日前のデータ
-        $diff = $latest['close'] - $previous['close'];
-        $percent_diff = ($latest['close'] - $previous['close'])/ $previous['close'] * 100;
+    $latest = $stockPrices[count($stockPrices) - 1];    // 最新日のデータ
+    $previous = $stockPrices[count($stockPrices) - 2];  // 最新の1日前のデータ
+    $diff = $latest['close'] - $previous['close'];
+    $percent_diff = ($latest['close'] - $previous['close']) / $previous['close'] * 100;
     ?>
 
     <!-- Javascriptからpostするためのform(非表示) -->
-    <div class="hidden">     
+    <div class="hidden">
         <form id="delete-trade" method="post">
             <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($_SESSION['csrf_token']) ?>">
             <input type="hidden" name="redirect" value="<?= htmlspecialchars($_SERVER['REQUEST_URI']) ?>">
@@ -44,12 +45,12 @@
 
     <section>
         <div class="stock-board">
-            <div class="stock-board-name"><?= htmlspecialchars($stock['name']) ?></div>    
-            
+            <div class="stock-board-name"><?= htmlspecialchars($stock['name']) ?></div>
+
             <div class="stock-board-info-block">
                 <div class="stock-board-symbol"><?= htmlspecialchars($stock['symbol']) ?></div>
                 <div class="stock-board-latest-date"><?= htmlspecialchars($latest['date']) ?></div>
-        
+
                 <div class="stock-board-price">
                     <div class="stock-board-price-int-part">
                         <?= $latest['close'] ? number_format(floor($latest['close'])) : '-' ?>
@@ -82,23 +83,23 @@
                 </div>
                 <div class="amount-block">
                     <div class="amount-caption">平均取得単価</div>
-                    <div class="amount-value"> 
+                    <div class="amount-value">
                         <?= ViewHelper::formatDiff(
-                            $tradeAmounts['quantity'] > 0 ? 
-                            $tradeAmounts['total'] / $tradeAmounts['quantity'] : 
-                            0, 
+                            $tradeAmounts['quantity'] > 0 ?
+                                $tradeAmounts['total'] / $tradeAmounts['quantity'] :
+                                0,
                             $stock['digit']
                         ) ?>
                     </div>
                 </div>
                 <div class="amount-block">
                     <?php
-                        $profit = $tradeAmounts['quantity'] > 0 ?
-                                  $tradeAmounts['quantity'] * $latest['close'] - $tradeAmounts['total'] :
-                                  0;
+                    $profit = $tradeAmounts['quantity'] > 0 ?
+                        $tradeAmounts['quantity'] * $latest['close'] - $tradeAmounts['total'] :
+                        0;
                     ?>
                     <div class="amount-caption">評価損益</div>
-                    <div class="amount-value <?= ViewHelper::diffClass($profit) ?>"> 
+                    <div class="amount-value <?= ViewHelper::diffClass($profit) ?>">
                         <?= ViewHelper::formatDiff($profit, $stock['digit']) ?>
                     </div>
                 </div>
@@ -106,18 +107,18 @@
             <?php endif ?>
         </div>
     </section>
-    
+
     <section>
         <form class="select-chart" id="select-chart">
-            <input id="item-1" class="radio-inline__input" type="radio" name="accessibleradio" value="daily" checked="checked"/>
+            <input id="item-1" class="radio-inline__input" type="radio" name="accessibleradio" value="daily" checked="checked" />
             <label class="radio-inline__label" for="item-1">
                 日足
             </label>
-            <input id="item-2" class="radio-inline__input" type="radio" name="accessibleradio" value="weekly"/>
+            <input id="item-2" class="radio-inline__input" type="radio" name="accessibleradio" value="weekly" />
             <label class="radio-inline__label" for="item-2">
                 週足
             </label>
-            <input id="item-3" class="radio-inline__input" type="radio" name="accessibleradio" value="monthly"/>
+            <input id="item-3" class="radio-inline__input" type="radio" name="accessibleradio" value="monthly" />
             <label class="radio-inline__label" for="item-3">
                 月足
             </label>
@@ -150,7 +151,7 @@
             </table>
         </div>
     </section>
-    
+
     <section class="user-valid">
         <button id="show-modal-button">取引情報入力</button>
     </section>
@@ -162,9 +163,9 @@
                 <?php foreach ($trades as $trade): ?>
                     <div class="trade-content">
                         <div class="trade-content-left">
-                            <?php if($trade['type'] === 1): ?>
+                            <?php if ($trade['type'] === 1): ?>
                                 <div class="trade-type buy-color">買</div>
-                            <?php elseif($trade['type'] === 2): ?>
+                            <?php elseif ($trade['type'] === 2): ?>
                                 <div class="trade-type sell-color">売</div>
                             <?php else: ?>
                                 <div class="trade-type">他</div>
@@ -177,13 +178,13 @@
                             <div><?= $trade['content'] ?></div>
 
                             <div class="trade-content-button-container">
-                                <button 
+                                <button
                                     class="js-edit-trade"
                                     data-id="<?= htmlspecialchars($trade['id'], ENT_QUOTES) ?>">
                                     編集
                                 </button>
 
-                                <button 
+                                <button
                                     class="js-delete-trade"
                                     data-id="<?= htmlspecialchars($trade['id'], ENT_QUOTES) ?>">
                                     削除
@@ -225,8 +226,8 @@
                         </tbody>
                     </table>
                 </div>
-               
-                <form id="modal-form"  method="post">
+
+                <form id="modal-form" method="post">
                     <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($_SESSION['csrf_token']) ?>">
                     <input type="hidden" name="redirect" value="<?= htmlspecialchars($_SERVER['REQUEST_URI']) ?>">
                     <input type="hidden" name="uuid" value="<?= htmlspecialchars($_SESSION['user']['uuid']) ?>">
@@ -235,27 +236,27 @@
                     <div class="modal-content-data-block">
                         <div>日付</div>
                         <div>
-                            <input 
-                                type="date" 
+                            <input
+                                type="date"
                                 name="date"
-                                id="input-date" 
+                                id="input-date"
                                 placeholder="yyyy-mm-dd">
                         </div>
                     </div>
                     <div class="modal-content-data-block">
                         <div>単価</div>
                         <div>
-                            <input 
+                            <input
                                 type="text"
                                 name="price"
-                                id="input-price" 
+                                id="input-price"
                                 placeholder="0">
                         </div>
                     </div>
                     <div class="modal-content-data-block">
                         <div>数量</div>
                         <div>
-                            <input 
+                            <input
                                 type="text"
                                 name="quantity"
                                 id="input-quantity"
@@ -278,8 +279,7 @@
                             <textarea
                                 name="content"
                                 id="input-content"
-                                placeholder="アクションの詳細"
-                            >
+                                placeholder="アクションの詳細">
                             </textarea>
                         </div>
                     </div>
@@ -295,20 +295,19 @@
 
     <script src="https://unpkg.com/lightweight-charts/dist/lightweight-charts.standalone.production.js"></script>
     <script type="module" src="<?= BASE_PATH ?>/js/pages/show-detail/init.js"></script>
-    
-    <script >
 
+    <script>
         const user = <?= json_encode($user, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT) ?>;
         const isAdmin = <?= json_encode($isAdmin, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT) ?>;
-        const stockId = <?= json_encode($stock['id'], JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT)?>;
+        const stockId = <?= json_encode($stock['id'], JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT) ?>;
 
-        const chartPrices = <?= json_encode($chartPrices, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT)?>;
-        const trades = <?= json_encode($trades, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT)?>;
-        const chartTrades = <?= json_encode($chartTrades, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT)?>;
+        const chartPrices = <?= json_encode($chartPrices, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT) ?>;
+        const trades = <?= json_encode($trades, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT) ?>;
+        const chartTrades = <?= json_encode($chartTrades, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT) ?>;
     </script>
 
     <?php
-        unset($_SESSION['flash'], $_SESSION['errors'], $_SESSION['old']);
+    unset($_SESSION['flash'], $_SESSION['errors'], $_SESSION['old']);
     ?>
 </body>
 

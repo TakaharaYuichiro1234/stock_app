@@ -1,4 +1,4 @@
-export class ChartModule{
+export class ChartModule {
     #domId;
     #chart;
     #series;
@@ -14,7 +14,7 @@ export class ChartModule{
     init() {
         const dom = document.getElementById(this.#domId);
         this.#chart = LightweightCharts.createChart(dom, {
-            width: dom.clientWidth, 
+            width: dom.clientWidth,
             height: dom.clientHeight,
 
             layout: {
@@ -23,7 +23,7 @@ export class ChartModule{
                 },
                 textColor: 'rgba(255, 255, 255, 0.9)',
             },
-                    
+
             grid: {
                 vertLines: {
                     color: 'rgba(197, 203, 206, 0.2)',
@@ -54,10 +54,10 @@ export class ChartModule{
             },
             timeScale: {
                 borderColor: 'rgba(197, 203, 206, 0.8)',
-                timeVisible: false,                         
-                secondsVisible: false, 
+                timeVisible: false,
+                secondsVisible: false,
                 rightBarStaysOnScroll: false,
-                rightOffset: 5,  
+                rightOffset: 5,
                 leftOffset: 2,
             },
             localization: {
@@ -154,7 +154,7 @@ export class ChartModule{
         const now = new Date();
 
         const to = Math.floor(now.getTime() / 1000); // 今日（秒）
-        
+
         const fromDate = new Date(now);
         fromDate.setMonth(fromDate.getMonth() - monthRange);
         const from = Math.floor(fromDate.getTime() / 1000);

@@ -1,10 +1,12 @@
 <?php
+
 namespace App\Middlewares;
 
 use App\Core\MiddlewareInterface;
 use App\Core\Auth;
 
-class UserMiddleware implements MiddlewareInterface {
+class UserMiddleware implements MiddlewareInterface
+{
     public function handle(): void
     {
         if (!Auth::isLogged()) {

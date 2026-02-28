@@ -10,7 +10,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 let stockView;
 let currentStockIdList = [];
-let swipeStartX = 0;         
+let swipeStartX = 0;
 
 async function init() {
     initMenu();
@@ -20,7 +20,7 @@ async function init() {
     stockView = new StocksViewModule();
     initEventsFromStockView();
     await initSearchedSection();
-    await initUsersSection();   
+    await initUsersSection();
     currentStockIdList = stockView.getUsersStockIdList();
 }
 
@@ -54,7 +54,7 @@ function initMenu() {
     menu.init();
 }
 
-function initViewSwitch() {            
+function initViewSwitch() {
     viewSwitch(true);
 
     document.getElementById("view-switch-searched").addEventListener("click", function () {
@@ -124,7 +124,7 @@ function initEventsFromStockView() {
         // 詳細画面へ遷移
         const { stockId } = e.detail;
         const redirectUri = encodeURI(`${BASE_PATH}/user-stocks`);
-        location.href=`${BASE_PATH}/stocks/show-detail/${stockId}?redirect=${redirectUri}`
+        location.href = `${BASE_PATH}/stocks/show-detail/${stockId}?redirect=${redirectUri}`
     });
 }
 
@@ -183,7 +183,7 @@ async function setUsersStocks() {
     try {
         const res = await fetch(`${BASE_PATH}/api/stocks/get-user-stocks`);
         if (!res.ok) throw new Error(`APIエラー: ${res.status}`);
-        const json = await res.json(); 
+        const json = await res.json();
         const stocks = json.data;
         for (const stock of stocks) {
             const s = {
@@ -202,7 +202,7 @@ async function setUsersStocks() {
 
 function setUserOperationButtonsListener() {
     document.getElementById('update-button').addEventListener('click', async () => {
-        if(!confirm("登録しますか？")) return;
+        if (!confirm("登録しますか？")) return;
         const stockIdList = stockView.getUsersStockIdList();
         const data = JSON.stringify(stockIdList);
         const url = `${BASE_PATH}/api/user-stocks/update`;
@@ -221,7 +221,7 @@ function setUserOperationButtonsListener() {
             if (!res.ok) {
                 throw new Error('通信エラー');
             }
-            
+
             currentStockIdList = stockView.getUsersStockIdList();
             alert('登録しました');
 

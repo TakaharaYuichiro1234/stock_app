@@ -1,18 +1,23 @@
 <?php
+
 namespace App\Services;
+
 use PDO;
 use App\Models\Stock;
 
-class StockService {
+class StockService
+{
     private PDO $pdo;
     private Stock $stockModel;
 
-    public function __construct(PDO $pdo) {
+    public function __construct(PDO $pdo)
+    {
         $this->pdo = $pdo;
         $this->stockModel = new Stock($this->pdo);
     }
 
-    public function initCreate(?string $symbol): array {
+    public function initCreate(?string $symbol): array
+    {
         $data = null;
         $error = null;
 
@@ -40,9 +45,8 @@ class StockService {
         return [$error, $data];
     }
 
-    public function isSymbolRegistered(?string $symbol): bool {
+    public function isSymbolRegistered(?string $symbol): bool
+    {
         return $symbol ? $this->stockModel->existsBySymbol($symbol) : false;
     }
-
-
 }

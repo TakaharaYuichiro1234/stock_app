@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="ja">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, user-scalable=yes">
@@ -12,34 +13,34 @@
 <body>
     <!-- ヘッダー -->
     <?php
-        $backUrl = null;
-        $pageTitle = $user ? "お気に入り銘柄一覧" : "登録銘柄一覧";
-        require __DIR__ . '/common/header.php';
+    $backUrl = null;
+    $pageTitle = $user ? "お気に入り銘柄一覧" : "登録銘柄一覧";
+    require __DIR__ . '/common/header.php';
     ?>
 
     <!-- フラッシュメッセージ -->
     <?php
-        require __DIR__ . '/common/flash.php';
+    require __DIR__ . '/common/flash.php';
     ?>
 
     <!-- 株価表示用の関数 -->
     <?php
-        require_once __DIR__ . '/../Helpers/ViewHelper.php';
+    require_once __DIR__ . '/../Helpers/ViewHelper.php';
     ?>
 
     <div>
-        <?= count($stocks) === 0 ? "対象の銘柄がありません。": "" ?> 
+        <?= count($stocks) === 0 ? "対象の銘柄がありません。" : "" ?>
     </div>
 
     <div class="list">
         <?php foreach ($stocks as $stock): ?>
             <div class="stock-board" id="list-content_<?= htmlspecialchars($stock['id']) ?>">
                 <div class="stock-board-name-block">
-                    <div class="stock-board-name"><?= htmlspecialchars($stock['name']) ?></div>    
+                    <div class="stock-board-name"><?= htmlspecialchars($stock['name']) ?></div>
                     <div class="stock-board-info-block">
                         <div class="stock-board-symbol"><?= htmlspecialchars($stock['symbol']) ?></div>
                         <div class="stock-board-latest-date"><?= htmlspecialchars($stock['latest_date']) ?></div>
-                    </div>         
+                    </div>
                 </div>
 
                 <div class="stock-board-price">
@@ -54,7 +55,7 @@
 
                 <div class="stock-board-diff-block">
                     <div class="stock-board-diff <?= ViewHelper::diffClass($stock['diff']) ?>"> <?= ViewHelper::formatDiff($stock['diff'], $stock['digit']) ?></div>
-                    <div class="stock-board-percent-diff <?= ViewHelper::diffClass($stock['diff']) ?>"> <?= ViewHelper::formatDiff($stock['percent_diff'],2) ?>%</div>
+                    <div class="stock-board-percent-diff <?= ViewHelper::diffClass($stock['diff']) ?>"> <?= ViewHelper::formatDiff($stock['percent_diff'], 2) ?>%</div>
                 </div>
             </div>
 
@@ -62,7 +63,7 @@
     </div>
 
     <?php
-        unset($_SESSION['flash'], $_SESSION['errors'], $_SESSION['old']);
+    unset($_SESSION['flash'], $_SESSION['errors'], $_SESSION['old']);
     ?>
 
 </body>
@@ -74,4 +75,5 @@
     const isAdmin = <?= json_encode($isAdmin, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT) ?>;
     const stocks = <?= json_encode($stocks, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT) ?>;
 </script>
+
 </html>

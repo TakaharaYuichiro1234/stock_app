@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Core;
 
 class Router
@@ -26,7 +27,7 @@ class Router
                 }
 
                 $params = array_slice($matches, 1);
-                
+
                 (new $route['controller'])->{$route['action']}(...$params);
 
                 return;

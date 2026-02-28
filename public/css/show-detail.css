@@ -3,7 +3,7 @@ section {
     padding: 10px;
 }
 
-.section-title{
+.section-title {
     font-size: 1.4rem;
     margin: 5px 0;
 }
@@ -19,11 +19,12 @@ section {
     font-weight: bold;
     padding: 0;
     margin: 0;
-    overflow:scroll;
+    overflow: scroll;
 
     &::-webkit-scrollbar {
         display: none;
     }
+
     scrollbar-width: none;
 }
 
@@ -42,8 +43,9 @@ section {
     width: auto;
     padding: 0;
     margin: 0;
-    height:100%;
+    height: 100%;
 }
+
 .stock-board-latest-date {
     grid-column: 2;
 }
@@ -56,11 +58,13 @@ section {
     width: 100px;
     margin: 0 5px;
 }
+
 .stock-board-price-int-part {
     text-align: right;
     font-size: 1.6rem;
     line-height: 1;
 }
+
 .stock-board-price-decimal-part {
     margin-left: 2px;
     font-size: 0.8rem;
@@ -72,7 +76,7 @@ section {
     width: 60px;
     display: flex;
     flex-direction: column;
-    
+
     gap: 3px;
     line-height: 1;
     font-size: 0.9rem;
@@ -86,6 +90,7 @@ section {
     height: 60vh;
     border: none;
 }
+
 #chart {
     width: 100%;
     height: 100%;
@@ -102,6 +107,7 @@ section {
 .clicked-data-table-container {
     padding: 5px 20px;
 }
+
 .clicked-data-table {
     border-collapse: collapse;
     border: 2px solid rgb(140 140 140);
@@ -111,29 +117,33 @@ section {
     table-layout: fixed;
     width: 100%;
 }
+
 .clicked-data-table thead {
-  background-color: rgb(62, 68, 71);
-  color:white;
+    background-color: rgb(62, 68, 71);
+    color: white;
 }
-.clicked-data-table th, .clicked-data-table td{
-  border: 1px solid rgb(160 160 160);
-  padding: 8px 2px;
-  min-width:100px;
-  text-align: center;
+
+.clicked-data-table th,
+.clicked-data-table td {
+    border: 1px solid rgb(160 160 160);
+    padding: 8px 2px;
+    min-width: 100px;
+    text-align: center;
 }
 
 /* ローソク足の選択用ラジオボタン */
 .select-chart {
-  border: none;
-  padding: 0 20px;
-  margin: 0;
+    border: none;
+    padding: 0 20px;
+    margin: 0;
 }
 
 .radio-inline__input {
     clip: rect(1px, 1px, 1px, 1px);
     position: absolute !important;
-    
+
 }
+
 .radio-inline__label {
     display: inline-block;
     padding: 0.5rem 1rem;
@@ -141,15 +151,18 @@ section {
     border-radius: 3px;
     transition: all .2s;
 }
+
 .radio-inline__label:hover {
     background-color: #f5c0c0;
 }
-.radio-inline__input:checked + .radio-inline__label {
+
+.radio-inline__input:checked+.radio-inline__label {
     background: #B54A4A;
     color: #fff;
-    text-shadow: 0 0 1px rgba(0,0,0,.7);
+    text-shadow: 0 0 1px rgba(0, 0, 0, .7);
 }
-.radio-inline__input:focus + .radio-inline__label {
+
+.radio-inline__input:focus+.radio-inline__label {
     outline-color: #4D90FE;
     outline-offset: -2px;
     outline-style: auto;
@@ -158,16 +171,18 @@ section {
 
 /* 保有銘柄数量明細 */
 .amount-section {
-    display:flex;
+    display: flex;
     justify-content: space-around;
     gap: 10px;
     padding: 10px 30px;
     background: #111;
     border-radius: 8px;
 }
+
 .amount-caption {
     white-space: nowrap;
 }
+
 .amount-value {
     font-size: 1.4rem;
     white-space: nowrap;
@@ -183,15 +198,17 @@ section {
 }
 
 .trade-content {
-    display:flex;
-    justify-content:left;
+    display: flex;
+    justify-content: left;
     align-items: center;
     border-bottom: 1px solid #aaa;
     margin-bottom: 20px;
 }
+
 .trade-content-right {
     padding: 10px;
 }
+
 .trade-type {
     font-size: 2.4rem;
     font-weight: 700;
@@ -201,12 +218,15 @@ section {
     justify-content: center;
     align-items: center;
 }
+
 .trade-type.buy-color {
     color: #2196F3;
 }
+
 .trade-type.sell-color {
     color: #7bc4ad;
 }
+
 .trade-content-button-cotainer {
     display: flex;
     gap: 10px;
@@ -217,6 +237,7 @@ section {
     .stock-board-price {
         width: 70px;
     }
+
     .stock-board-diff-block {
         width: 50px;
     }

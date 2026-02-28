@@ -1,21 +1,27 @@
 <?php
+
 namespace App\Models;
+
 use PDO;
 
-class Stock {
+class Stock
+{
     private PDO $pdo;
 
-    public function __construct(PDO $pdo) {
-        $this -> pdo = $pdo;
+    public function __construct(PDO $pdo)
+    {
+        $this->pdo = $pdo;
     }
 
-    public function all(): array {
+    public function all(): array
+    {
         $sql = 'SELECT id, symbol, name, short_name, long_name FROM stocks ORDER BY symbol';
         $stmt = $this->pdo->query($sql);
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    public function filter($keywords): array {
+    public function filter($keywords): array
+    {
         $sql = 'SELECT id, symbol, name, short_name, long_name FROM stocks';
 
         $where = [];
@@ -44,7 +50,8 @@ class Stock {
         return $stocks;
     }
 
-    public function find(int $id): ?array {
+    public function find(int $id): ?array
+    {
         $stmt = $this->pdo->prepare(
             'SELECT * FROM stocks WHERE id = ?'
         );
@@ -55,7 +62,8 @@ class Stock {
         return $stock ?: null;
     }
 
-    public function create(array $data): int{
+    public function create(array $data): int
+    {
         $stmt = $this->pdo->prepare(
             'INSERT INTO stocks (symbol, name, short_name, long_name, digit) VALUES (?, ?, ?, ?, ?)'
         );
@@ -64,21 +72,24 @@ class Stock {
         return (int)$this->pdo->lastInsertId();
     }
 
-    public function update(int $id, array $data): void {
+    public function update(int $id, array $data): void
+    {
         $stmt = $this->pdo->prepare(
             'UPDATE stocks SET name = ?, digit = ?, updated_at = NOW() WHERE id = ?'
         );
         $stmt->execute([$data['name'], (int)$data['digit'], $id]);
     }
 
-    public function delete(int $id): void {
+    public function delete(int $id): void
+    {
         $stmt = $this->pdo->prepare(
             'DELETE FROM stocks WHERE id = ?'
         );
         $stmt->execute([$id]);
     }
 
-    public function allWithLatestPrice(?int $userId = null): array {
+    public function allWithLatestPrice(?int $userId = null): array
+    {
         $params = [];
         $joinUserStocks = '';
         $where = '';
@@ -155,7 +166,8 @@ class Stock {
     }
 
 
-    public function findWithInfo(int $id): array {
+    public function findWithInfo(int $id): array
+    {
         $stmt = $this->pdo->prepare(
             'SELECT 
                 s.id,
@@ -175,7 +187,8 @@ class Stock {
         return $stock ?: null;
     }
 
-    public function existsBySymbol(string $symbol): bool {
+    public function existsBySymbol(string $symbol): bool
+    {
         $sql = "SELECT 1 FROM stocks WHERE symbol = :symbol LIMIT 1";
         $stmt = $this->pdo->prepare($sql);
         $stmt->execute([':symbol' => $symbol]);

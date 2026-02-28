@@ -1,7 +1,9 @@
 <?php
+
 namespace App\Data;
 
-class TradeData {
+class TradeData
+{
     public function __construct(
         public int $stock_id,
         public ?string $date,

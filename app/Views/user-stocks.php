@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="ja">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, user-scalable=yes">
@@ -13,17 +14,17 @@
 <body>
     <!-- ヘッダー -->
     <?php
-        $backUrl = BASE_PATH. '/';
-        $pageTitle = "お気に入り編集";
-        require __DIR__ . '/common/header.php';
+    $backUrl = BASE_PATH . '/';
+    $pageTitle = "お気に入り編集";
+    require __DIR__ . '/common/header.php';
     ?>
 
     <!-- フラッシュメッセージ -->
     <?php
-        require __DIR__ . '/common/flash.php';
+    require __DIR__ . '/common/flash.php';
     ?>
 
-    <div id="main-container" >
+    <div id="main-container">
         <div id="main-wrapper">
 
             <section class="list-section">
@@ -31,11 +32,11 @@
                     <h3 class="section-title">候補リスト</h3>
                     <button class="section-header-button" id="search-submit-button">検索</button>
                 </div>
-                
+
                 <div class="search-container">
                     <div class="search-input-block">
                         <input class="search-input" id="search-input" type="text" name="keywords" placeholder="キーワードを入力（スペース区切り）">
-                    </div>   
+                    </div>
                 </div>
 
                 <hr>
@@ -73,7 +74,7 @@
     </footer>
 
     <?php
-        unset($_SESSION['flash'], $_SESSION['errors'], $_SESSION['old']);
+    unset($_SESSION['flash'], $_SESSION['errors'], $_SESSION['old']);
     ?>
 
     <script type="module" src="<?= BASE_PATH ?>/js/pages/user-stocks/init.js"></script>
@@ -83,4 +84,5 @@
         const isAdmin = <?= json_encode($isAdmin, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT) ?>;
     </script>
 </body>
+
 </html>

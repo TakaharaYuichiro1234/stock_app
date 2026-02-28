@@ -1,15 +1,20 @@
 <?php
+
 namespace App\Models;
+
 use PDO;
 
-class UserStock {
+class UserStock
+{
     private PDO $pdo;
 
-    public function __construct(PDO $pdo) {
-        $this -> pdo = $pdo;
+    public function __construct(PDO $pdo)
+    {
+        $this->pdo = $pdo;
     }
 
-    public function replace(int $userId, array $stockIds) {
+    public function replace(int $userId, array $stockIds)
+    {
         $stmtDelete = $this->pdo->prepare(
             'DELETE FROM user_stocks WHERE user_id = ?'
         );
@@ -22,7 +27,7 @@ class UserStock {
         $sortOrder = 10;
         foreach ($stockIds as $stockId) {
             $stmtInsert->execute([$userId, $stockId, $sortOrder]);
-            $sortOrder+=10;
+            $sortOrder += 10;
         }
     }
 }

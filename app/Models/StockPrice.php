@@ -1,15 +1,20 @@
 <?php
+
 namespace App\Models;
+
 use PDO;
 
-class StockPrice {
+class StockPrice
+{
     private PDO $pdo;
 
-    public function __construct(PDO $pdo) {
+    public function __construct(PDO $pdo)
+    {
         $this->pdo = $pdo;
     }
 
-    public function filterByStockId(int $stockId): ?array {
+    public function filterByStockId(int $stockId): ?array
+    {
         $stmt = $this->pdo->prepare(
             'SELECT * FROM stock_prices WHERE stock_id = ? ORDER BY date ASC'
         );
@@ -20,7 +25,8 @@ class StockPrice {
         return $stockPrices;
     }
 
-    public function upsertPrices(int $stockId, array $prices): void {
+    public function upsertPrices(int $stockId, array $prices): void
+    {
         $sql = "
             INSERT INTO stock_prices
             (stock_id, date, open, high, low, close, volume)
@@ -49,7 +55,8 @@ class StockPrice {
         }
     }
 
-    public function getLatestDate(int $stockId): ?string {
+    public function getLatestDate(int $stockId): ?string
+    {
         $stmt = $this->pdo->prepare(
             'SELECT MAX(date) FROM stock_prices WHERE stock_id = ?'
         );
@@ -60,7 +67,8 @@ class StockPrice {
         return $latestDate ?: null;
     }
 
-    public function getForChart(int $stockId, $granularity = "daily"): array {
+    public function getForChart(int $stockId, $granularity = "daily"): array
+    {
         $stmt = null;
         switch ($granularity) {
             case 'daily':
@@ -73,7 +81,7 @@ class StockPrice {
                 $stmt = $this->pdo->prepare($this->monthlySql());
                 break;
         }
-        
+
         if ($stmt) {
             $stmt->execute([$stockId]);
             return $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -82,7 +90,8 @@ class StockPrice {
         }
     }
 
-    function dailySql(): string {
+    function dailySql(): string
+    {
         $partition = 'date';
         return "
             SELECT
@@ -94,7 +103,8 @@ class StockPrice {
         ";
     }
 
-    function weeklySql(): string {
+    function weeklySql(): string
+    {
         return "
             WITH data AS (
                 SELECT
@@ -137,7 +147,8 @@ class StockPrice {
         ";
     }
 
-    function monthlySql(): string {
+    function monthlySql(): string
+    {
         return "
             WITH data AS (
                 SELECT

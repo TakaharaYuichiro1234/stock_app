@@ -1,5 +1,7 @@
 <?php
+
 namespace App\Core;
+
 abstract class BaseController
 {
     protected function abort(int $status, string $message = '')

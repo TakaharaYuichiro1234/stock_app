@@ -1,9 +1,11 @@
 <?php
+
 namespace App\Middlewares;
 
 use App\Core\MiddlewareInterface;
 
-class CsrfMiddleware implements MiddlewareInterface {
+class CsrfMiddleware implements MiddlewareInterface
+{
     public function handle(): void
     {
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {

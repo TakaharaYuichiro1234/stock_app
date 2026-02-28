@@ -28,7 +28,7 @@ function initMenu() {
                 action: () => document.getElementById('logout').submit()
             })
         );
-        
+
     } else {
         items.push(
             new MenuItem({
@@ -59,29 +59,29 @@ function initChart() {
     // 株価チャート初期化
     chart = new ChartModule('chart');
     chart.init();
-    chart.drawChart(chartPrices['daily'], chartTrades['daily']?? []);
-    
+    chart.drawChart(chartPrices['daily'], chartTrades['daily'] ?? []);
+
     // 日足・週足・月足の初期化
     const granularity = localStorage.getItem('stock-app:chart-granularity') || 'daily';
     const selectChart = document.getElementById('select-chart');
     selectChart.accessibleradio.value = granularity;
-    const monthRange = (granularity === "monthly") ? 48 : (granularity === "weekly") ? 12 : 3; 
-    chart.drawChart(chartPrices[granularity], chartTrades[granularity]?? [], monthRange);
+    const monthRange = (granularity === "monthly") ? 48 : (granularity === "weekly") ? 12 : 3;
+    chart.drawChart(chartPrices[granularity], chartTrades[granularity] ?? [], monthRange);
 
     // 日足・週足・月足の変更イベント登録
     selectChart.addEventListener('change', () => {
         const granularity = selectChart.accessibleradio.value;
-        const monthRange = (granularity === "monthly") ? 48 : (granularity === "weekly") ? 12 : 3; 
-        chart.drawChart(chartPrices[granularity], chartTrades[granularity]?? [], monthRange);
+        const monthRange = (granularity === "monthly") ? 48 : (granularity === "weekly") ? 12 : 3;
+        chart.drawChart(chartPrices[granularity], chartTrades[granularity] ?? [], monthRange);
         localStorage.setItem('stock-app:chart-granularity', granularity);
     });
 
     // チャートをクリックした時のカスタムイベント
     document.addEventListener("click-chart", (e) => {
         const { time } = e.detail;
-    
+
         const chartType = selectChart.accessibleradio.value;
-        const prices = chartPrices[chartType].find( p => p.time ===  time);
+        const prices = chartPrices[chartType].find(p => p.time === time);
 
         // チャートクリック時の値を表示する各要素に値を入力
         showChartClickedData(time, prices);
@@ -101,7 +101,7 @@ function showChartClickedData(date, prices) {
         document.getElementById('clicked-low'),
         document.getElementById('clicked-close')
     ];
-    
+
     if (prices) {
         domPrices[0].innerHTML = prices['open'];
         domPrices[1].innerHTML = prices['high'];
@@ -130,7 +130,7 @@ function initModal() {
     const inputDate = document.getElementById("input-date");
     inputDate.addEventListener("change", () => {
         const date = inputDate.value;
-        const prices = chartPrices['daily'].find(p => p.time ===  date);
+        const prices = chartPrices['daily'].find(p => p.time === date);
         setModalPriceTable(date, prices);
     });
 
@@ -155,12 +155,12 @@ function initModal() {
     });
 }
 
-function edit(tradeId){
+function edit(tradeId) {
     const index = trades.findIndex(trade => trade.id === tradeId);
-    if (index>=0) {
+    if (index >= 0) {
         const trade = trades[index];
         const date = trade.date;
-        const prices = chartPrices['daily'].find(p => p.time ===  date);
+        const prices = chartPrices['daily'].find(p => p.time === date);
 
         setModalPriceTable(date, prices);
         setModalEditingData(trade.price, trade.quantity, trade.type, trade.content);
@@ -210,7 +210,7 @@ function setModalEditingData(price, quantity, type, content) {
     document.getElementById('input-content').value = content;
 }
 
-function deleteTrade(tradeId){
+function deleteTrade(tradeId) {
     if (!confirm("この取引データを削除してもよろしいですか？")) return;
 
     document.getElementById('trade-id-for-delete').value = tradeId;

@@ -1,23 +1,28 @@
 <?php
+
 namespace App\Controllers;
+
 use App\Core\BaseWebController;
 
-class AuthController extends BaseWebController {
-    public function showLogin() {
+class AuthController extends BaseWebController
+{
+    public function showLogin()
+    {
         if (isset($_GET['redirect']) && str_starts_with($_GET['redirect'], BASE_PATH)) {
             $_SESSION['redirect_after_login'] = $_GET['redirect'];
         }
-        
+
         $this->view('login');
     }
 
-    public function login()  {
+    public function login()
+    {
         $email = $_POST['email'];
         $password = $_POST['password'];
 
         if ($email === '' || $password === '') {
             $_SESSION['error'] = '未入力項目があります';
-            header('Location: '.BASE_PATH. '/login');
+            header('Location: ' . BASE_PATH . '/login');
             exit;
         }
 
@@ -32,7 +37,7 @@ class AuthController extends BaseWebController {
 
         if (!$user || !password_verify($password, $user['password'])) {
             $_SESSION['error'] = 'ログイン失敗';
-            header('Location: '. BASE_PATH);
+            header('Location: ' . BASE_PATH);
             exit;
         }
 
@@ -50,11 +55,12 @@ class AuthController extends BaseWebController {
         exit;
     }
 
-    public function logout() {
+    public function logout()
+    {
         $_SESSION = [];
         session_destroy();
 
-        header('Location: '. BASE_PATH);
+        header('Location: ' . BASE_PATH);
         exit;
     }
 }

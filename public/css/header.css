@@ -1,4 +1,3 @@
-
 header {
     position: sticky;
     top: 0;
@@ -12,7 +11,7 @@ header {
     border-bottom: 1px solid white;
     margin-bottom: 5px;
     z-index: 1000;
-} 
+}
 
 /* 戻るボタン */
 .prev-button {
@@ -22,14 +21,16 @@ header {
     border: none;
     padding: 0;
 }
-.prev-button .lessthan{
+
+.prev-button .lessthan {
     display: block;
     width: 100%;
     height: 100%;
     position: relative;
     text-decoration: none;
 }
-.prev-button .lessthan::before{
+
+.prev-button .lessthan::before {
     content: "";
     display: block;
     width: 15px;
@@ -54,9 +55,10 @@ header {
     justify-content: start;
     align-items: center;
 }
+
 .header-title p {
     font-size: 1.6rem;
-    margin:0;
+    margin: 0;
     padding: 0;
     white-space: nowrap;
 }
@@ -68,8 +70,9 @@ header {
     align-items: center;
     gap: 5px;
 }
+
 .header-user p {
-    margin:0;
+    margin: 0;
     padding: 0;
     white-space: nowrap;
     font-size: 0.9rem;
@@ -103,6 +106,7 @@ header {
     height: 4px;
     background-color: white;
 }
+
 .three-dot-leader .dot {
     top: 0;
     right: 0;
@@ -111,16 +115,19 @@ header {
     margin: auto;
 }
 
-.three-dot-leader .dot::before, .three-dot-leader .dot::after {
+.three-dot-leader .dot::before,
+.three-dot-leader .dot::after {
     content: '';
 }
 
 .three-dot-leader .dot::before {
-    top: -9px;    /* 上のドットの位置 */
+    top: -9px;
+    /* 上のドットの位置 */
 }
 
 .three-dot-leader .dot::after {
-    top: 9px;     /* 下のドットの位置 */
+    top: 9px;
+    /* 下のドットの位置 */
 }
 
 /* 3点リーダを押した時に表示されるメニューパネル */
@@ -130,7 +137,7 @@ header {
     right: 0;
     background: #3c3c3c;
     border-radius: 10px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
     display: none;
     z-index: 9999;
     min-width: 160px;

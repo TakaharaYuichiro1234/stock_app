@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="ja">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, user-scalable=yes">
@@ -13,14 +14,14 @@
 <body>
     <!-- ヘッダー -->
     <?php
-        $backUrl = BASE_PATH. '/';
-        $pageTitle = "管理画面";
-        require __DIR__ . '/common/header.php';
+    $backUrl = BASE_PATH . '/';
+    $pageTitle = "管理画面";
+    require __DIR__ . '/common/header.php';
     ?>
-    
+
     <!-- フラッシュメッセージ -->
     <?php
-        require __DIR__ . '/common/flash.php';
+    require __DIR__ . '/common/flash.php';
     ?>
 
     <!-- Javascriptからpostするためのform(非表示) -->
@@ -49,7 +50,7 @@
                     <input type="hidden" name="symbol" id="symbol" value="<?= htmlspecialchars($data["symbol"] ?? '', ENT_QUOTES, 'UTF-8') ?>">
                     <input type="hidden" name="short_name" id="short_name" value="<?= htmlspecialchars($data["shortName"] ?? '', ENT_QUOTES, 'UTF-8') ?>">
                     <input type="hidden" name="long_name" id="long_name" value="<?= htmlspecialchars($data["longName"] ?? '', ENT_QUOTES, 'UTF-8') ?>">
-                    
+
                     <table class="stock-table">
                         <tbody>
                             <tr>
@@ -133,29 +134,27 @@
                     <div class="modal-content-data-block">
                         <div>銘柄名</div>
                         <div>
-                            <input 
-                                type="text" 
-                                id="input-stock-name" 
-                                name="name" 
-                                placeholder="銘柄名を入力"
-                            >
+                            <input
+                                type="text"
+                                id="input-stock-name"
+                                name="name"
+                                placeholder="銘柄名を入力">
                         </div>
                     </div>
                     <div class="modal-content-data-block">
                         <div>株価の小数点以下桁数</div>
                         <div>
-                            <input 
-                                type="text" 
-                                id="input-digit" 
-                                name="digit" 
-                                placeholder="整数(0, 1, 2, ・・・)"
-                            >
+                            <input
+                                type="text"
+                                id="input-digit"
+                                name="digit"
+                                placeholder="整数(0, 1, 2, ・・・)">
                         </div>
                     </div>
 
                     <div class="section-content-message" id="modal-message-container">
                     </div>
-                    
+
                     <div>
                         <button type="submit" id="modal-submit">更新</button>
                     </div>
@@ -165,7 +164,7 @@
     </div>
 
     <?php
-        unset($_SESSION['flash'], $_SESSION['errors'], $_SESSION['old']);
+    unset($_SESSION['flash'], $_SESSION['errors'], $_SESSION['old']);
     ?>
 
     <script type="module" src="<?= BASE_PATH ?>/js/pages/admin/init.js"></script>
@@ -174,4 +173,3 @@
         const isAdmin = <?= json_encode($isAdmin) ?>;
     </script>
 </body>
-
