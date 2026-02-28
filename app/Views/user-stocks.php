@@ -76,18 +76,11 @@
         unset($_SESSION['flash'], $_SESSION['errors'], $_SESSION['old']);
     ?>
 
-    <!-- <script src="<?= BASE_PATH ?>/js/app.js"></script>
-    <script src="<?= BASE_PATH ?>/js/utils/menu-item.js"></script>
-    <script src="<?= BASE_PATH ?>/js/utils/menu.js"></script>
-    <script src="<?= BASE_PATH ?>/js/utils/stocks-view.js"></script> -->
     <script type="module" src="<?= BASE_PATH ?>/js/pages/user-stocks/init.js"></script>
 
     <script>
         const user = <?= json_encode($user, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT) ?>;
         const isAdmin = <?= json_encode($isAdmin, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT) ?>;
-
-        // init();
-
     </script>
 </body>
 </html>
