@@ -303,15 +303,12 @@ function initRegistrationEvents() {
                 headers: { Accept: 'application/json' }
             });
 
-            console.log(res);
-
             if (!res.ok) {
                 showSearchResult([`サーバーエラー（${res.status}）`], null);
                 return;
             }
 
             const data = await res.json();
-            console.log(data);
 
             if (!data.success) {
                 showSearchResult(data.errors, null);
