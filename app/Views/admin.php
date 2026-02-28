@@ -46,7 +46,6 @@
         <div class="section-content">
             <div class="content-container hidden">
                 <form id="stockForm" action="<?= BASE_PATH ?>/api/stocks/store" method="post">
-                    <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($_SESSION['csrf_token'] ?? '', ENT_QUOTES, 'UTF-8') ?>">
                     <input type="hidden" name="symbol" id="symbol" value="<?= htmlspecialchars($data["symbol"] ?? '', ENT_QUOTES, 'UTF-8') ?>">
                     <input type="hidden" name="short_name" id="short_name" value="<?= htmlspecialchars($data["shortName"] ?? '', ENT_QUOTES, 'UTF-8') ?>">
                     <input type="hidden" name="long_name" id="long_name" value="<?= htmlspecialchars($data["longName"] ?? '', ENT_QUOTES, 'UTF-8') ?>">
@@ -129,7 +128,6 @@
             <div class="modal-content-inner">
 
                 <form id="modal-form" method="post">
-                    <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($_SESSION['csrf_token']) ?>">
                     <input type="hidden" name="redirect" value="<?= htmlspecialchars($_SERVER['REQUEST_URI']) ?>">
                     <input type="hidden" name="stock_id" id="modal-form-stock-id">
                     <div class="modal-content-data-block">
@@ -170,15 +168,10 @@
         unset($_SESSION['flash'], $_SESSION['errors'], $_SESSION['old']);
     ?>
 
-    <!-- <script src="<?= BASE_PATH ?>/js/app.js"></script>
-    <script src="<?= BASE_PATH ?>/js/utils/menu-item.js"></script>
-    <script src="<?= BASE_PATH ?>/js/utils/menu.js"></script>
-    <script src="<?= BASE_PATH ?>/js/utils/stocks-view.js"></script> -->
     <script type="module" src="<?= BASE_PATH ?>/js/pages/admin/init.js"></script>
 
     <script>
         const isAdmin = <?= json_encode($isAdmin) ?>;
-        // init();
     </script>
 </body>
 

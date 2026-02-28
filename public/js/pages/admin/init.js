@@ -1,4 +1,5 @@
 import { BASE_PATH } from '../../config.js';
+import { getCsrfToken } from '../../utils/common.js';
 import { MenuItem } from '../../utils/menu-item.js';
 import { Menu } from '../../utils/menu.js';
 import { StocksViewModule } from '../../utils/stocks-view.js';
@@ -39,7 +40,7 @@ function initMenu() {
         new MenuItem({
             caption: 'ログアウト',
             name: 'logout',
-            action: () =>  document.getElementById('logout').submit()
+            action: () => document.getElementById('logout').submit()
         })
     );
 
@@ -59,12 +60,8 @@ function initEventsFromStockView() {
         const { stockId } = e.detail;
         const url = `${BASE_PATH}/api/stocks/update-stock-prices`;
         try {
-            const csrfToken = document
-                .querySelector('meta[name="csrf-token"]')
-                ?.getAttribute('content');
-
             const formData = new FormData();
-            formData.append('csrf_token', csrfToken);
+            formData.append('csrf_token', getCsrfToken());
             formData.append('stockId', stockId);
 
             const res = await fetch(url, {
@@ -113,7 +110,7 @@ function initEventsFromStockView() {
 
         } catch (err) {
             console.error(err);
-            return; 
+            return;
         }
 
         // モーダル画面にデータを設定して、銘柄編集画面を表示
@@ -131,12 +128,8 @@ function initEventsFromStockView() {
         const { stockId } = e.detail;
         const url = `${BASE_PATH}/api/stocks/delete`;
         try {
-            const csrfToken = document
-                .querySelector('meta[name="csrf-token"]')
-                ?.getAttribute('content');
-
             const formData = new FormData();
-            formData.append('csrf_token', csrfToken);
+            formData.append('csrf_token', getCsrfToken());
             formData.append('stockId', stockId);
 
             const res = await fetch(url, {
@@ -164,7 +157,7 @@ function initEventsFromStockView() {
     document.addEventListener("show-detail", (e) => {
         const { stockId } = e.detail;
         const redirectUri = encodeURI(`${BASE_PATH}/admins`);
-        location.href=`${BASE_PATH}/stocks/show-detail/${stockId}?redirect=${redirectUri}`
+        location.href = `${BASE_PATH}/stocks/show-detail/${stockId}?redirect=${redirectUri}`
     });
 }
 
@@ -176,7 +169,7 @@ function initModalScreenEvents() {
 
     // モーダル画面の更新ボタンを押した時の処理
     document.getElementById('modal-form').addEventListener('submit', async (e) => {
-        e.preventDefault(); 
+        e.preventDefault();
 
         const form = e.target;
         const formData = new FormData(form);
@@ -191,15 +184,18 @@ function initModalScreenEvents() {
         if (!(/^\d+$/.test(digit))) validationErrors.push("桁数は正の整数を入力してください");
 
         if (validationErrors.length > 0) {
-            showModalMessages(validationErrors.map(err => ({'message': err, 'type':'error'})));
+            showModalMessages(validationErrors.map(err => ({ 'message': err, 'type': 'error' })));
             return;
-        } 
+        }
 
         // 更新処理
         showModalMessages([]);
 
         const url = `${BASE_PATH}/api/stocks/update`;
         try {
+            const csrfToken = getCsrfToken();
+            formData.append('csrf_token', csrfToken);
+
             const res = await fetch(url, {
                 method: 'POST',
                 body: formData,
@@ -230,7 +226,7 @@ function initModalScreenEvents() {
 function showModalMessages(messageObjects) {  // messageObjects: {message: string, type: string(error/success)}
     const messageContainer = document.getElementById("modal-message-container");
     messageContainer.innerHTML = '';
-    for (obj of messageObjects) {
+    for (const obj of messageObjects) {
         const element = document.createElement('p');
         element.textContent = obj.message;
         element.className = obj.type;
@@ -241,10 +237,10 @@ function showModalMessages(messageObjects) {  // messageObjects: {message: strin
 function initRegistrationEvents() {
     // 新規銘柄登録
     document.getElementById('stockForm').addEventListener('submit', async (e) => {
-        e.preventDefault(); 
+        e.preventDefault();
 
         const form = e.target;
-        const url  = form.action;
+        const url = form.action;
         const formData = new FormData(form);
 
         // バリデーションチェック
@@ -257,7 +253,7 @@ function initRegistrationEvents() {
         if (!(/^\d+$/.test(digit))) validationErrors.push("桁数は正の整数を入力してください");
 
         if (validationErrors.length > 0) {
-            showMessages(validationErrors.map(err => ({'message': err, 'type':'error'})));
+            showMessages(validationErrors.map(err => ({ 'message': err, 'type': 'error' })));
             return;
         } else {
             showMessages([]);
@@ -265,6 +261,8 @@ function initRegistrationEvents() {
 
         // 新規銘柄登録処理
         try {
+            formData.append('csrf_token', getCsrfToken());
+
             const res = await fetch(url, {
                 method: 'POST',
                 body: formData,
@@ -293,8 +291,8 @@ function initRegistrationEvents() {
     // 新規銘柄検索
     document.getElementById('search-new-form').addEventListener('submit', async (e) => {
         e.preventDefault();
-        showMessages([{message: '検索中...', type: 'nomal'}]);
-        
+        showMessages([{ message: '検索中...', type: 'nomal' }]);
+
         try {
             const form = e.target;
             const formData = new FormData(form);
@@ -305,12 +303,15 @@ function initRegistrationEvents() {
                 headers: { Accept: 'application/json' }
             });
 
+            console.log(res);
+
             if (!res.ok) {
                 showSearchResult([`サーバーエラー（${res.status}）`], null);
                 return;
             }
 
             const data = await res.json();
+            console.log(data);
 
             if (!data.success) {
                 showSearchResult(data.errors, null);
@@ -325,24 +326,24 @@ function initRegistrationEvents() {
     });
 }
 
-function showSearchResult(errors, data, isRegistered=false){
+function showSearchResult(errors, data, isRegistered = false) {
     const resultContainer = document.querySelector(".content-container");
-    
+
     if (errors?.length) {
-        showMessages(errors.map(err => ({message: err, type:'error'})));
+        showMessages(errors.map(err => ({ message: err, type: 'error' })));
         resultContainer.classList.add("hidden");
         return;
-    } 
+    }
 
     if (!data) {
-        showMessages([{message: '検索結果がありません。', type: 'nomal'}]);
+        showMessages([{ message: '検索結果がありません。', type: 'nomal' }]);
         resultContainer.classList.add("hidden");
         return;
     }
 
     resultContainer.classList.remove("hidden");
     document.getElementById('formSubmit').toggleAttribute('disabled', isRegistered);
-    showMessages(isRegistered ? [{message: 'この銘柄はすでに登録されています', type: 'error'}]: []);
+    showMessages(isRegistered ? [{ message: 'この銘柄はすでに登録されています', type: 'error' }] : []);
 
     const fields = {
         'result-symbol': data.symbol,
@@ -374,7 +375,7 @@ function showSearchResult(errors, data, isRegistered=false){
 function showMessages(messageObjects) {  // messageObjects: {message: string, type: string(error/success)}
     const messageContainer = document.getElementById("message-container");
     messageContainer.innerHTML = '';
-    for (obj of messageObjects) {
+    for (const obj of messageObjects) {
         const element = document.createElement('p');
         element.textContent = obj.message;
         element.className = obj.type;
@@ -389,7 +390,7 @@ function judgeDigit(numberArray) {
         return numbers[1] ? numbers[1].length : 0;
     }
 
-    for(number of numberArray) {
+    for (const number of numberArray) {
         const decimalPointLength = getDecimalPointLength(number);
         if (maxDecimalPointLength < decimalPointLength) maxDecimalPointLength = decimalPointLength;
     }
@@ -404,8 +405,8 @@ async function initRegisteredStocksSection() {
     // DB登録済み銘柄のリストを表示
     await refreshSearchedStocks("");
 
-    document.getElementById("search-registered-form").addEventListener('submit', async (e) =>{
-        e.preventDefault(); 
+    document.getElementById("search-registered-form").addEventListener('submit', async (e) => {
+        e.preventDefault();
 
         const form = e.target;
         const formData = new FormData(form);

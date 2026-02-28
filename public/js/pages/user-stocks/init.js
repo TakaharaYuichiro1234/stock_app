@@ -1,4 +1,5 @@
 import { BASE_PATH } from '../../config.js';
+import { getCsrfToken } from '../../utils/common.js';
 import { MenuItem } from '../../utils/menu-item.js';
 import { Menu } from '../../utils/menu.js';
 import { StocksViewModule } from '../../utils/stocks-view.js';
@@ -207,12 +208,8 @@ function setUserOperationButtonsListener() {
         const url = `${BASE_PATH}/api/user-stocks/update`;
 
         try {
-            const csrfToken = document
-                .querySelector('meta[name="csrf-token"]')
-                ?.getAttribute('content');
-
             const formData = new FormData();
-            formData.append('csrf_token', csrfToken);
+            formData.append('csrf_token', getCsrfToken());
             formData.append('users-stocks', data);
 
             const res = await fetch(url, {

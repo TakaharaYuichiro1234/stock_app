@@ -175,10 +175,20 @@
                             <div>単価：<?= $trade['price'] ?></div>
                             <div>数量：<?= $trade['quantity'] ?></div>
                             <div><?= $trade['content'] ?></div>
-                            <class class="trade-content-button-cotainer">
-                                <button onclick="edit(<?= htmlspecialchars($trade['id']) ?>)" id="edit_<?= htmlspecialchars($trade['id']) ?>">編集</button>
-                                <button onclick="deleteTrade(<?= htmlspecialchars($trade['id']) ?>)" id="remove_<?= htmlspecialchars($trade['id']) ?>">削除</button>
-                            </class>
+
+                            <div class="trade-content-button-container">
+                                <button 
+                                    class="js-edit-trade"
+                                    data-id="<?= htmlspecialchars($trade['id'], ENT_QUOTES) ?>">
+                                    編集
+                                </button>
+
+                                <button 
+                                    class="js-delete-trade"
+                                    data-id="<?= htmlspecialchars($trade['id'], ENT_QUOTES) ?>">
+                                    削除
+                                </button>
+                            </div>
                         </div>
                     </div>
                 <?php endforeach ?>

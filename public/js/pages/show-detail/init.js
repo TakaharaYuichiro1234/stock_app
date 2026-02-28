@@ -221,6 +221,22 @@ function deleteTrade(tradeId){
 }
 
 function initOtherEvents() {
+    document.querySelector('.trade-list').addEventListener('click', function (e) {
+        const editBtn = e.target.closest('.js-edit-trade');
+        if (editBtn) {
+            const id = parseInt(editBtn.dataset.id);
+            edit(id);
+            return;
+        }
+
+        const deleteBtn = e.target.closest('.js-delete-trade');
+        if (deleteBtn) {
+            const id = parseInt(deleteBtn.dataset.id);
+            deleteTrade(id);
+            return;
+        }
+    });
+
     // ウインドウサイズ変更時のイベント
     window.addEventListener('resize', () => {
         // 画面サイズを変更した時にチャートのサイズを再調整

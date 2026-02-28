@@ -42,7 +42,7 @@ class AdminApiController extends BaseApiController {
             $this->jsonResponse([
                 'success' => false,
                 'errors'  => $errors,
-            ], 400);
+            ]);
             return;
         }
 
