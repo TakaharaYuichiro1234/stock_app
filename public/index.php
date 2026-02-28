@@ -1,6 +1,11 @@
 <?php
 
 session_name('STOCK_APP_SESSID');
+session_set_cookie_params([
+    'secure' => true,      // 本番HTTPSで有効
+    'httponly' => true,
+    'samesite' => 'Lax'
+]);
 session_start();
 define('BASE_PATH', '/stock_app');
 require_once __DIR__ . '/../vendor/autoload.php';
