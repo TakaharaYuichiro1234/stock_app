@@ -10,6 +10,7 @@ class TradeData
         public float $price,
         public int $quantity,
         public int $type,
+        public int $account_id,
         public string $content
     ) {}
 }

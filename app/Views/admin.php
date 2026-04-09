@@ -37,12 +37,21 @@
             <h3 class="section-title">新たに登録する銘柄</h3>
         </div>
 
-        <form method="get" class="search-container" id="search-new-form">
+        <!-- <form method="get" class="search-container" id="search-new-form">
             <div class="search-input-block">
                 <input class="search-input" type="text" name="symbol" value="<?= htmlspecialchars($symbol) ?>" placeholder="証券コード(例: 7203.T)">
             </div>
             <button class="search-submit" type="submit">検索</button>
-        </form>
+        </form> -->
+
+        <div class="search-container" id="search-new-form">
+            <div class="search-input-block">
+                <input class="search-input" id="search-input" type="text" name="symbol" value="<?= htmlspecialchars($symbol) ?>" placeholder="証券コード(例: 7203.T)">
+            </div>
+            <button class="search-submit" type="button" id="search-button">検索</button>
+        </div>
+
+        <div class="list" id="candidate-stock-list"></div>
 
         <div class="section-content">
             <div class="content-container hidden">
@@ -131,26 +140,54 @@
                 <form id="modal-form" method="post">
                     <input type="hidden" name="redirect" value="<?= htmlspecialchars($_SERVER['REQUEST_URI']) ?>">
                     <input type="hidden" name="stock_id" id="modal-form-stock-id">
-                    <div class="modal-content-data-block">
-                        <div>銘柄名</div>
-                        <div>
-                            <input
-                                type="text"
-                                id="input-stock-name"
-                                name="name"
-                                placeholder="銘柄名を入力">
-                        </div>
-                    </div>
-                    <div class="modal-content-data-block">
-                        <div>株価の小数点以下桁数</div>
-                        <div>
-                            <input
-                                type="text"
-                                id="input-digit"
-                                name="digit"
-                                placeholder="整数(0, 1, 2, ・・・)">
-                        </div>
-                    </div>
+                    <input type="hidden" name="symbol" id="modal-form-symbol" value="<?= htmlspecialchars($data["symbol"] ?? '', ENT_QUOTES, 'UTF-8') ?>">
+                    <input type="hidden" name="short_name" id="short_name" value="<?= htmlspecialchars($data["shortName"] ?? '', ENT_QUOTES, 'UTF-8') ?>">
+                    <input type="hidden" name="long_name" id="long_name" value="<?= htmlspecialchars($data["longName"] ?? '', ENT_QUOTES, 'UTF-8') ?>">
+
+                    <table class="stock-table">
+                        <tbody>
+                            <tr>
+                                <th colspan="2">証券コード</th>
+                                <td><span id="modal-symbol"></td>
+                            </tr>
+                            <tr>
+                                <th colspan="2">銘柄名</th>
+                                <td><input type="text" name="name" id="input-stock-name" placeholder="登録用の銘柄名を入力"></td>
+                            </tr>
+                            <tr>
+                                <th colspan="2">株価の小数点以下桁数</th>
+                                <td><input type="text" name="digit" id="input-digit" placeholder="0"></td>
+                            </tr>
+                            <tr>
+                                <th colspan="3"><span id="result-date"></span>の株価データ</th>
+                            </tr>
+                            <tr>
+                                <th></th>
+                                <th>始値</th>
+                                <td><span id="result-open"></td>
+                            </tr>
+                            <tr>
+                                <th></th>
+                                <th>高値</th>
+                                <td><span id="result-high"></td>
+                            </tr>
+                            <tr>
+                                <th></th>
+                                <th>低値</th>
+                                <td><span id="result-low"></td>
+                            </tr>
+                            <tr>
+                                <th></th>
+                                <th>終値</th>
+                                <td><span id="result-close"></td>
+                            </tr>
+                            <tr>
+                                <th></th>
+                                <th>出来高</th>
+                                <td><span id="result-volume"></td>
+                            </tr>
+                        </tbody>
+                    </table>
 
                     <div class="section-content-message" id="modal-message-container">
                     </div>
@@ -167,6 +204,7 @@
     unset($_SESSION['flash'], $_SESSION['errors'], $_SESSION['old']);
     ?>
 
+    <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
     <script type="module" src="<?= BASE_PATH ?>/js/pages/admin/init.js"></script>
 
     <script>

@@ -62,6 +62,7 @@ CREATE TABLE IF NOT EXISTS trades (
     id INT AUTO_INCREMENT PRIMARY KEY,
     user_id INT NOT NULL,
     stock_id INT NOT NULL, 
+    account_id INT NOT NULL, 
     date DATE,
     price DECIMAL(10,2),
     quantity BIGINT,
@@ -74,6 +75,30 @@ CREATE TABLE IF NOT EXISTS trades (
     INDEX idx_trades_stock_id (stock_id),
 
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
-    FOREIGN KEY (stock_id) REFERENCES stocks(id) ON DELETE CASCADE
+    FOREIGN KEY (stock_id) REFERENCES stocks(id) ON DELETE CASCADE,
+    FOREIGN KEY (account_id) REFERENCES accounts(id) ON DELETE CASCADE
 
+);
+
+CREATE TABLE IF NOT EXISTS acounts (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NOT NULL,
+    type INT,
+    content TEXT,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+);
+
+CREATE TABLE IF NOT EXISTS splits (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    stock_id INT NOT NULL, 
+    date DATE,
+    numerator DECIMAL,
+    denominator DECIMAL,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+
+    FOREIGN KEY (stock_id) REFERENCES stocks(id) ON DELETE CASCADE
 );

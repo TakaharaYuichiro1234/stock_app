@@ -23,15 +23,73 @@ class Trade
         return $stmt->fetchAll();
     }
 
+    public function getAllByUserId($user_id): array
+    {
+        $stmt = $this->pdo->prepare(
+            'SELECT * FROM trades WHERE (user_id = ?)'
+        );
+        $stmt->execute([$user_id]);
+        return $stmt->fetchAll();
+    }
+
+    public function getAllByUserStockAccount($user_id, $stock_id, $account_id): array
+    {
+        $stmt = $this->pdo->prepare(
+            'SELECT *
+             FROM trades
+             WHERE user_id = ? AND stock_id = ? AND account_id = ? 
+             ORDER BY date'
+        );
+
+        $stmt->execute([$user_id, $stock_id, $account_id]);
+        return $stmt->fetchAll();
+    }
+
+    // public function getAllByUserStockAccount($user_id, $stock_id, $account_id): array
+    // {
+    //     $stmt = $this->pdo->prepare(
+    //         'SELECT 
+    //             t.stock_id as stock_id, 
+    //             t.account_id as account_id, 
+    //             t.quantity as quantity, 
+    //             t.price as price, 
+    //             t.type as type, 
+    //             t.date as date,
+    //             s.name as name,
+    //             s.symbol as symbol,
+    //             s.digit as digit
+    //          FROM trades t 
+    //          JOIN stocks s ON t.stock_id = s.id 
+    //          WHERE t.user_id = ? AND t.stock_id = ? AND t.account_id = ? 
+    //          ORDER BY t.date'
+    //     );
+
+    //     $stmt->execute([$user_id, $stock_id, $account_id]);
+    //     return $stmt->fetchAll();
+    // }
+
+    public function getPairOfStockAccount($user_id): array
+    {
+        $stmt = $this->pdo->prepare(
+            'SELECT DISTINCT stock_id, account_id
+             FROM trades
+             WHERE user_id = ? AND (type = 1 OR type = 2)
+             ORDER BY stock_id, account_id;'
+        );
+        $stmt->execute([$user_id]);
+        return $stmt->fetchAll();
+    }
+
     public function create(int $userId, TradeData $trade): int
     {
         $stmt = $this->pdo->prepare('
-            INSERT INTO trades (user_id, stock_id, date, price, quantity, type, content) VALUES (?, ?, ?, ?, ?, ?, ?);
+            INSERT INTO trades (user_id, stock_id, account_id, date, price, quantity, type, content) VALUES (?, ?, ?, ?, ?, ?, ?, ?);
         ');
 
         $stmt->execute([
             $userId,
             $trade->stock_id,
+            $trade->account_id,
             $trade->date,
             $trade->price,
             $trade->quantity,

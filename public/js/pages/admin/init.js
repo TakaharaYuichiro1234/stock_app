@@ -2,23 +2,47 @@ import { BASE_PATH } from '../../config.js';
 import { getCsrfToken } from '../../utils/common.js';
 import { MenuItem } from '../../utils/menu-item.js';
 import { Menu } from '../../utils/menu.js';
-import { StocksViewModule } from '../../utils/stocks-view.js';
+import { StocksViewModule, ViewType } from '../../utils/stocks-view.js';
 
+let candidateListView;
 let stockView;
+
+const MODAL_MODE = Object.freeze({
+    REGISTER: "register",
+    EDIT: "edit"
+});
+let modalMode = MODAL_MODE.REGISTER;
+
 
 document.addEventListener("DOMContentLoaded", () => {
     init();
 });
 
-function init() {
+async function init() {
+    await loadStockListFile();
+
     initMenu();
 
     initRegistrationEvents();
+
+    candidateListView = new StocksViewModule();
+    initCandidateListSection();
 
     stockView = new StocksViewModule();
     initEventsFromStockView();
     initModalScreenEvents();
     initRegisteredStocksSection();
+}
+
+let jpxStockDataList = [];
+async function loadStockListFile() {
+
+    const res = await fetch(`${BASE_PATH}/resources/data/data_j.xls`);
+    const arrayBuffer = await res.arrayBuffer();
+    const data = new Uint8Array(arrayBuffer);
+    const workbook = XLSX.read(data, { type: 'array' });
+    const sheet = workbook.Sheets[workbook.SheetNames[0]];
+    jpxStockDataList = XLSX.utils.sheet_to_json(sheet);
 }
 
 function initMenu() {
@@ -55,14 +79,131 @@ function initMenu() {
 
 // stockViewModuleからのイベントを受ける
 function initEventsFromStockView() {
-    // 株価更新
+    // 登録
+    document.addEventListener("register-stock", async (e) => {
+        const { symbol } = e.detail;
+
+        console.log("register-stockイベントを受け取りました:", symbol);
+
+        showMessages([{ message: '検索中...', type: 'nomal' }]);
+
+        console.log(typeof jpxStockDataList[0]["コード"], typeof symbol);
+
+        const targetStock = jpxStockDataList.find(row => row["コード"] === symbol);
+        if (!targetStock) {
+            showSearchResult(['銘柄が見つかりませんでした'], null);
+            return;
+        }
+
+        try {
+            const params = new URLSearchParams({ keywords: symbol + '.T' });
+
+            const res = await fetch(`${BASE_PATH}/api/admins/show?${params}`, {
+                headers: { Accept: 'application/json' }
+            });
+
+            if (!res.ok) {
+                showSearchResult([`サーバーエラー（${res.status}）`], null);
+                return;
+            }
+
+            const data = await res.json();
+
+            if (!data.success) {
+                showSearchResult(data.errors, null);
+                return;
+            }
+
+            // showSearchResult([], data.data, data.isRegistered);
+
+
+            // モーダル画面にデータを設定して、銘柄編集画面を表示
+            console.log(data.data);
+            modalMode = MODAL_MODE.REGISTER;
+            document.getElementById('modal-symbol').textContent = targetStock["コード"];
+            document.getElementById('modal-form-symbol').value = targetStock["コード"] + '.T';
+            document.getElementById('input-stock-name').value = targetStock["銘柄名"];
+            document.getElementById('input-digit').value = judgeDigit([data.data.open, data.data.high, data.data.low, data.data.close]);
+            document.getElementById('modal-form-stock-id').value = "";
+            document.getElementById('modal-submit').textContent = "登録";
+
+            showModalMessages([]);
+            document.querySelector(".modal").classList.remove("hidden");
+
+
+        } catch (e) {
+            showSearchResult(['通信エラーが発生しました'], null);
+        } finally {
+            showMessages([]);
+        }
+
+        // const url = `${BASE_PATH}/api/stocks/update-stock-prices`;
+        // try {
+        //     const formData = new FormData();
+        //     formData.append('csrf_token', getCsrfToken());
+        //     formData.append('stockId', stockId);
+
+        //     const res = await fetch(url, {
+        //         method: 'POST',
+        //         body: formData,
+        //         credentials: 'same-origin', // セッション / CSRF用
+        //     });
+
+        //     if (!res.ok) {
+        //         throw new Error('通信エラー');
+        //     }
+
+        //     const result = await res.json();
+
+        //     if (!result.success) throw new Error('書き込みエラー');
+
+        //     alert('株価を更新しました');
+
+        // } catch (err) {
+        //     console.error(err);
+        //     alert('株価更新に失敗しました');
+        // }
+    });
+
+    // 分割情報更新＆株価更新
     document.addEventListener("update-prices", async (e) => {
         const { stockId } = e.detail;
+
+        // // 分割情報更新
+        // const url2 = `${BASE_PATH}/api/splits/store`;
+        // try {
+        //     const formData = new FormData();
+        //     formData.append('csrf_token', getCsrfToken());
+        //     formData.append('stock_id', stockId);
+
+        //     const res = await fetch(url2, {
+        //         method: 'POST',
+        //         body: formData,
+        //         credentials: 'same-origin', // セッション / CSRF用
+        //     });
+
+        //     if (!res.ok) {
+        //         throw new Error('分割情報更新時に通信エラー発生');
+        //     }
+
+        //     const result = await res.json();
+        //     console.log("分割情報更新のAPIエラー:", result.errors);
+
+        //     if (!result.success) throw new Error('分割情報更の更新に失敗');
+
+        //     // alert('株価を更新しました');
+
+        // } catch (err) {
+        //     console.error(err);
+        //     // alert('株価更新に失敗しました');
+        // }
+
+        // 株価更新
         const url = `${BASE_PATH}/api/stocks/update-stock-prices`;
         try {
             const formData = new FormData();
             formData.append('csrf_token', getCsrfToken());
-            formData.append('stockId', stockId);
+            formData.append('stock_id', stockId);
 
             const res = await fetch(url, {
                 method: 'POST',
@@ -114,10 +255,14 @@ function initEventsFromStockView() {
         }
 
         // モーダル画面にデータを設定して、銘柄編集画面を表示
+        modalMode = MODAL_MODE.EDIT;
+        document.getElementById('modal-symbol').textContent = stock.symbol;
         document.getElementById('input-stock-name').value = stock.name;
         document.getElementById('input-digit').value = stock.digit;
         document.getElementById('modal-form-stock-id').value = stockId;
+        document.getElementById('modal-submit').textContent = "更新";
 
+        showModalMessages([]);
         document.querySelector(".modal").classList.remove("hidden");
     });
 
@@ -175,9 +320,12 @@ function initModalScreenEvents() {
         const formData = new FormData(form);
 
         // バリデーションチェック
+        const symbol = formData.get('symbol');
         const name = formData.get('name');
         const digit = formData.get('digit');
         const validationErrors = [];
+
+        console.log("バリデーションチェック:", { name, digit });
 
         if (name === "") validationErrors.push("名前を入力して下さい");
         if (name.length > 255) validationErrors.push("名前は255文字以下で入力して下さい");
@@ -188,36 +336,71 @@ function initModalScreenEvents() {
             return;
         }
 
-        // 更新処理
+        const csrfToken = getCsrfToken();
+        formData.append('csrf_token', csrfToken);
+        
         showModalMessages([]);
 
-        const url = `${BASE_PATH}/api/stocks/update`;
-        try {
-            const csrfToken = getCsrfToken();
-            formData.append('csrf_token', csrfToken);
+        if (modalMode === MODAL_MODE.REGISTER) {
+            // 登録処理
+            try {
+                const url = `${BASE_PATH}/api/stocks/store`;
+                const res = await fetch(url, {
+                    method: 'POST',
+                    body: formData,
+                    credentials: 'same-origin', // セッション / CSRF用
+                });
 
-            const res = await fetch(url, {
-                method: 'POST',
-                body: formData,
-                credentials: 'same-origin', // セッション / CSRF用
-            });
+                if (!res.ok) {
+                    throw new Error('通信エラー');
+                }
 
-            if (!res.ok) {
-                throw new Error('通信エラー');
+                const result = await res.json();
+                if (!result.success) {
+                    throw new Error('登録エラー');
+                }
+
+                await refreshSearchedStocks("");
+                document.getElementById('formSubmit').toggleAttribute('disabled', true);
+                alert('登録しました');
+
+            } catch (err) {
+                console.error(err);
+                alert('登録に失敗しました');
             }
 
-            const result = await res.json();
+        } else {
+            // 更新処理
+            const url = `${BASE_PATH}/api/stocks/update`;
+            try {
 
-            if (!result.success) throw new Error('書き込みエラー');
 
-            // 画面更新処理
-            await refreshSearchedStocks("");
-            alert('更新しました');
+                const res = await fetch(url, {
+                    method: 'POST',
+                    body: formData,
+                    credentials: 'same-origin', // セッション / CSRF用
+                });
 
-        } catch (err) {
-            console.error(err);
-            alert('更新に失敗しました');
+                if (!res.ok) {
+                    throw new Error('通信エラー');
+                }
+
+                const result = await res.json();
+
+                if (!result.success) throw new Error('書き込みエラー');
+
+                // 画面更新処理
+                await refreshSearchedStocks("");
+                alert('更新しました');
+
+            } catch (err) {
+                console.error(err);
+                alert('更新に失敗しました');
+            }
         }
+
+
+        
 
         document.querySelector(".modal").classList.add("hidden");
     });
@@ -398,6 +581,26 @@ function judgeDigit(numberArray) {
 }
 
 
+async function initCandidateListSection() {
+    // DB登録済み銘柄のリストを表示
+    await refreshCandidateList("");
+
+    document.getElementById("search-button").addEventListener("click", async () => {
+        console.log('clicked');
+        const keyword = document.getElementById('search-input').value.trim();
+        await refreshCandidateList(keyword);
+    }); 
+
+    // document.getElementById("search-registered-form").addEventListener('submit', async (e) => {
+    //     e.preventDefault();
+
+    //     const form = e.target;
+    //     const formData = new FormData(form);
+    //     const keywordInputs = formData.get('keyword').trim();
+    //     await refreshSearchedStocks(keywordInputs);
+    // });
+}
+
 async function initRegisteredStocksSection() {
     // DB登録済み銘柄のリストを表示
     await refreshSearchedStocks("");
@@ -410,6 +613,69 @@ async function initRegisteredStocksSection() {
         const keywordInputs = formData.get('keyword').trim();
         await refreshSearchedStocks(keywordInputs);
     });
+}
+
+
+async function refreshCandidateList(keyword) {
+    if (keyword === "") return;
+    const stocks = jpxStockDataList.filter(row =>
+        String(row["コード"]).includes(keyword) ||
+        (row["銘柄名"] && row["銘柄名"].includes(keyword))
+    );
+
+    console.log("検索結果：", stocks);
+
+
+    const searchedStocks = [];
+    for (const stock of stocks) {
+        const s = {
+            id: stock['コード'],
+            name: stock['銘柄名'],
+            symbol: stock['コード'],
+            // tentative: stock['tentative'],
+        }
+        searchedStocks.push(s);
+        if (searchedStocks.length >= 100) break; 
+    }
+
+    const listDomId = "candidate-stock-list";
+    candidateListView.initFirstStockView(searchedStocks, listDomId, ViewType.CANDIDATE);
+
+
+
+
+    // const params = new URLSearchParams({
+    //     keywords: keywordInputs
+    // });
+
+    // const res = await fetch(`${BASE_PATH}/api/stocks/get-filtered?${params.toString()}`, {
+    //     method: 'GET',
+    //     headers: {
+    //         'Accept': 'application/json'
+    //     }
+    // });
+
+    // if (!res.ok) {
+    //     alert('検索に失敗しました');
+    //     return;
+    // }
+
+    // const json = await res.json();
+    // const stocks = json.data;
+
+    // const searchedStocks = [];
+    // for (const stock of stocks) {
+    //     const s = {
+    //         id: stock['id'],
+    //         name: stock['name'],
+    //         symbol: stock['symbol'],
+    //         tentative: stock['tentative'],
+    //     }
+    //     searchedStocks.push(s);
+    // }
+
+    // const listDomId = "searched-stock-list";
+    // stockView.initFirstStockView(searchedStocks, listDomId, 'admin');
 }
 
 async function refreshSearchedStocks(keywordInputs) {
@@ -437,11 +703,12 @@ async function refreshSearchedStocks(keywordInputs) {
         const s = {
             id: stock['id'],
             name: stock['name'],
-            symbol: stock['symbol']
+            symbol: stock['symbol'],
+            tentative: stock['tentative'],
         }
         searchedStocks.push(s);
     }
 
     const listDomId = "searched-stock-list";
-    stockView.initFirstStockView(searchedStocks, listDomId, 'admin');
+    stockView.initFirstStockView(searchedStocks, listDomId, ViewType.ADMIN);
 }

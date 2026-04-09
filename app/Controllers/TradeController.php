@@ -4,6 +4,7 @@ namespace App\Controllers;
 
 use PDO;
 use RuntimeException;
+use App\Core\Auth;
 use App\Core\BaseWebController;
 use App\Models\Trade;
 use App\Models\User;
@@ -24,6 +25,21 @@ class TradeController extends BaseWebController
         $this->userModel = new User($this->pdo);
     }
 
+    public function index()
+    {
+        $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+
+        $isAdmin = Auth::isAdmin();
+        $user = $_SESSION['user'];
+
+        $this->view('trade', [
+            'isAdmin' => $isAdmin,
+            'user'    => $user,
+        ]);
+    }
+
+
+
     public function store()
     {
         try {
@@ -41,6 +57,7 @@ class TradeController extends BaseWebController
                 (float)$_POST['price'],
                 (int)$_POST['quantity'],
                 (int)$_POST['type'],
+                0,
                 $_POST['content'] ?? '',
             );
 
@@ -78,6 +95,7 @@ class TradeController extends BaseWebController
                 (float)$_POST['price'],
                 (int)$_POST['quantity'],
                 (int)$_POST['type'],
+                0,
                 $_POST['content'] ?? '',
             );
 

@@ -2,6 +2,7 @@
 namespace App\Controllers\Api;
 
 use PDO;
+use RuntimeException;
 use App\Core\Auth;
 use App\Core\BaseApiController;
 use App\Models\User;

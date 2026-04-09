@@ -1,3 +1,9 @@
+export const ViewType = Object.freeze({
+    ADMIN: "admin",
+    SEARCHED: "searched",
+    USERS: "users",
+    CANDIDATE: "candidate"
+});
 
 export class StocksViewModule {
     #searchedStocks = [];
@@ -11,7 +17,7 @@ export class StocksViewModule {
     // ==================================================================
     // パブリックメソッド
     // ==================================================================
-    initFirstStockView(stocks, containerId, type = "searched") {
+    initFirstStockView(stocks, containerId, type = ViewType.SEARCHED) {
         this.#searchedStocks = stocks;
         this.#searchedContainerId = containerId;
         const stockList = document.getElementById(containerId);
@@ -23,7 +29,7 @@ export class StocksViewModule {
         }
     }
 
-    initSecondStockView(stocks, containerId, type = "users") {
+    initSecondStockView(stocks, containerId, type = ViewType.USERS) {
         this.#usersStocks = stocks;
         this.#usersContainerId = containerId;
         const stockList = document.getElementById(containerId);
@@ -134,6 +140,14 @@ export class StocksViewModule {
                 buttonAction = (id) => this.#removeAction(id);
                 break;
 
+            case "candidate":
+                boardClass = 'searched-stock';
+                // boardAction = (id) => this.#showDetailAction(id);
+                buttonClass = 'admin-button';
+                buttonText = '登録';
+                buttonAction = (id) => this.#registerAction(id);
+                break;
+
             default:
                 return null;
         }
@@ -161,6 +175,17 @@ export class StocksViewModule {
         stockBoardSymbol.className = "stock-board-symbol";
         stockBoardSymbol.textContent = stock['symbol'];
 
+        const stockBoardTentative = document.createElement('p');
+        stockBoardTentative.className = "stock-board-tentative";
+        console.log("tentative: ", stock['tentative']);
+        if (stock['tentative']) {
+            stockBoardTentative.textContent = "（仮）";
+            stockBoardTentative.style.color = "#dd5555";
+        } else {
+            stockBoardTentative.textContent = "-";
+        }
+
+        stockBoardInfoBlock.appendChild(stockBoardTentative);
         stockBoardInfoBlock.appendChild(stockBoardSymbol);
         stockBoardNameBlock.appendChild(stockBoardName);
         stockBoardNameBlock.appendChild(stockBoardInfoBlock);
@@ -292,6 +317,12 @@ export class StocksViewModule {
     #removeStockForAdmin(stockId) {
         document.dispatchEvent(new CustomEvent('remove-stock', {
             detail: { stockId: stockId }
+        }))
+    }
+
+    #registerAction(id) {
+        document.dispatchEvent(new CustomEvent('register-stock', {
+            detail: { symbol: id }
         }))
     }
 }

@@ -5,15 +5,18 @@ use PDO;
 use App\Core\Auth;
 use App\Core\BaseApiController;
 use App\Services\StockService;
+use App\Services\YfinanceService;
 
 class AdminApiController extends BaseApiController {
     private PDO $pdo;
     private StockService $stockService;
+    private YfinanceService $yfinanceService;
 
     public function __construct() {
         require __DIR__ . '/../../../config/db.php';
         $this->pdo = $pdo;
         $this->stockService = new StockService($pdo);
+        $this->yfinanceService = new YfinanceService($pdo);
     }
 
     public function show(): void {
@@ -31,7 +34,7 @@ class AdminApiController extends BaseApiController {
         $isRegistered = false;
         $data = null;
 
-        [$error, $data] = $this->stockService->initCreate($symbol);
+        [$error, $data] = $this->yfinanceService->getStock($symbol);
         if ($error) $errors[] = $error;
 
         if ($symbol !== '' && $this->stockService->isSymbolRegistered($symbol)) {

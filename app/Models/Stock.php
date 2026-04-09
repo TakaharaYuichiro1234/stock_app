@@ -15,7 +15,7 @@ class Stock
 
     public function all(): array
     {
-        $sql = 'SELECT id, symbol, name, short_name, long_name FROM stocks ORDER BY symbol';
+        $sql = 'SELECT id, symbol, name, short_name, long_name, digit, tentative FROM stocks ORDER BY symbol';
         $stmt = $this->pdo->query($sql);
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
@@ -62,22 +62,52 @@ class Stock
         return $stock ?: null;
     }
 
+    public function findBySymbol(string $symbol): ?array
+    {
+        $stmt = $this->pdo->prepare(
+            'SELECT * FROM stocks WHERE symbol = ?'
+        );
+
+        $stmt->execute([$symbol]);
+        $stock = $stmt->fetch();
+
+        return $stock ?: null;
+    }
+
     public function create(array $data): int
     {
         $stmt = $this->pdo->prepare(
-            'INSERT INTO stocks (symbol, name, short_name, long_name, digit) VALUES (?, ?, ?, ?, ?)'
+            'INSERT INTO stocks (symbol, name, short_name, long_name, digit, tentative) VALUES (?, ?, ?, ?, ?, ?)'
         );
-        $stmt->execute([$data['symbol'], $data['name'], $data['shortName'], $data['longName'], $data['digit']]);
+        $stmt->execute([$data['symbol'], $data['name'], $data['shortName'], $data['longName'], $data['digit'], $data['tentative']]);
 
         return (int)$this->pdo->lastInsertId();
     }
 
     public function update(int $id, array $data): void
     {
+        $setSql = '';
+        $array = [];
+        if (isset($data['name'])) {
+            $array[] = $data['name'];
+            $setSql .= 'name = ?, ';
+        }
+        if (isset($data['digit'])) {
+            $array[] = (int)$data['digit'];
+            $setSql .= 'digit = ?, ';
+        }
+        if (isset($data['tentative'])) {
+            $array[] = $data['tentative'];
+            $setSql .= 'tentative = ?, ';
+        }
+        $array[] = $id;
+
         $stmt = $this->pdo->prepare(
-            'UPDATE stocks SET name = ?, digit = ?, updated_at = NOW() WHERE id = ?'
+            'UPDATE stocks SET ' . $setSql . 'updated_at = NOW() WHERE id = ?'
+            // 'UPDATE stocks SET name = ?, digit = ?, tentative = ?, updated_at = NOW() WHERE id = ?'
         );
-        $stmt->execute([$data['name'], (int)$data['digit'], $id]);
+        $stmt->execute($array);
+        //  $stmt->execute([$data['name'], (int)$data['digit'], $data['tentative'] ?? 0, $id]);
     }
 
     public function delete(int $id): void
@@ -114,7 +144,9 @@ class Stock
                 sp_latest.close AS latest_close,
 
                 sp_prev.date  AS prev_date,
-                sp_prev.close AS prev_close
+                sp_prev.close AS prev_close,
+
+                s.tentative AS tentative
 
             FROM stocks s
             $joinUserStocks
