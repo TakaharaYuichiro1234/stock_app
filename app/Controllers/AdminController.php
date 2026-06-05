@@ -28,13 +28,11 @@ class AdminController extends BaseWebController
     public function index()
     {
         try {
-            $isAdmin = Auth::isAdmin();
-            $user = $_SESSION['user'];
             $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+            $stocks = $this->stockModel->allWithLatestPrice();  
 
             $this->view('admin', [
-                'isAdmin' => $isAdmin,
-                'user'    => $user,
+                'stocks'  => $stocks,
             ]);
         } catch (\Exception $e) {
             http_response_code($e->getCode() ?: 500);

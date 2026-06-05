@@ -1,7 +1,6 @@
 <?php
-/** @var array $stocks */
-/** @var array $userStocks */
-/** @var array $accounts */
+/** @var array $stock */
+/** @var array $stockPrices */
 ?>
 
 <!DOCTYPE html>
@@ -14,17 +13,14 @@
     <title>株価取得アプリ</title>
     <link rel="stylesheet" href="<?= BASE_PATH ?>/css/style.css">
     <link rel="stylesheet" href="<?= BASE_PATH ?>/css/header.css">
-    <link rel="stylesheet" href="<?= BASE_PATH ?>/css/trade.css">
-
-
-
+    <link rel="stylesheet" href="<?= BASE_PATH ?>/css/manual-input.css">
 </head>
 
 <body>
     <!-- ヘッダー -->
     <?php
     $backUrl = $redirect ?? BASE_PATH . '/';
-    $pageTitle = "取引データ登録";
+    $pageTitle = "株価手動入力";
     require __DIR__ . '/common/header.php';
     ?>
 
@@ -33,38 +29,15 @@
     require __DIR__ . '/common/flash.php';
     ?>
 
-    
-    <p>追加するデータを表示する欄を追加。そこで、データチェックと削除もできる</p>
-    <p>エクセルからのデータ入力はモーダル画面に移す</p>
-    <p>手作業で一つ一つ入力するためのモーダル画面も追加</p>
-    <p>すでに登録されているデータを削除したり、編集したりする機能を追加</p>
+    <h1><?= htmlspecialchars($stock['symbol'] . " " . $stock['name']) ?></h1>
 
-    <h1>1. 取引データ入力</h1>
+    <h2>1. 株価データ入力</h1>
 
     <div class="input-area" id="manual-input-area">
-        <h2>個別入力</h2>
+        <h3>個別入力の場合はこちらから</h3>
         <table>
             <tr>
-                <th>証券コード</th>
-                <td class="symbol-input-block">
-                    <input id="input-symbol" value="" list="symbol-select" name="input-symbol" />
-                    <datalist id="symbol-select">
-                        <option value=""></option>
-                    </datalist>
-                    <p id="matched-name"></p>
-                </td>
-            </tr>
-            <tr>
-                <th>口座</th>
-                <td class="symbol-input-block">
-                    <input id="input-account" value="" list="account-select" name="input-account" />
-                    <datalist id="account-select">
-                        <option value=""></option>
-                    </datalist>
-                </td>
-            </tr>
-            <tr>
-                <th>取引日</th>
+                <th>日付</th>
                 <td class="symbol-input-block">
                     <input
                         type="date"
@@ -74,54 +47,53 @@
                 </td>
             </tr>
             <tr>
-                <th>取引種別</th>
-                <td class="symbol-input-block">
-                    <select name="type" id="modal-input-type">
-                        <option value="1">買付</option>
-                        <option value="2">売付</option>
-                        <option value="3">配当</option>
-                        <option value="0">メモ</option>
-                    </select>
-                </td>
-            </tr>
-            <tr>
-                <th>単価</th>
+                <th>始値</th>
                 <td class="symbol-input-block">
                 <input
                     type="text"
                     name="price"
-                    id="input-price"
+                    id="input-open"
                     placeholder="0">
                 </td>
             </tr>
             <tr>
-                <th>数量</th>
+                <th>高値</th>
+                <td class="symbol-input-block">
+                <input
+                    type="text"
+                    name="price"
+                    id="input-hign"
+                    placeholder="0">
+                </td>
+            </tr>
+            <tr>
+                <th>安値</th>
                 <td class="symbol-input-block">
                     <input
                         type="text"
                         name="quantity"
-                        id="input-quantity"
+                        id="input-low"
                         placeholder="0">
                 </td>
             </tr>
             <tr>
-                <th>金額</th>
+                <th>終値</th>
                 <td class="symbol-input-block">
                     <input
                         type="text"
                         name="subtotal"
-                        id="input-subtotal"
+                        id="input-close"
                         placeholder="0">
                 </td>
             </tr>
             <tr>
-                <th>メモ</th>
+                <th>出来高</th>
                 <td class="symbol-input-block">
-                    <textarea
-                        name="content"
-                        id="input-content"
-                        placeholder="取引の詳細">
-                    </textarea>
+                <input
+                    type="text"
+                    name="price"
+                    id="input-volume"
+                    placeholder="0">
                 </td>
             </tr>
         </table>
@@ -132,35 +104,47 @@
     </div>
 
     <div class="input-area">
-        <h2>一括入力</h2>
+        <h3>一括入力の場合はこちらから</h3>
         <button class="btn" id="batch-input-button">一括入力</button>
     </div>
 
-   <h1>2. 入力データの確認</h1>
+    <h2>2. 入力データの確認</h1>
     <div class="data-view-container" id="temporary-data-view-area">
         <table id="temporary-data-table"></table>
     </div>
     <div id="unregistered-symbols"></div>
 
+    <h2>3. 登録</h1>
     <div>
         <button class="primary-btn" id="store-button">データベースに登録</button>
     </div>
     
-    
-    <h1>登録済み取引データ</h1>
+    <hr>
+    <h2>登録済み株価データ</h2>
     <div>
         <table id="data-table">
-            <tr>
-                <th>日付</th>
-                <th>取引種別</th>
-                <th>証券コード</th>
-                <th>銘柄名</th>
-                <th>口座</th>
-                <th>株数</th>
-                <th>株価</th>
-                <th>金額</th>
-            </tr>
-            
+            <thead>
+                <tr>
+                    <th>日付</th>
+                    <th>始値</th>
+                    <th>高値</th>
+                    <th>安値</th>
+                    <th>終値</th>
+                    <th>出来高</th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php foreach ($stockPrices as $price): ?>
+                    <tr>
+                        <td><?= $price['date'] ?></td>
+                        <td><?= $price['open'] ?></td>
+                        <td><?= $price['high'] ?></td>
+                        <td><?= $price['low'] ?></td>
+                        <td><?= $price['close'] ?></td>
+                        <td><?= $price['volume'] ?></td>
+                    </tr> 
+                <?php endforeach ?>
+            </tbody>
         </table>
     </div>
 
@@ -192,14 +176,16 @@
 
 </body>
 
-<script type="module" src="<?= BASE_PATH ?>/js/pages/trade/init.js"></script>
+<script type="module" src="<?= BASE_PATH ?>/js/pages/manual-input/init.js"></script>
 
 <script>
+    const isAdmin = <?= json_encode($_SESSION['isAdmin'], JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT) ?>;
     const user = <?= json_encode($_SESSION['user'], JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT) ?>;
-    const stocks = <?= json_encode($stocks, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT) ?>;
-    const accounts = <?= json_encode($accounts, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT) ?>;
-    const userStocks = <?= json_encode($userStocks, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT) ?>;
+    const stock = <?= json_encode($stock, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT) ?>;
+    const stockPrices = <?= json_encode($stockPrices, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT) ?>;
 
+    console.log('stock: ', stock);
+    console.log('stockPrices: ', stockPrices);
 
 </script>
 

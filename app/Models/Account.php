@@ -13,6 +13,22 @@ class Account
         $this->pdo = $pdo;
     }
 
+    public function create(array $data): int
+    {
+        $stmt = $this->pdo->prepare(
+            'INSERT INTO accounts (user_id, content) VALUES (?, ?)'
+            // 'INSERT INTO accounts (user_id, type, content) VALUES (?, ?, ?)'
+        );
+
+        $stmt->execute([
+            $data['user_id'],
+            // $data['type'],
+            $data['content'],
+        ]);
+
+        return (int)$this->pdo->lastInsertId();
+    }
+
     public function getByUserId(int $userId): array
     {
         $stmt = $this->pdo->prepare(

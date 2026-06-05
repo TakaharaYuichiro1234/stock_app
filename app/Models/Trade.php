@@ -26,7 +26,14 @@ class Trade
     public function getAllByUserId($user_id): array
     {
         $stmt = $this->pdo->prepare(
-            'SELECT * FROM trades WHERE (user_id = ?)'
+            'SELECT 
+                t.id as id, t.user_id as user_id, t.date as date, t.price as price, t.quantity as quantity , t.type as type, t.subtotal as subtotal,
+                s.symbol as symbol, s.name as name, s.digit as digit, a.content as content 
+            FROM trades t 
+            JOIN stocks s ON t.stock_id = s.id 
+            JOIN accounts a ON t.account_id = a.id 
+            WHERE t.user_id = ? 
+            ORDER BY t.date desc'
         );
         $stmt->execute([$user_id]);
         return $stmt->fetchAll();
@@ -83,7 +90,7 @@ class Trade
     public function create(int $userId, TradeData $trade): int
     {
         $stmt = $this->pdo->prepare('
-            INSERT INTO trades (user_id, stock_id, account_id, date, price, quantity, type, content) VALUES (?, ?, ?, ?, ?, ?, ?, ?);
+            INSERT INTO trades (user_id, stock_id, account_id, date, price, quantity, type, content, subtotal) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);
         ');
 
         $stmt->execute([
@@ -94,7 +101,8 @@ class Trade
             $trade->price,
             $trade->quantity,
             $trade->type,
-            $trade->content
+            $trade->content,
+            $trade->subtotal,
         ]);
 
         return (int)$this->pdo->lastInsertId();
@@ -105,7 +113,7 @@ class Trade
     public function update(int $id, TradeData $trade): void
     {
         $stmt = $this->pdo->prepare(
-            'UPDATE trades SET date = ?, price = ?, quantity = ?, type = ?, content = ?, updated_at = NOW() WHERE id = ?'
+            'UPDATE trades SET date = ?, price = ?, quantity = ?, type = ?, content = ?, subtotal = ?, updated_at = NOW() WHERE id = ?'
         );
         $stmt->execute([
             $trade->date,
@@ -113,6 +121,7 @@ class Trade
             $trade->quantity,
             $trade->type,
             $trade->content,
+            $trade->subtotal,
             $id
         ]);
     }
@@ -235,5 +244,19 @@ class Trade
             GROUP BY y, m, type
             ORDER BY y, m;
         ";
+    }
+
+
+    public function getStockIdsByUserId(int $userId) : array
+    {
+        $stmt = $this->pdo->prepare(
+            'SELECT DISTINCT t.stock_id AS stock_id, s.name AS name, s.symbol AS symbol 
+             FROM trades t
+             JOIN stocks s ON t.stock_id = s.id
+             WHERE t.user_id = ? 
+             ORDER BY t.stock_id;'
+        );
+        $stmt->execute([$userId]);
+        return $stmt->fetchAll();
     }
 }

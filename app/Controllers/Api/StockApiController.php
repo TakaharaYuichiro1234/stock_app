@@ -36,6 +36,24 @@ class StockApiController extends BaseApiController {
         $this->stockService = new StockService($pdo);   
     }
 
+    public function index() {
+        try {
+            $stock = $this->stockModel->all(); 
+
+            $this->jsonResponse([
+                'stock' => $stock,
+                'success' => true,
+                'errors' => [],
+            ]);
+        } catch (\Throwable $e) {
+            $this->jsonResponse([
+                'success' => false,
+                'errors'  => ['データベースエラー']
+            ], 400);
+        }
+    }
+
+
     public function show($stockId) {
         try {
             $stock = $this->stockModel->find($stockId);   
@@ -119,16 +137,17 @@ class StockApiController extends BaseApiController {
             return;
         }
 
-        $stockId = null;
-        $this->pdo->beginTransaction();
+        // $stockId = null;
+        // $this->pdo->beginTransaction();
         try {
             $stockId = $this->stockModel->create($data);
+            $stock = $this->stockModel->find($stockId);
             // $this->stockPriceService->updateLatestPrices($stockId, $data['symbol']);
-            $this->pdo->commit();
+            // $this->pdo->commit();
 
             $this->jsonResponse([
                 'success' => true,
-                'data' => ['stockId'=>$stockId],
+                'stock' => $stock,
                 'errors' => [],
             ]);
         } catch (\Throwable $e) {
@@ -222,10 +241,12 @@ class StockApiController extends BaseApiController {
 
         try {
             $stocks = $this->stockModel->allWithLatestPrice($userId);
+            // $stocks = $this->stockModel->allByUserId($userId);
 
             $this->jsonResponse([
                 'success' => true,
                 'data' => $stocks,
+                'user_id' => $userId,
                 'errors' => [],
             ]);
         } catch (\Throwable $e) {

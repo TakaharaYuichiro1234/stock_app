@@ -112,9 +112,13 @@ body {
 }
 
 .stock-board-info-block {
-    display: grid;
-    grid-template-columns: 1fr auto;
+    display: flex;
+    /* grid-template-columns: 1fr auto; */
     font-size: 0.8rem
+}
+
+.stock-board-tentative {
+    width: 30px;
 }
 
 .stock-board-symbol {

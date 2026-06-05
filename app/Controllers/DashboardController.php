@@ -10,8 +10,10 @@ use App\Models\Stock;
 use App\Models\StockPrice;
 use App\Models\Trade;
 use App\Models\User;
-
+use App\Models\Dividend;
 use App\Services\DashboardService;
+use App\Services\MailService;
+use App\Services\DividendService;
 
 class DashboardController extends BaseWebController
 {
@@ -21,7 +23,10 @@ class DashboardController extends BaseWebController
     private Trade $tradeModel;
     private Account $accountModel;
     private User $userModel;
+    private Dividend $dividendModel;
     private DashboardService $dashBoardService;
+    private MailService $mailService;
+    private DividendService $dividendService;
 
     public function __construct()
     {
@@ -32,7 +37,10 @@ class DashboardController extends BaseWebController
         $this->tradeModel = new Trade($this->pdo);
         $this->accountModel = new Account($this->pdo);
         $this->userModel = new User($this->pdo);
+        $this->dividendModel = new Dividend($this->pdo);
         $this->dashBoardService = new DashboardService($this->pdo);
+        $this->mailService = new MailService();
+        $this->dividendService = new DividendService($this->pdo);
     }
 
     public function index()
@@ -41,29 +49,26 @@ class DashboardController extends BaseWebController
 
         $isAdmin = Auth::isAdmin();
         $user = $_SESSION['user'];
-        // $uuid = $_SESSION['user']['uuid'];
-        // $userId = $this->userModel->getUserIdByUuid($uuid);
 
-        $tradeSummary = null;
+        $expectedDividends = $this->dividendModel->getExpectedDividends();
+
         $acounts = [];
+        $stocks = null;
         if (Auth::isLogged()) {
             $uuid = $_SESSION['user']['uuid'];
             $userId = $this->userModel->getUserIdByUuid($uuid);
             if ($userId) {
-                $tradeSummary = $this->dashBoardService->calTradeSummary();
                 $acounts = $this->accountModel->getByUserId($userId);
+                $stocks = $this->stockModel->allWithLatestPrice($userId);
             }
         }
-
-        // $stocks = $this->stockModel->all();
-        $stocks = $this->stockModel->allWithLatestPrice(null);
 
         $this->view('dashboard', [
             'isAdmin' => $isAdmin,
             'user'    => $user,
-            'tradeSummary' => $tradeSummary,
             'stocks' => $stocks,
-            'accounts' => $acounts
+            'accounts' => $acounts,
+            'expectedDividends' => $expectedDividends
         ]);
     }
 

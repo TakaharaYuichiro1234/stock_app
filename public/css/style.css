@@ -127,6 +127,8 @@ hr {
     margin: 0;
     max-width: 100%;
     overflow: hidden;
+
+    border: 1px solid green;
 }
 
 .stock-board-name {
@@ -141,6 +143,14 @@ hr {
     grid-template-columns: 1fr auto;
     font-size: 0.8rem;
     padding: 0 4px 0 0;
+    margin: 0;
+}
+
+
+.stock-board-tentative {
+    color: #999;
+    width: auto;
+    padding: 0;
     margin: 0;
 }
 

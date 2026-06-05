@@ -1,3 +1,9 @@
+<?php
+/** @var array $user */
+/** @var array $stocks */
+/** @var bool $isAdmin */
+?>
+
 <!DOCTYPE html>
 <html lang="ja">
 

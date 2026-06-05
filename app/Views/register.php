@@ -10,8 +10,8 @@
 </head>
 
 <body>
-    <form class="form-login" method="post" action="<?= BASE_PATH ?>/login">
-        <h1>ログイン</h1>
+    <form class="form-login" method="post" action="<?= BASE_PATH ?>/register">
+        <h1>会員登録</h1>
         <div class="input-block">
             <div class="input-block-caption">ユーザーID</div>
             <div class="input-block-input">
@@ -25,12 +25,12 @@
             </div>
         </div>
         <div class="button-block">
-            <button>ログイン</button>
+            <button>会員登録</button>
         </div>
     </form>
 
     <div class="login-register-switching">
-        <a href="<?= BASE_PATH ?>/show_register">会員登録はこちら</a>
+        <a href="<?= BASE_PATH ?>/show_login">ログインはこちら</a>
     </div>
   </div>
 </body>

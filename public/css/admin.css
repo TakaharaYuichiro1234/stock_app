@@ -110,6 +110,10 @@ section {
     align-items: center;
 }
 
+.stock-board-tentative {
+    width: 20px;
+}
+
 .stock-board-symbol {
     font-size: 1rem;
     color: white;
@@ -134,7 +138,7 @@ section {
 
 @media screen and (max-width: 480px) {
     .stock-board-name-block {
-        grid-template-columns: 45px 1fr;
+        grid-template-columns: 65px 1fr;
     }
 
     .admin-button {
@@ -143,4 +147,11 @@ section {
         white-space: normal;
         font-size: 0.8rem;
     }
+}
+
+
+input:disabled {
+    color:#EEE;
+    background: #222;
+    border-style: none;
 }

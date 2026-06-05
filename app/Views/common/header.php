@@ -1,3 +1,9 @@
+<?php 
+/** @var bool $backUrl */
+$user =  $_SESSION['user'];
+$isAdmin =  $_SESSION['user']['role'] === 'admin';
+?>
+
 <header>
     <?php if ($backUrl): ?>
         <button class="prev-button" onclick="location.href='<?= htmlspecialchars($backUrl) ?>'">
@@ -9,6 +15,9 @@
 
     <div class="header-title">
         <p id="header-title-text"><?= htmlspecialchars($pageTitle) ?></p>
+    </div>
+    <div class="header-option" id="header-option">
+
     </div>
 
     <div class="header-user">

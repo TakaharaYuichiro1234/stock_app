@@ -78,4 +78,33 @@ class YfinanceService
     // {
     //     return $symbol ? $this->stockModel->existsBySymbol($symbol) : false;
     // }
+
+    public function getDividends(?string $symbol): array
+    {
+        $data = null;
+        $error = null;
+
+        if ($symbol !== null && $symbol !== '') {
+            $url = "http://127.0.0.1:5000/dividend?symbol=" . urlencode($symbol);
+
+            $context = stream_context_create([
+                'http' => [
+                    'timeout' => 3
+                ]
+            ]);
+
+            $json = @file_get_contents($url, false, $context);
+
+            if ($json === false) {
+                $error = "Python APIに接続できません";
+            } else {
+                $data = json_decode($json, true);
+                if (isset($data["error"])) {
+                    $error = $data["error"];
+                }
+            }
+        }
+
+        return [$error, $data];
+    }
 }

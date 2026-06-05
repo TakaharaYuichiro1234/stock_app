@@ -14,7 +14,7 @@ use App\Services\AssetService;
 
 class TradeApiController extends BaseApiController {
     private PDO $pdo;
-    private Trade $model;
+    private Trade $tradeModel;
     private User $userModel;
     private Stock $stockModel;
     private Account $accountModel;
@@ -24,7 +24,7 @@ class TradeApiController extends BaseApiController {
     public function __construct() {
         require __DIR__ . '/../../../config/db.php';
         $this->pdo = $pdo;
-        $this->model = new Trade($this->pdo);
+        $this->tradeModel = new Trade($this->pdo);
         $this->userModel = new User($this->pdo);
         $this->stockModel = new Stock($this->pdo);
         $this->accountModel = new Account($this->pdo);
@@ -40,7 +40,7 @@ class TradeApiController extends BaseApiController {
                 throw new RuntimeException('ユーザーが存在しません');
             }
 
-            $trades = $this->model->getAllByUserId($userId);
+            $trades = $this->tradeModel->getAllByUserId($userId);
 
             $this->jsonResponse([
                 'success' => true,
@@ -60,7 +60,7 @@ class TradeApiController extends BaseApiController {
 
     public function store() 
     {
-        // try {
+        try {
             $uuid = $_SESSION['user']['uuid'];
             $userId = $this->userModel->getUserIdByUuid($uuid);
 
@@ -80,40 +80,68 @@ class TradeApiController extends BaseApiController {
     
             foreach($inputTrades as $input) {
 
-                if (!isset($input['symbol'], $input['date'], $input['price'], $input['quantity'], $input['type_name'], $input['account_name'])) {
+                if (!isset($input['symbol'], $input['date'], $input['price'], $input['quantity'], $input['type'], $input['account_name'], $input['subtotal'])) {
                     continue;
                 }
 
-                $symbolWithSuffix = $input['symbol'] . ".T";
-                $stockId = $this->stockModel->findBySymbol($symbolWithSuffix)['id'] ?? null;
+                // 証券コードをチェック
+                $symbol = strtoupper(trim($input['symbol']));
+                $stockId = $this->stockModel->findBySymbol($symbol)['id'] ?? null;
                 if (!$stockId) {
-                    continue;
+                    $data = [
+                        'name' => '仮登録',
+                        'digit' => 0,
+                        'symbol' => $symbol,
+                        'tentative' => 1,
+                    ];
+                    $stockId = $this->stockModel->create($data);
                 }
 
-                $accountId = $this->accountModel->findByContent($userId, $input['account_name'])['type'] ?? null;
+                // 口座をチェック
+                $accountId = $this->accountModel->findByContent($userId, $input['account_name'])['id'] ?? null;
                 if (!$accountId) {
+                    $accountData = [
+                        'user_id' => $userId,
+                        'content' => $input['account_name'],
+                    ];
+                    $accountId = $this->accountModel->create($accountData);
+                }
+
+                // 取引日をチェック
+                $date = date_create($input['date']);
+                if (!$date) {
                     continue;
                 }
 
-                $type = 0;
-                if ($input['type_name'] === '買付') {
-                    $type = 1;
-                } else if ($input['type_name'] === '売付') {
-                    $type = 2;
-                } else {
-                    $type = 0;
+                // 取引種別をチェック
+                // $type = $input['type'];
+                // if ($input['type_name'] === '買付') {
+                //     $type = 1;
+                // } else if ($input['type_name'] === '売付') {
+                //     $type = 2;
+                // } else if ($input['type_name'] === '配当') {
+                //     $type = 3;
+                // } else {
+                //     $type = 0;
+                // }
+
+                // 
+                $content = $input['content'] ?? '';
+                if (mb_strlen($content) > 1000) {
+                    $content = mb_substr($content, 0, 1000);
                 }
                 
                 $trade = new TradeData(
                     $stockId,
-                    $input['date'],
+                    $date ->format('Y-m-d'),
                     (float)$input['price'],
                     (int)$input['quantity'],
-                    $type,
+                    (int)$input['type'],
                     $accountId,
-                    ''
+                    $content,
+                    (float)$input['subtotal'],
                 );    
-                $this->model->create($userId, $trade);
+                $this->tradeModel->create($userId, $trade);
             }
 
             $this->pdo->commit();
@@ -123,14 +151,14 @@ class TradeApiController extends BaseApiController {
                 'errors' => [],
             ]);
 
-        // } catch (\Throwable $e) {
-        //     $this->pdo->rollBack();
+        } catch (\Throwable $e) {
+            $this->pdo->rollBack();
 
-        //     $this->jsonResponse([
-        //         'success' => false,
-        //         'errors'  => ['書き込みエラー'],
-        //     ], 400);
-        // }
+            $this->jsonResponse([
+                'success' => false,
+                'errors'  => ['書き込みエラー'],
+            ], 400);
+        }
     }
 
     public function getForChart($uuid, $stockId): void {
@@ -141,9 +169,9 @@ class TradeApiController extends BaseApiController {
                 throw new RuntimeException('ユーザーが存在しません');
             }
 
-            $daily = $this->model->getForChart($userId, $stockId, 'daily');
-            $weekly = $this->model->getForChart($userId, $stockId, 'weekly');
-            $monthly = $this->model->getForChart($userId, $stockId, 'monthly');
+            $daily = $this->tradeModel->getForChart($userId, $stockId, 'daily');
+            $weekly = $this->tradeModel->getForChart($userId, $stockId, 'weekly');
+            $monthly = $this->tradeModel->getForChart($userId, $stockId, 'monthly');
 
             $trades = ['daily'=>$daily, 'weekly'=>$weekly, 'monthly'=>$monthly];
 
@@ -162,22 +190,28 @@ class TradeApiController extends BaseApiController {
         }
     }
 
-    public function getDailyAssets(): void {
-        // try {
-            $ret = $this->assetService->dailyAssets();
+    public function getStockIdsBelongToUser(): void
+    {
+        try {
+            $uuid = $_SESSION['user']['uuid'];
+            $userId = $this->userModel->getUserIdByUuid($uuid);
+            if ($userId === null) {
+                throw new RuntimeException('ユーザーが存在しません');
+            }
+
+            $stockIds = $this->tradeModel->getStockIdsByUserId($userId);
 
             $this->jsonResponse([
                 'success' => true,
-                'data' => $ret,
+                'data' => $stockIds,
                 'errors' => [],
             ]);
             
-        // } catch (\Throwable $e) {
-        //     $this->pdo->rollBack();
-        //     $this->jsonResponse([
-        //         'success' => false,
-        //         'errors'  => ['書き込みエラー'],
-        //     ], 400);
-        // }
+        } catch (\Throwable $e) {
+            $this->jsonResponse([
+                'success' => false,
+                'errors'  => ['エラー'],
+            ], 400);
+        }
     }
 }

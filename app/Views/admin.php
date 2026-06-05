@@ -1,3 +1,9 @@
+<?php
+/** @var bool $isAdmin */
+/** @var string $symbol */
+/** @var array $stocks */
+?>
+
 <!DOCTYPE html>
 <html lang="ja">
 
@@ -31,101 +37,19 @@
         </form>
     </div>
 
-    <!-- 銘柄を新規登録するためのセクション -->
-    <section>
-        <div class="section-header">
-            <h3 class="section-title">新たに登録する銘柄</h3>
-        </div>
-
-        <!-- <form method="get" class="search-container" id="search-new-form">
-            <div class="search-input-block">
-                <input class="search-input" type="text" name="symbol" value="<?= htmlspecialchars($symbol) ?>" placeholder="証券コード(例: 7203.T)">
-            </div>
-            <button class="search-submit" type="submit">検索</button>
-        </form> -->
-
-        <div class="search-container" id="search-new-form">
-            <div class="search-input-block">
-                <input class="search-input" id="search-input" type="text" name="symbol" value="<?= htmlspecialchars($symbol) ?>" placeholder="証券コード(例: 7203.T)">
-            </div>
-            <button class="search-submit" type="button" id="search-button">検索</button>
-        </div>
-
-        <div class="list" id="candidate-stock-list"></div>
-
-        <div class="section-content">
-            <div class="content-container hidden">
-                <form id="stockForm" action="<?= BASE_PATH ?>/api/stocks/store" method="post">
-                    <input type="hidden" name="symbol" id="symbol" value="<?= htmlspecialchars($data["symbol"] ?? '', ENT_QUOTES, 'UTF-8') ?>">
-                    <input type="hidden" name="short_name" id="short_name" value="<?= htmlspecialchars($data["shortName"] ?? '', ENT_QUOTES, 'UTF-8') ?>">
-                    <input type="hidden" name="long_name" id="long_name" value="<?= htmlspecialchars($data["longName"] ?? '', ENT_QUOTES, 'UTF-8') ?>">
-
-                    <table class="stock-table">
-                        <tbody>
-                            <tr>
-                                <th colspan="2">証券コード</th>
-                                <td><span id="result-symbol"></td>
-                            </tr>
-                            <tr>
-                                <th colspan="2">銘柄名</th>
-                                <td><input type="text" name="name" id="name" placeholder="登録用の銘柄名を入力"></td>
-                            </tr>
-                            <tr>
-                                <th colspan="2">株価の小数点以下桁数</th>
-                                <td><input type="text" name="digit" id="digit" placeholder="0"></td>
-                            </tr>
-                            <tr>
-                                <th colspan="3"><span id="result-date"></span>の株価データ</th>
-                            </tr>
-                            <tr>
-                                <th></th>
-                                <th>始値</th>
-                                <td><span id="result-open"></td>
-                            </tr>
-                            <tr>
-                                <th></th>
-                                <th>高値</th>
-                                <td><span id="result-high"></td>
-                            </tr>
-                            <tr>
-                                <th></th>
-                                <th>低値</th>
-                                <td><span id="result-low"></td>
-                            </tr>
-                            <tr>
-                                <th></th>
-                                <th>終値</th>
-                                <td><span id="result-close"></td>
-                            </tr>
-                            <tr>
-                                <th></th>
-                                <th>出来高</th>
-                                <td><span id="result-volume"></td>
-                            </tr>
-                        </tbody>
-                    </table>
-                    <button type="submit" id="formSubmit">この銘柄を登録</button>
-                </form>
-            </div>
-
-            <div class="section-content-message" id="message-container">
-                <!-- <p id="message">検索結果がありません。</p> -->
-            </div>
-        </div>
-    </section>
-
     <!-- 登録済みの銘柄を表示するセクション -->
     <section>
-        <div class="section-header">
-            <h3 class="section-title">登録済みの銘柄</h3>
+        <div class="search-container">
+            <div class="search-input-block">
+                <input class="search-input" id="input-symbol" value=""  placeholder="証券コードまたは銘柄名"/>
+            </div>
+            <button id="search-input-clear-btn" class="search-submit" type="button">クリア</button>
         </div>
 
-        <form method="get" class="search-container" id="search-registered-form">
-            <div class="search-input-block">
-                <input class="search-input" type="text" name="keyword" placeholder="証券コードまたは銘柄名">
-            </div>
-            <button class="search-submit" type="submit">検索</button>
-        </form>
+        <div class="filter-options-container">
+            <input type="checkbox" id="view-tentative-only" name="view-tentative-only" value="on">
+            <label for="view-tentative-only">仮登録のみ表示</label>            
+        </div>
 
         <div class="list" id="searched-stock-list"></div>
     </section>
@@ -139,7 +63,7 @@
 
                 <form id="modal-form" method="post">
                     <input type="hidden" name="redirect" value="<?= htmlspecialchars($_SERVER['REQUEST_URI']) ?>">
-                    <input type="hidden" name="stock_id" id="modal-form-stock-id">
+                    <input type="hidden" name="stock_id" id="modal-form-stock-id" >
                     <input type="hidden" name="symbol" id="modal-form-symbol" value="<?= htmlspecialchars($data["symbol"] ?? '', ENT_QUOTES, 'UTF-8') ?>">
                     <input type="hidden" name="short_name" id="short_name" value="<?= htmlspecialchars($data["shortName"] ?? '', ENT_QUOTES, 'UTF-8') ?>">
                     <input type="hidden" name="long_name" id="long_name" value="<?= htmlspecialchars($data["longName"] ?? '', ENT_QUOTES, 'UTF-8') ?>">
@@ -148,7 +72,8 @@
                         <tbody>
                             <tr>
                                 <th colspan="2">証券コード</th>
-                                <td><span id="modal-symbol"></td>
+                                <!-- <td><span id="modal-symbol"></td> -->
+                                <td><input type="text" name="symbol" id="input-stock-symbol" disabled></td>
                             </tr>
                             <tr>
                                 <th colspan="2">銘柄名</th>
@@ -194,11 +119,13 @@
 
                     <div>
                         <button type="submit" id="modal-submit">更新</button>
+                        <button type="button" id="manual-input-btn">株価手動入力</button>
                     </div>
                 </form>
             </div>
         </div>
     </div>
+
 
     <?php
     unset($_SESSION['flash'], $_SESSION['errors'], $_SESSION['old']);
@@ -208,6 +135,7 @@
     <script type="module" src="<?= BASE_PATH ?>/js/pages/admin/init.js"></script>
 
     <script>
-        const isAdmin = <?= json_encode($isAdmin) ?>;
+        const isAdmin = <?= json_encode($isAdmin, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT) ?>;
+        const stocks = <?= json_encode($stocks, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT) ?>;
     </script>
 </body>

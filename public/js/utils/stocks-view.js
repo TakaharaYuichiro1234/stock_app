@@ -177,7 +177,7 @@ export class StocksViewModule {
 
         const stockBoardTentative = document.createElement('p');
         stockBoardTentative.className = "stock-board-tentative";
-        console.log("tentative: ", stock['tentative']);
+        // console.log("tentative: ", stock['tentative']);
         if (stock['tentative']) {
             stockBoardTentative.textContent = "（仮）";
             stockBoardTentative.style.color = "#dd5555";

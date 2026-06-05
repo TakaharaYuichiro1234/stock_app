@@ -81,6 +81,8 @@ class AssetService
         $totalQuantity = 0.0;
         $averagePrice = 0.0;
         $tradeDataWithAveragePrice = [];
+        $totalRealize = 0.0;
+        $totalDividend = 0.0;
         foreach($tradeData as $datum) {
 
             $effectiveSplits = array_filter($splits, function($split) use ($datum) {
@@ -94,17 +96,25 @@ class AssetService
 
             $prevTotalQuantity = $totalQuantity;
             $totalQuantity += (float)$datum['quantity']* $splitCoefficient;
-            if ($datum['type'] == 1) {
+            if ($datum['type'] == 1) {      // 買付
                 if($totalQuantity == 0) continue;   // 買付後に合計株数がゼロのときは、あとで、データ不正としてなんらかの処理を追加する
                 $averagePrice = ($prevTotalQuantity * $averagePrice + ((float)$datum['quantity'] * (float)$datum['price'])) / $totalQuantity;
-            } else {
-                $averagePrice = $averagePrice;
+            } else if ($datum['type'] == 2) {   // 売付
+                // $averagePrice = $averagePrice;
+
+                $realize = -(float)$datum['quantity'] * ((float)$datum['price'] - $averagePrice * $splitCoefficient);
+                $totalRealize += $realize;
+            } else if ($datum['type'] == 3) {   // 配当
+                $dividend = (float)$datum['subtotal'];
+                $totalDividend += $dividend;
             }
 
             $tradeDataWithAveragePrice[] = [
                 'date' => $datum['date'],
-                'quantity' => $totalQuantity,
+                'total_quantity' => $totalQuantity,
                 'average_price' => $averagePrice,
+                'total_realize' => $totalRealize,
+                'total_dividend' => $totalDividend,
             ];
         }
 
@@ -122,8 +132,10 @@ class AssetService
                 'date' => $date,
                 'stock_id' => $stockId,
                 'account_id' => $accountId,
-                'quantity' => $matchedTrade ? $matchedTrade['quantity'] : null,
+                'total_quantity' => $matchedTrade ? $matchedTrade['total_quantity'] : null,
                 'average_price' => $matchedTrade ? $matchedTrade['average_price'] : null,
+                'total_realize' => $matchedTrade ? $matchedTrade['total_realize'] : null,
+                'total_dividend' => $matchedTrade ? $matchedTrade['total_dividend'] : null,
             ];     
         }
         
@@ -133,66 +145,61 @@ class AssetService
 
 
 
-    private function calSummary(): array 
+    public function dailyAssetDetail(int $userId, array $stockAccountPairs): array 
     {
-        $uuid = $_SESSION['user']['uuid'];
-        $userId = $this->userModel->getUserIdByUuid($uuid);
-        if (!$userId) return [];
-
-        $stockAccountPairs = $this->tradeModel->getPairOfStockAccount($userId);
         $dates = $this->createDateArray();
 
-        $summary = [];
+        $results = [];
+        $latests = [];
         foreach($stockAccountPairs as $pair) {
             $stockId = $pair['stock_id'];
             $accountId = $pair['account_id'];
 
-            if ($accountId == 2) continue;
-            if ($accountId == 3) continue;
-
             $dailyPrices = $this->createDailyPriceArray($stockId, $dates); 
             $dailyTrades = $this->createDailyTradeArray($userId, $stockId, $accountId, $dates);
 
+            $latest = null;
             foreach($dailyTrades as $index => $dailyTrade) {
-                $date = $dailyTrade['date'];
-                $quantity = $dailyTrade['quantity'];
+                $totalQuantity = $dailyTrade['total_quantity'];
                 $averagePrice = $dailyTrade['average_price'];
                 $price = $dailyPrices[$index]['price'];
 
-                $summary[] = [
-                    'date' => $date,
+                $result = [
+                    'date' => $dailyTrade['date'],
                     'stock_id' => $stockId,
                     'account_id' => $accountId,
-                    'quantity' => $quantity,
+                    'total_quantity' => $totalQuantity,
                     'average_price' => $averagePrice,
+                    'total_realize' => $dailyTrade['total_realize'],
+                    'total_dividend' => $dailyTrade['total_dividend'],
                     'price' => $price,
-                    'asset_value' => ($quantity !== null && $price !== null) ? ($quantity * $price) : null,
-                    'profit_loss' => ($quantity !== null && $price !== null && $averagePrice !== null) ? (($price - $averagePrice) * $quantity) : null,
+                    'asset_value' => ($totalQuantity !== null && $price !== null) ? ($totalQuantity * $price) : null,
+                    'profit_loss' => ($totalQuantity !== null && $price !== null && $averagePrice !== null) ? (($price - $averagePrice) * $totalQuantity) : null,
                 ];
-            }
-        }
+                $results[] = $result;
 
-        return $summary;
+                if (!$latest) {
+                    $latest = $result;
+                } else {
+                    if ($latest['date'] < $result['date']) $latest = $result;
+                }
+            }
+            $latests[] = $latest;
+        }
+        return [$results, $latests];
     }
 
 
     public function dailyAssets(): array
     {   
-        // $stockId = 238;
-        // $userId = 1;
-        // $accountId = 2;
+        $uuid = $_SESSION['user']['uuid'];
+        $userId = $this->userModel->getUserIdByUuid($uuid);
+        if (!$userId) return [];
 
-        // $dates = $this->createDateArray();
-        // $dailyPrices = $this->createDailyPriceArray($stockId, $dates); 
-        // $dailyTrades = $this->createDailyTradeArray($userId, $stockId, $accountId, $dates);
+        $stockAccountPairs = $this->tradeModel->getPairOfStockAccount($userId);
 
 
-
-        // $stockPrices = $this->stockPriceModel->filterByStockId($stockId); 
-
-
-        $objects = $this->  calSummary();
-
+        $objects = $this->  dailyAssetDetail($userId, $stockAccountPairs);
         $result = [];
 
         foreach ($objects as $obj) {
@@ -210,13 +217,84 @@ class AssetService
             $result[$date]['total_profit_loss'] += $obj['profit_loss'];
         }
 
-        // ★ 日付キーで昇順ソート
         ksort($result);
-
-        // 添字を振り直す
         $result = array_values($result);
 
         return $result;
-
     }
+
+
+    // public function dailyAssetsIndividual(int $stockId, int $accountId): array
+    // {   
+    //     $uuid = $_SESSION['user']['uuid'];
+    //     $userId = $this->userModel->getUserIdByUuid($uuid);
+    //     if (!$userId) return [];
+
+    //     $stockAccountPairs = [
+    //         ['stock_id' => $stockId, 'account_id' => $accountId],
+    //     ];
+
+
+    //     $objects = $this->  dailyAssetDetail($userId, $stockAccountPairs);
+
+    //     // return $objects;
+
+
+    //     $result = [];
+
+    //     foreach ($objects as $obj) {
+    //         $date = $obj['date'];
+
+    //         if (!isset($result[$date])) {
+    //             $result[$date] = [
+    //                 'date' => $date,
+    //                 'total_asset_value' => 0,
+    //                 'total_profit_loss' => 0,
+    //             ];
+    //         }
+
+    //         $result[$date]['total_asset_value'] += $obj['asset_value'];
+    //         $result[$date]['total_profit_loss'] += $obj['profit_loss'];
+    //     }
+
+    //     ksort($result);
+    //     $result = array_values($result);
+
+    //     return $result;
+    // }
+
+
+
+
+
+    public function dailyAssetsTotal(array $dailyAssetDetail): array
+    {   
+        $result = [];
+
+        foreach ($dailyAssetDetail as $obj) {
+            $date = $obj['date'];
+
+            if (!isset($result[$date])) {
+                $result[$date] = [
+                    'date' => $date,
+                    'total_asset_value' => 0,
+                    'total_profit_loss' => 0,
+                    'total_realize' => 0,
+                    'total_dividend' => 0,
+                ];
+            }
+
+            $result[$date]['total_asset_value'] += $obj['asset_value'];
+            $result[$date]['total_profit_loss'] += $obj['profit_loss'];
+            $result[$date]['total_realize'] += $obj['total_realize'];
+            $result[$date]['total_dividend'] += $obj['total_dividend'];
+        }
+
+        ksort($result);
+        $result = array_values($result);
+
+        return $result;
+    }
+
+
 }

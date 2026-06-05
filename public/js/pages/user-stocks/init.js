@@ -30,6 +30,11 @@ function initMenu() {
     if (user) {
         items.push(
             new MenuItem({
+                caption: '取引のある銘柄を登録',
+                name: 'auto-stock-select',
+                action: () => autoStockSelect()
+            }),
+            new MenuItem({
                 caption: 'ログアウト',
                 name: 'logout',
                 action: () => document.getElementById('logout').submit()
@@ -52,6 +57,33 @@ function initMenu() {
     });
 
     menu.init();
+}
+
+async function autoStockSelect() {
+    //
+    const usersStocks = [];
+    try {
+        const res = await fetch(`${BASE_PATH}/api/trades/get_stock_ids_belong_to_user`);
+        if (!res.ok) throw new Error(`APIエラー: ${res.status}`);
+        const json = await res.json();
+        const data = json.data;
+        for (const datum of data) {
+            const d = {
+                id: datum['stock_id'],
+                name: datum['name'],
+                symbol: datum['symbol']
+            }
+            usersStocks.push(d);
+        }
+    } catch (err) {
+        console.error(err);
+    }
+
+    console.log("usersStockIds: ", usersStocks);
+
+    stockView.initSecondStockView(usersStocks, "users-stock-list");
+    currentStockIdList = stockView.getUsersStockIdList();
+
 }
 
 function initViewSwitch() {
@@ -199,6 +231,8 @@ async function setUsersStocks() {
 
     return usersStocks;
 }
+
+
 
 function setUserOperationButtonsListener() {
     document.getElementById('update-button').addEventListener('click', async () => {

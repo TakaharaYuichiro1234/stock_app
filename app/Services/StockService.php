@@ -60,7 +60,7 @@ class StockService
     // }
 
 
-    public function updateStockPrices($stockId): array {
+    public function updateStockPrices(int $stockId): array {
         $errors = [];
         $success = false;
 
@@ -85,7 +85,7 @@ class StockService
                 }
 
                 // 株価データ更新
-                $success = $this->stockPriceService ->updateLatestPrices($stock['id'], $stock['symbol'], false);
+                $success = $this->stockPriceService->updateLatestPrices($stock['id'], $stock['symbol'], false);
                 if (!$success) {
                     throw new RuntimeException('更新失敗');
                 }

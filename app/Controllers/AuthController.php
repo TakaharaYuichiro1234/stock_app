@@ -2,10 +2,19 @@
 
 namespace App\Controllers;
 
+use PDO;
 use App\Core\BaseWebController;
 
 class AuthController extends BaseWebController
 {
+    private PDO $pdo;
+
+    public function __construct()
+    {
+        require __DIR__ . '/../../config/db.php';
+        $this->pdo = $pdo;
+    }
+
     public function showLogin()
     {
         if (isset($_GET['redirect']) && str_starts_with($_GET['redirect'], BASE_PATH)) {
@@ -13,6 +22,15 @@ class AuthController extends BaseWebController
         }
 
         $this->view('login');
+    }
+
+    public function showRegister()
+    {
+        if (isset($_GET['redirect']) && str_starts_with($_GET['redirect'], BASE_PATH)) {
+            $_SESSION['redirect_after_login'] = $_GET['redirect'];
+        }
+
+        $this->view('register');
     }
 
     public function login()
@@ -26,10 +44,10 @@ class AuthController extends BaseWebController
             exit;
         }
 
-        require __DIR__ . '/../../config/db.php';
-        $this->pdo = $pdo;
+        // require __DIR__ . '/../../config/db.php';
+        // $this->pdo = $pdo;
 
-        $stmt = $pdo->prepare(
+        $stmt = $this->pdo->prepare(
             'SELECT * FROM users WHERE email = ?'
         );
         $stmt->execute([$email]);
@@ -40,6 +58,53 @@ class AuthController extends BaseWebController
             header('Location: ' . BASE_PATH);
             exit;
         }
+
+        session_regenerate_id(true);
+        $_SESSION['user'] = [
+            'uuid' => $user['uuid'],
+            'name' => $user['name'],
+            'role' => $user['role'],
+        ];
+
+        $redirect = $_SESSION['redirect_after_login'] ?? BASE_PATH;
+        unset($_SESSION['redirect_after_login']);
+
+        header('Location: ' . $redirect);
+        exit;
+    }
+
+
+    public function register()
+    {
+        $email = $_POST['email'];
+        $password = $_POST['password'];
+
+        if ($email === '' || $password === '') {
+            $_SESSION['error'] = '未入力項目があります';
+            header('Location: ' . BASE_PATH . '/register');
+            exit;
+        }
+
+        // require __DIR__ . '/../../config/db.php';
+        // $this->pdo = $pdo;
+
+        $stmt = $this->pdo->prepare(
+            'SELECT * FROM users WHERE email = ?'
+        );
+        $stmt->execute([$email]);
+        $user = $stmt->fetch();
+
+        if ($user) {
+            $_SESSION['error'] = 'このメールアドレスは登録済みです';
+            header('Location: ' . BASE_PATH . '/register');
+            exit;
+        }
+
+        // if (!password_verify($password, $user['password'])) {
+        //     $_SESSION['error'] = 'ログイン失敗';
+        //     header('Location: ' . BASE_PATH);
+        //     exit;
+        // }
 
         session_regenerate_id(true);
         $_SESSION['user'] = [

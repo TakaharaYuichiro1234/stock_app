@@ -117,7 +117,15 @@ class Stock
         );
         $stmt->execute([$id]);
     }
-
+    
+    public function allByUserId(int $userId): array
+    {
+        $sql = 'SELECT s.id, s.symbol, s.name, s.digit, us.is_visible FROM stocks s JOIN user_stocks us ON s.id = us.stock_id WHERE us.user_id = ? ORDER BY us.sort_order';
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute([$userId]);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+    
     public function allWithLatestPrice(?int $userId = null): array
     {
         $params = [];
@@ -226,4 +234,6 @@ class Stock
         $stmt->execute([':symbol' => $symbol]);
         return (bool) $stmt->fetchColumn();
     }
+
+
 }

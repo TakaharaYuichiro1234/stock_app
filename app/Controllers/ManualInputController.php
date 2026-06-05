@@ -8,16 +8,19 @@ use App\Core\Auth;
 use App\Core\BaseWebController;
 use App\Models\Account;
 use App\Models\Stock;
+use App\Models\StockPrice;
 use App\Models\Trade;
 use App\Models\User;
 use App\Validations\TradeValidator;
 use App\Data\TradeData;
 
-class TradeController extends BaseWebController
+
+class ManualInputController extends BaseWebController
 {
     private PDO $pdo;
     private Account $accountModel;
     private Stock $stockModel;
+    private StockPrice $stockPriceModel;
     private Trade $tradeModel;
     private User $userModel;
 
@@ -27,38 +30,38 @@ class TradeController extends BaseWebController
         $this->pdo = $pdo;
         $this->accountModel = new Account($this->pdo);
         $this->stockModel = new Stock($this->pdo);
+        $this->stockPriceModel = new StockPrice($this->pdo);
         $this->tradeModel = new Trade($this->pdo);
-        $this->userModel = new User($this->pdo);
+        $this->userModel = new User($this->pdo);   
     }
 
     public function index()
     {
         $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
 
-        $isAdmin = Auth::isAdmin();
-        $user = $_SESSION['user'];
-        $stocks = $this->stockModel->all();  
+        $stockId = $_GET['stock_id'];
+        $stock = $this->stockModel->find($stockId);
+        $stockPrices = $this->stockPriceModel->filterByStockId($stockId);
 
-        $accounts = [];
-        $userStocks = [];
-        if (Auth::isLogged()) {
-            $uuid = $_SESSION['user']['uuid'];
-            $userId = $this->userModel->getUserIdByUuid($uuid);
-            if ($userId) {
-                $accounts = $this->accountModel->getByUserId($userId);
-                $userStocks = $this->stockModel-> allByUserId($userId);
-            }
-        }
-
-        $this->view('trade', [
-            'isAdmin' => $isAdmin,
-            'user'    => $user,
-            'stocks' => $stocks,
-            'accounts' => $accounts,
-            'userStocks' => $userStocks,
+        $this->view('manual-input', [
+            'stock' => $stock,
+            'stockPrices' => $stockPrices,
         ]);
     }
 
+
+    public function updateStockPrices()
+    {
+        $stockId = (int)$_POST['stock_id'];
+        $prices = json_decode($_POST['prices'], true);
+
+        try {
+            $this->stockPriceModel->upsertPrices($stockId, $prices);
+        } catch (\Exception $e) {
+            http_response_code($e->getCode() ?: 500);
+            exit($e->getMessage());
+        }
+    }
 
 
     public function store()

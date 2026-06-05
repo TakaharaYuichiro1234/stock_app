@@ -2,11 +2,11 @@ import { BASE_PATH } from '../../config.js';
 import { MenuItem } from '../../utils/menu-item.js';
 import { Menu } from '../../utils/menu.js';
 import { getCsrfToken } from '../../utils/common.js';
-
-
+import * as store from './store.js';
 
 let trades = [];
 let inputData;
+
 document.addEventListener("DOMContentLoaded", () => {
     init();
 });
@@ -14,13 +14,12 @@ document.addEventListener("DOMContentLoaded", () => {
 
 async function init() {
     initMenu();
+    initInputData();
     initRegistrationEvents();
+    initModal();
     
-
     trades = await fetchData();
-
     showData();
-
 }
 
 // ===========================================================
@@ -45,22 +44,27 @@ async function fetchData() {
 }
 
 function showData() {
+    const typeText = {1: '買付', 2: '売付', 3: '配当'};
     const dataTable = document.getElementById('data-table');
+    dataTable.innerHTML = "";
+
     for (const trade of trades) {
         const td1 = document.createElement('td');
         td1.textContent = trade['date'];
         const td2 = document.createElement('td');
-        td2.textContent = trade['type'];
+        td2.textContent = typeText[trade['type']];
         const td3 = document.createElement('td');
-        td3.textContent = trade['stock_id'];
+        td3.textContent = trade['symbol'];
         const td4 = document.createElement('td');
-        td4.textContent = "仮"
+        td4.textContent = trade['name'];
         const td5 = document.createElement('td');
-        td5.textContent = trade['account_id'];
+        td5.textContent = trade['content'];
         const td6 = document.createElement('td');
-        td6.textContent = trade['quantity'];
+        td6.textContent = (trade['type'] === 1 || trade['type'] === 2) ? trade['quantity']: "---";
         const td7 = document.createElement('td');
-        td7.textContent = trade['price'];
+        td7.textContent = (trade['type'] === 1 || trade['type'] === 2) ? trade['price']: "---";
+        const td8 = document.createElement('td');
+        td8.textContent = (trade['type'] === 1 || trade['type'] === 2) ? trade['quantity']*trade['price'] : trade['subtotal'];
 
         const tr = document.createElement('tr');
         tr.appendChild(td1);
@@ -70,6 +74,7 @@ function showData() {
         tr.appendChild(td5);
         tr.appendChild(td6);
         tr.appendChild(td7);
+        tr.appendChild(td8);
 
         dataTable.appendChild(tr);
     }
@@ -77,250 +82,105 @@ function showData() {
 }
 
 
+
+
+function initModal() {
+
+    // モーダル画面表示・非表示
+    document.getElementById("batch-input-button").addEventListener("click", () => {
+        // document.getElementById('modal-update').classList.add("hidden");
+        // document.getElementById('modal-submit').classList.remove("hidden");
+
+        document.querySelector(".modal").classList.remove("hidden");
+    });
+
+    document.querySelector(".modal-close").addEventListener("click", () => {
+        document.querySelector(".modal").classList.add("hidden");
+    });
+
+    document.getElementById("add-to-temporary-data").addEventListener("click", () => {
+        store.addToTemporaryData();
+        document.querySelector(".modal").classList.add("hidden");
+    });
+}
 
 // ===========================================================
 // 新規取引データ登録関連
-// あとでModalに移す
 // ===========================================================
 function initRegistrationEvents() {
+    document.getElementById('temporary-save').addEventListener('click', function() {
+        store.getInputData();
+    });
+
     // 「貼り付け」クリック時の処理
     document.getElementById('paste-from-clipboard').addEventListener('click', async () => {
-        await pasteFromClipboard();
+        await store.pasteFromClipboard();
     });
-
-    // document.getElementById('check-symbols').addEventListener('click', async () => {
-    //     await checkSymbols();
-    // });
 
     document.getElementById('store-button').addEventListener('click', async () => {
-        if (!inputData) {
-            alert("データがありません");
-            return;
-        } else {
-            await checkSymbols();
-            await storeData();
-        }
+        await store.storeData();
     });
 }
 
-async function pasteFromClipboard() {
-    const clipboardData = await navigator.clipboard.readText();
-    inputData = parseExcelClipboard(clipboardData);
+function initInputData() {
 
-    const dataTable = document.getElementById('data-paste-table');
-    for (const row of inputData) {
-        const tr = document.createElement('tr');
-        for (const cell of row) {
-            const td = document.createElement('td');
-            td.textContent = cell;
-            tr.appendChild(td);
-        }
-        dataTable.appendChild(tr);
-    }
-}
+    const today = new Date();
+    const yyyy = today.getFullYear();
+    const mm = String(today.getMonth() + 1).padStart(2, '0'); 
+    const dd = String(today.getDate()).padStart(2, '0');
+    document.getElementById('input-date').value = `${yyyy}-${mm}-${dd}`;
 
-function parseExcelClipboard(text) {
-    const rows = [];
-    let row = [];
-    let cell = '';
 
-    let i = 0;
-    let inQuotes = false;
-
-    while (i < text.length) {
-        const char = text[i];
-        const nextChar = text[i + 1];
-
-        // --- ダブルクォート処理 ---
-        if (char === '"') {
-            if (inQuotes && nextChar === '"') {
-                // "" → エスケープされた "
-                cell += '"';
-                i += 2;
-                continue;
-            } else {
-                // クォート開始 or 終了
-                inQuotes = !inQuotes;
-                i++;
-                continue;
-            }
-        }
-
-        // --- タブ（列区切り） ---
-        if (char === '\t' && !inQuotes) {
-            row.push(cell);
-            cell = '';
-            i++;
-            continue;
-        }
-
-        // --- 改行（行区切り） ---
-        if ((char === '\n') && !inQuotes) {
-            row.push(cell);
-            rows.push(row);
-
-            row = [];
-            cell = '';
-            i++;
-            continue;
-        }
-
-        // --- CR除去（Windows対策） ---
-        if (char === '\r') {
-            i++;
-            continue;
-        }
-
-        // --- 通常文字 ---
-        cell += char;
-        i++;
+    for (const stock of userStocks) {
+        const option = document.createElement('option');
+        option.value = `${stock.symbol}: ${stock.name}`;
+        option.dataset.id = stock.symbol;
+        document.getElementById('symbol-select').appendChild(option);
     }
 
-    // 最後のセル・行
-    if (cell !== '' || row.length > 0) {
-        row.push(cell);
-        rows.push(row);
-    }
+    const input = document.getElementById('input-symbol');
+    input.addEventListener('input', function () {
+        const nameView = document.getElementById('matched-name');
+        nameView.textContent = "";
+        if (!this.value) return;
 
-    return rows;
-}
+        const option = document.querySelector(
+            `#symbol-select option[value="${this.value}"]`
+        );
 
-async function checkSymbols() {
-    const temtativeRegistrated = [];
-    const registered = [];
-    for (const row of inputData) {
-        if (row[4] === "") continue;   // 空行はスキップ
-        // console.log("symbol: ", row[4]);
-        console.log("row: ", row);
-        const symbol = row[4].toUpperCase();
-        if (!(/^[A-Z0-9]{4}$/.test(symbol))) continue;   // 銘柄コードの形式でないものはスキップ{
-        const name = row[3].trim();
-
-        const ret = await tentativelyStoreStock(symbol, name);
-
-        if (ret) {
-            temtativeRegistrated.push(symbol);
-        } else {
-            registered.push(symbol);
+        let targetVal = this.value;
+        if (option) {
+            targetVal = option.dataset.id;
+            this.value = targetVal;            
         }
+        const value = stocks.find(stock => stock.symbol === targetVal)?.name || "該当なし";
+        nameView.textContent = value;
+    });
+
+
+    for (const account of accounts) {
+        const option = document.createElement('option');
+        option.value = `${account.content}`;
+        option.dataset.id = account.id;
+        document.getElementById('account-select').appendChild(option);
     }
 
-    const unregisteredDiv = document.getElementById('unregistered-symbols');
+    // document.getElementById('input-account').addEventListener('input', function () {
+    //     if (!this.value) return;
 
-    const msg = document.createElement('p');
-    msg.textContent = "以下の銘柄は仮登録されました。後ほど管理者が確認して正式に登録されます。";
-    unregisteredDiv.appendChild(msg);
+    //     const option = document.querySelector(
+    //         `#account-select option[value="${this.value}"]`
+    //     );
 
-    for (const symbol of temtativeRegistrated) {
-        const p = document.createElement('p');
-        p.textContent = symbol;
-        unregisteredDiv.appendChild(p);
-    }
-}
+    //     let targetVal = this.value;
+    //     if (option) {
+    //         targetVal = option.dataset.id;
+    //         this.value = targetVal;            
+    //     }
 
-async function tentativelyStoreStock(symbol, name) {
-    const url = `${BASE_PATH}/api/stocks/tentative-store`;
-
-    try {
-        const formData = new FormData();
-        formData.append('csrf_token', getCsrfToken());
-        formData.append('symbol', symbol + '.T');
-        formData.append('name', name);
-
-        const res = await fetch(url, {
-            method: 'POST',
-            body: formData,
-            credentials: 'same-origin', // セッション / CSRF用
-        });
-
-        if (!res.ok) {
-            throw new Error('通信エラー');
-        }
-
-        const result = await res.json();
-        if (result.success) {
-            console.log("stockId: ", result.data['stockId']);
-            return true;
-        }
-
-    } catch (err) {
-        console.error(err);
-    }
-    return false;
-}
-
-async function storeData() {
-    const verifiedData = [];
-    for (const row of inputData) {
-        const verifiedRowData = verifyData(row);
-
-        if (Object.keys(verifiedRowData).length === 6) {
-            verifiedData.push(verifiedRowData);
-        }
-    }
-
-    if (!confirm("登録しますか？")) return;
-
-    const data = JSON.stringify(verifiedData);
-    const url = `${BASE_PATH}/api/trades/store`;
-
-    try {
-        const formData = new FormData();
-        formData.append('csrf_token', getCsrfToken());
-        formData.append('input_trades', data);
-
-        const res = await fetch(url, {
-            method: 'POST',
-            body: formData,
-            credentials: 'same-origin', // セッション / CSRF用
-        });
-
-        console.log(res);
-
-        if (!res.ok) {
-            throw new Error('通信エラー');
-        }
-
-        const result = await res.json();
-        console.log(result);
-
-        // currentStockIdList = stockView.getUsersStockIdList();
-        alert('登録しました');
-
-    } catch (err) {
-        console.error(err);
-    }
-}
+    // });
 
 
-
-
-function verifyData(row) {
-    const verifiedData = {};
-    if (row.length < 8) return {};
-
-    // 日付	年	分類	銘柄	証券コード	口座	株数	株価
-
-    // 日付
-    if (new Date(row[0]).getTime()) verifiedData['date'] = row[0];
-
-    // 銘柄コード
-    if (/^[A-Z0-9]{4}$/.test(row[4].toUpperCase())) {
-        verifiedData['symbol'] = row[4].toUpperCase();
-    }
-
-    if (row[5] !== "") verifiedData['account_name'] = row[5].trim();
-
-
-    if (row[2] === "買付" || row[2] === "売付") verifiedData['type_name'] = row[2];
-
-
-    if (!isNaN(row[6]) && row[6].trim() !== "") verifiedData['quantity'] = row[6];
-
-
-    if (!isNaN(row[7].replace(/,/g, '')) && row[7].trim() !== "") verifiedData['price'] = row[7].replace(/,/g, '');
-
-    return verifiedData;
 
 }
 

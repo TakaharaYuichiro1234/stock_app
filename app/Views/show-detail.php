@@ -1,3 +1,14 @@
+<?php
+/** @var array $user */
+/** @var array $stock */
+/** @var bool $isAdmin */
+/** @var array $tradeAmounts */
+/** @var array $stockPrices */
+/** @var array $chartPrices */
+/** @var array $trades */
+/** @var array $chartTrades */
+?>
+
 <!DOCTYPE html>
 <html lang="ja">
 

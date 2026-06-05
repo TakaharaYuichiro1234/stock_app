@@ -11,6 +11,7 @@ class TradeData
         public int $quantity,
         public int $type,
         public int $account_id,
-        public string $content
+        public string $content,
+        public float $subtotal,
     ) {}
 }
